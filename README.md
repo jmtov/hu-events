@@ -1,75 +1,94 @@
-# React + TypeScript + Vite
+# Event OS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Event management platform for corporate events — HR retreats, workshops, BDR calls, hackathons, and more.
 
-Currently, two official plugins are available:
+Admins create and configure events. Attendees receive notifications, complete their checklist, and upload documents.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Stack
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+| Layer | Tool |
+|---|---|
+| Frontend | React 19 + Vite + TypeScript |
+| Routing | TanStack Router |
+| Data fetching | TanStack Query |
+| Forms | TanStack Form + Zod |
+| API layer | Vercel Serverless Functions (`api/`) |
+| AI | Claude API (Anthropic) |
+| Automations | n8n (cloud) |
+| Notifications | Slack, Email, WhatsApp |
+| Deploy | Vercel |
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## Project structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+api/               # Vercel Serverless Functions — all external API calls go here
+src/
+  components/      # Shared UI components
+  features/        # Feature-level components, organized by domain
+  hooks/           # TanStack Query hooks (useGetX, useCreateX, etc.)
+  lib/             # Shared utilities (api.ts client, etc.)
+  routes/          # TanStack Router file-based routes
+  schemas/         # Zod validation schemas
+  services/        # Service files that call src/lib/api.ts
+  types/           # TypeScript entity types
+docs/
+  features_list.md        # All features, organized by module and user role
+  technical_docs_plan.md  # One entry per feature: route, endpoints, hooks, notes
+  api_layer.md            # API layer architecture, env vars, n8n webhook payloads
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**1. Install dependencies**
+```bash
+npm install
 ```
+
+**2. Set up environment variables**
+
+Copy `.env.example` to `.env.local` and fill in the values:
+```bash
+cp .env.example .env.local
+```
+
+**3. Run the dev server**
+```bash
+npm run dev
+```
+
+---
+
+## Environment variables
+
+Secrets live in `.env.local` for development and in the Vercel dashboard for production. Never commit `.env.local`.
+
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Claude API key |
+| `N8N_WEBHOOK_URL` | n8n webhook base URL |
+| `N8N_WEBHOOK_SECRET` | Shared secret for n8n webhook authentication |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `SESSION_SECRET` | Secret for signing session tokens |
+
+---
+
+## Docs
+
+- [`docs/features_list.md`](./docs/features_list.md) — full feature list
+- [`docs/technical_docs_plan.md`](./docs/technical_docs_plan.md) — technical spec per feature
+- [`docs/api_layer.md`](./docs/api_layer.md) — API layer, serverless functions, n8n payloads
+
+---
+
+## Working with Claude Code
+
+This project has a [`CLAUDE.md`](./CLAUDE.md) at the root with the full project context, stack conventions, and coding rules. Claude Code reads it automatically at the start of every session.
+
+Before writing any code, Claude will cross-reference the feature docs above.

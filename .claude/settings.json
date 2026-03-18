@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun install:*)",
+      "Bash(bun run:*)",
+      "Bash(bunx:*)",
+      "Bash(npm install:*)",
+      "Bash(npx:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh auth status:*)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)",
+      "Bash(npm remove:*)",
+      "Bash(npx @biomejs/biome init)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx shadcn@latest *",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

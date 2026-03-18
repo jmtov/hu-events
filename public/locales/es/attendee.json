@@ -1,0 +1,34 @@
+{
+  "registration": {
+    "title": "Confirmación de Asistencia",
+    "subtitle": "Completa los datos para confirmar tu participación.",
+    "success": {
+      "title": "¡RSVP Confirmado!",
+      "message": "Tu asistencia fue registrada con éxito.\n¡Hasta pronto!"
+    },
+    "fields": {
+      "fullName": {
+        "label": "Nombre Completo",
+        "placeholder": "Ej: Ana García",
+        "errors": {
+          "required": "El nombre completo es obligatorio."
+        }
+      },
+      "email": {
+        "label": "E-mail Corporativo",
+        "placeholder": "Ej: ana.garcia@empresa.com",
+        "errors": {
+          "required": "El e-mail corporativo es obligatorio.",
+          "invalid": "Ingresa un e-mail válido."
+        }
+      },
+      "dietary": {
+        "label": "Restricciones Alimentarias",
+        "placeholder": "Ej: Vegetariano, sin gluten...",
+        "hint": "Este es un ejemplo de campo dinámico configurable por evento."
+      }
+    },
+    "submit": "Confirmar Asistencia (RSVP)",
+    "submitting": "Confirmando..."
+  }
+}

@@ -12,7 +12,8 @@ dist
 dist-ssr
 *.local
 
-.claude/
+# Claude Code — versioned commands/skills; keep local overrides private
+.claude/settings.local.json
 
 # Editor directories and files
 .vscode/*

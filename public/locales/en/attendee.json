@@ -1,0 +1,34 @@
+{
+  "registration": {
+    "title": "Confirm Your Attendance",
+    "subtitle": "Fill in the details below to confirm your participation.",
+    "success": {
+      "title": "RSVP Confirmed!",
+      "message": "Your attendance has been successfully registered.\nSee you soon!"
+    },
+    "fields": {
+      "fullName": {
+        "label": "Full Name",
+        "placeholder": "e.g. Jane Smith",
+        "errors": {
+          "required": "Full name is required."
+        }
+      },
+      "email": {
+        "label": "Corporate Email",
+        "placeholder": "e.g. jane.smith@company.com",
+        "errors": {
+          "required": "Corporate email is required.",
+          "invalid": "Please enter a valid email address."
+        }
+      },
+      "dietary": {
+        "label": "Dietary Restrictions",
+        "placeholder": "e.g. Vegetarian, gluten-free...",
+        "hint": "This is an example of a dynamic field configurable per event."
+      }
+    },
+    "submit": "Confirm Attendance (RSVP)",
+    "submitting": "Confirming..."
+  }
+}

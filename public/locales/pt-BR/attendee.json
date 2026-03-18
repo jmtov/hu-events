@@ -1,0 +1,34 @@
+{
+  "registration": {
+    "title": "Confirmação de Presença",
+    "subtitle": "Preencha os dados abaixo para confirmar sua participação.",
+    "success": {
+      "title": "RSVP Confirmado!",
+      "message": "Sua presença foi registrada com sucesso.\nAté breve!"
+    },
+    "fields": {
+      "fullName": {
+        "label": "Nome Completo",
+        "placeholder": "Ex: Ana Paula Souza",
+        "errors": {
+          "required": "Nome completo é obrigatório."
+        }
+      },
+      "email": {
+        "label": "E-mail Corporativo",
+        "placeholder": "Ex: ana.souza@empresa.com",
+        "errors": {
+          "required": "E-mail corporativo é obrigatório.",
+          "invalid": "Insira um e-mail válido."
+        }
+      },
+      "dietary": {
+        "label": "Restrições Alimentares",
+        "placeholder": "Ex: Vegetariano, sem glúten...",
+        "hint": "Este é um exemplo de campo dinâmico configurável por evento."
+      }
+    },
+    "submit": "Confirmar Presença (RSVP)",
+    "submitting": "Confirmando..."
+  }
+}
