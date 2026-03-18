@@ -151,7 +151,7 @@ export default function HumandRegistration() {
 						<CardContent className="pt-6">
 							<SuccessScreen
 								name={values.full_name}
-								onBack={() => setValues(EMPTY_FORM) || setSubmitted(false)}
+								onBack={() => { setValues(EMPTY_FORM); setSubmitted(false); }}
 							/>
 						</CardContent>
 					</Card>
@@ -273,7 +273,7 @@ export default function HumandRegistration() {
 										{field.inputType === "select" ? (
 											<Select
 												value={values.preferences[field.id] ?? ""}
-												onValueChange={(v) => setPreference(field.id, v)}
+												onValueChange={(v) => setPreference(field.id, v ?? "")}
 											>
 												<SelectTrigger id={field.id}>
 													<SelectValue placeholder="Selecione..." />

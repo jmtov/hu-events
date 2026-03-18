@@ -1,5 +1,13 @@
 import { useState } from "react";
 
+type ContentBlock = { type: string; text: string };
+type EventResult = {
+  suggested_title: string;
+  event_type: string;
+  location_type: string;
+  is_travel_required: boolean;
+};
+
 const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos", um aplicativo corporativo. Sua função é ler a descrição crua de um evento fornecida por um usuário (geralmente do RH ou gestor) e classificar esse evento.
 Regras Estritas:
 1. Você deve retornar ÚNICA e EXCLUSIVAMENTE um objeto JSON válido.
@@ -23,7 +31,7 @@ const INVALID_TITLE = "Descrição Inválida";
 
 export default function App() {
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<EventResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,7 +50,7 @@ export default function App() {
         }),
       });
       const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
+      const text = data.content?.filter((b: ContentBlock) => b.type === "text").map((b: ContentBlock) => b.text).join("") || "";
       setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
     } catch {
       setError("Erro ao classificar o evento. Verifique a descrição e tente novamente.");
@@ -53,6 +61,8 @@ export default function App() {
 
   const reset = () => { setDescription(""); setResult(null); setError(""); };
   const isInvalid = result?.suggested_title === INVALID_TITLE;
+  const typeStyle = result ? (TYPE_STYLES[result.event_type as keyof typeof TYPE_STYLES] || TYPE_STYLES.Outro) : TYPE_STYLES.Outro;
+  const locIcon = result ? (LOC_ICONS[result.location_type as keyof typeof LOC_ICONS] || "📌") : "📌";
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", minHeight: "100vh", background: "#f8fafc", padding: "32px 16px" }}>
@@ -120,25 +130,25 @@ export default function App() {
                 </div>
                 <div style={{ marginBottom: 20 }}>
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px" }}>Título Sugerido</span>
-                  <p style={{ margin: "6px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a", lineHeight: 1.3 }}>{result.suggested_title}</p>
+                  <p style={{ margin: "6px 0 0", fontSize: 20, fontWeight: 700, color: "#0f172a", lineHeight: 1.3 }}>{result!.suggested_title}</p>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
                   <div style={{ background: "#f8fafc", borderRadius: 12, padding: "14px 12px", textAlign: "center" }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 8 }}>Tipo</span>
-                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 20, fontSize: 12, fontWeight: 700, background: (TYPE_STYLES[result.event_type] || TYPE_STYLES.Outro).bg, color: (TYPE_STYLES[result.event_type] || TYPE_STYLES.Outro).color }}>
-                      {result.event_type}
+                    <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 20, fontSize: 12, fontWeight: 700, background: typeStyle.bg, color: typeStyle.color }}>
+                      {result!.event_type}
                     </span>
                   </div>
                   <div style={{ background: "#f8fafc", borderRadius: 12, padding: "14px 12px", textAlign: "center" }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 8 }}>Formato</span>
-                    <span style={{ fontSize: 20 }}>{LOC_ICONS[result.location_type] || "📌"}</span>
-                    <p style={{ margin: "4px 0 0", fontSize: 13, fontWeight: 600, color: "#334155" }}>{result.location_type}</p>
+                    <span style={{ fontSize: 20 }}>{locIcon}</span>
+                    <p style={{ margin: "4px 0 0", fontSize: 13, fontWeight: 600, color: "#334155" }}>{result!.location_type}</p>
                   </div>
                   <div style={{ background: "#f8fafc", borderRadius: 12, padding: "14px 12px", textAlign: "center" }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.8px", display: "block", marginBottom: 8 }}>Viagem</span>
-                    <span style={{ fontSize: 20 }}>{result.is_travel_required ? "✈️" : "🏠"}</span>
-                    <p style={{ margin: "4px 0 0", fontSize: 13, fontWeight: 600, color: result.is_travel_required ? "#0369a1" : "#334155" }}>
-                      {result.is_travel_required ? "Necessária" : "Não necessária"}
+                    <span style={{ fontSize: 20 }}>{result!.is_travel_required ? "✈️" : "🏠"}</span>
+                    <p style={{ margin: "4px 0 0", fontSize: 13, fontWeight: 600, color: result!.is_travel_required ? "#0369a1" : "#334155" }}>
+                      {result!.is_travel_required ? "Necessária" : "Não necessária"}
                     </p>
                   </div>
                 </div>

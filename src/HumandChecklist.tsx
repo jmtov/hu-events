@@ -1,5 +1,10 @@
 import { useState } from "react";
 
+type ContentBlock = { type: string; text: string };
+type ChecklistItem = { name: string; type: string; suggestedRequired: boolean };
+type ChecklistResult = { items: ChecklistItem[] };
+type Counts = { task: number; document_upload: number; info_input: number; required: number };
+
 const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento (e seu tipo opcional) e gerar um checklist pré-evento com as tarefas que os participantes precisam cumprir.
 Regras Estritas:
 1. Você deve retornar ÚNICA e EXCLUSIVAMENTE um objeto JSON válido.
@@ -19,10 +24,10 @@ const EVENT_TYPES = ["Offsite", "Hackathon", "Treinamento", "Confraternização"
 export default function App() {
   const [eventType, setEventType] = useState("");
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<ChecklistResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [toggled, setToggled] = useState({});
+  const [toggled, setToggled] = useState<Record<number, boolean>>({});
 
   const generate = async () => {
     if (!description.trim()) return;
@@ -40,7 +45,7 @@ export default function App() {
         }),
       });
       const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
+      const text = data.content?.filter((b: ContentBlock) => b.type === "text").map((b: ContentBlock) => b.text).join("") || "";
       setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
     } catch {
       setError("Erro ao gerar o checklist. Verifique a descrição e tente novamente.");
@@ -50,14 +55,14 @@ export default function App() {
   };
 
   const reset = () => { setDescription(""); setEventType(""); setResult(null); setError(""); setToggled({}); };
-  const toggleRequired = (i) => setToggled(p => ({ ...p, [i]: !p[i] }));
-  const getRequired = (i, item) => (i in toggled ? toggled[i] : item.suggestedRequired);
+  const toggleRequired = (i: number) => setToggled(p => ({ ...p, [i]: !p[i] }));
+  const getRequired = (i: number, item: ChecklistItem) => (i in toggled ? toggled[i] : item.suggestedRequired);
 
-  const counts = result?.items?.length > 0 ? {
-    task:            result.items.filter(it => it.type === "task").length,
-    document_upload: result.items.filter(it => it.type === "document_upload").length,
-    info_input:      result.items.filter(it => it.type === "info_input").length,
-    required:        result.items.filter((it, i) => getRequired(i, it)).length,
+  const counts: Counts | null = result && result.items.length > 0 ? {
+    task:            result.items.filter((it: ChecklistItem) => it.type === "task").length,
+    document_upload: result.items.filter((it: ChecklistItem) => it.type === "document_upload").length,
+    info_input:      result.items.filter((it: ChecklistItem) => it.type === "info_input").length,
+    required:        result.items.filter((it: ChecklistItem, i: number) => getRequired(i, it)).length,
   } : null;
 
   return (
@@ -148,14 +153,14 @@ export default function App() {
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", padding: "16px 20px", marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 15 }}>📋</span>
-                    <span style={{ fontWeight: 700, fontSize: 15, color: "#1e293b" }}>{result.items.length} itens gerados</span>
+                    <span style={{ fontWeight: 700, fontSize: 15, color: "#1e293b" }}>{result!.items.length} itens gerados</span>
                     <span style={{ fontSize: 13, color: "#94a3b8" }}>·</span>
-                    <span style={{ fontSize: 13, color: "#64748b" }}>{counts.required} obrigatórios</span>
+                    <span style={{ fontSize: 13, color: "#64748b" }}>{counts!.required} obrigatórios</span>
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
-                    {Object.entries(TYPE_CONFIG).map(([k, v]) => counts[k] > 0 && (
+                    {Object.entries(TYPE_CONFIG).map(([k, v]) => counts![k as keyof Counts] > 0 && (
                       <span key={k} style={{ fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: v.bg, color: v.color, border: `1px solid ${v.border}` }}>
-                        {v.icon} {counts[k]} {v.label}
+                        {v.icon} {counts![k as keyof Counts]} {v.label}
                       </span>
                     ))}
                   </div>
@@ -166,11 +171,11 @@ export default function App() {
                 </p>
 
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", overflow: "hidden" }}>
-                  {result.items.map((item, i) => {
-                    const cfg = TYPE_CONFIG[item.type] || TYPE_CONFIG.task;
+                  {result!.items.map((item: ChecklistItem, i: number) => {
+                    const cfg = TYPE_CONFIG[item.type as keyof typeof TYPE_CONFIG] || TYPE_CONFIG.task;
                     const req = getRequired(i, item);
                     return (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderBottom: i < result.items.length - 1 ? "1px solid #f1f5f9" : "none" }}
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderBottom: i < result!.items.length - 1 ? "1px solid #f1f5f9" : "none" }}
                         onMouseEnter={e => e.currentTarget.style.background = "#fafafa"}
                         onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                         <div style={{ width: 38, height: 38, borderRadius: 10, background: cfg.bg, border: `1.5px solid ${cfg.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, flexShrink: 0 }}>
@@ -197,7 +202,7 @@ export default function App() {
                 <details style={{ marginTop: 16 }}>
                   <summary style={{ fontSize: 12, color: "#94a3b8", cursor: "pointer", userSelect: "none", padding: "0 4px" }}>Ver JSON bruto</summary>
                   <pre style={{ marginTop: 10, background: "#1e293b", color: "#94a3b8", borderRadius: 10, padding: "14px 16px", fontSize: 12, overflowX: "auto", lineHeight: 1.7 }}>
-                    {JSON.stringify({ items: result.items.map((it, i) => ({ ...it, suggestedRequired: getRequired(i, it) })) }, null, 2)}
+                    {JSON.stringify({ items: result!.items.map((it: ChecklistItem, i: number) => ({ ...it, suggestedRequired: getRequired(i, it) })) }, null, 2)}
                   </pre>
                 </details>
               </>

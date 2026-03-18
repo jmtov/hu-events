@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+type ContentBlock = { type: string; text: string };
+type FormField = { label: string; inputType: string; options: string[] | null };
+type FormResult = { fields: FormField[] };
+
 const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento e sugerir campos de formulário (preferências) que o organizador deveria perguntar aos participantes antes do evento.
 Regras Estritas:
 1. Retorne APENAS um objeto JSON válido. Nada de texto extra.
@@ -20,16 +24,16 @@ const lbStyle = { fontSize: 13, fontWeight: 600, color: "#374151", display: "blo
 const inputBase = { marginTop: 6, padding: "9px 12px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize: 13, background: "#f8fafc" };
 
 const PREVIEW = {
-  text:    ({ label }) => <div><label style={lbStyle}>{label}</label><div style={{ ...inputBase, color: "#94a3b8" }}>Digite sua resposta...</div></div>,
-  number:  ({ label }) => <div><label style={lbStyle}>{label}</label><div style={{ ...inputBase, width: 100, color: "#94a3b8" }}>0</div></div>,
-  boolean: ({ label }) => (
+  text:    ({ label }: { label: string }) => <div><label style={lbStyle}>{label}</label><div style={{ ...inputBase, color: "#94a3b8" }}>Digite sua resposta...</div></div>,
+  number:  ({ label }: { label: string }) => <div><label style={lbStyle}>{label}</label><div style={{ ...inputBase, width: 100, color: "#94a3b8" }}>0</div></div>,
+  boolean: ({ label }: { label: string }) => (
     <div><label style={lbStyle}>{label}</label>
       <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
         {["Sim", "Não"].map(o => <div key={o} style={{ padding: "6px 18px", borderRadius: 8, border: "1.5px solid #e2e8f0", fontSize: 13, color: "#64748b", background: o === "Sim" ? "#f0fdf4" : "#fff", fontWeight: o === "Sim" ? 600 : 400 }}>{o}</div>)}
       </div>
     </div>
   ),
-  select:  ({ label, options }) => (
+  select:  ({ label, options }: { label: string; options: string[] | null }) => (
     <div><label style={lbStyle}>{label}</label>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
         {(options || []).map((o, i) => <div key={i} style={{ padding: "5px 14px", borderRadius: 20, border: `1.5px solid ${i === 0 ? "#c7d2fe" : "#e2e8f0"}`, fontSize: 12, color: "#64748b", background: i === 0 ? "#eef2ff" : "#fff", fontWeight: i === 0 ? 600 : 400 }}>{o}</div>)}
@@ -41,11 +45,11 @@ const PREVIEW = {
 export default function App() {
   const [eventType, setEventType] = useState("");
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<FormResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
-  const [removed, setRemoved] = useState([]);
+  const [removed, setRemoved] = useState<number[]>([]);
 
   const generate = async () => {
     if (!description.trim()) return;
@@ -63,7 +67,7 @@ export default function App() {
         }),
       });
       const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
+      const text = data.content?.filter((b: ContentBlock) => b.type === "text").map((b: ContentBlock) => b.text).join("") || "";
       setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
     } catch {
       setError("Erro ao gerar o formulário. Verifique a descrição e tente novamente.");
@@ -73,10 +77,10 @@ export default function App() {
   };
 
   const reset = () => { setDescription(""); setEventType(""); setResult(null); setError(""); setRemoved([]); setPreview(false); };
-  const removeField = (i) => setRemoved(p => [...p, i]);
-  const activeFields = result ? result.fields.filter((_, i) => !removed.includes(i)) : [];
-  const counts = result?.fields?.length > 0
-    ? Object.fromEntries(Object.keys(INPUT_CONFIG).map(k => [k, activeFields.filter(f => f.inputType === k).length]))
+  const removeField = (i: number) => setRemoved(p => [...p, i]);
+  const activeFields: FormField[] = result ? result.fields.filter((_: FormField, i: number) => !removed.includes(i)) : [];
+  const counts: Record<string, number> = result && result.fields.length > 0
+    ? Object.fromEntries(Object.keys(INPUT_CONFIG).map(k => [k, activeFields.filter((f: FormField) => f.inputType === k).length]))
     : {};
 
   return (
@@ -145,7 +149,7 @@ export default function App() {
 
         {result && !loading && (
           <div style={{ animation: "fadeIn .4s ease" }}>
-            {result.fields.length === 0 ? (
+            {result!.fields.length === 0 ? (
               /* ── Empty / invalid state ── */
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", padding: "36px 24px", textAlign: "center" }}>
                 <div style={{ fontSize: 40, marginBottom: 14 }}>🤔</div>
@@ -180,8 +184,8 @@ export default function App() {
                   <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", padding: 24 }}>
                     <p style={{ margin: "0 0 20px", fontSize: 13, color: "#94a3b8", textAlign: "center" }}>Pré-visualização do formulário para participantes</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                      {activeFields.map((f, i) => {
-                        const Comp = PREVIEW[f.inputType] || PREVIEW.text;
+                      {activeFields.map((f: FormField, i: number) => {
+                        const Comp = PREVIEW[f.inputType as keyof typeof PREVIEW] || PREVIEW.text;
                         return (
                           <div key={i} style={{ paddingBottom: 20, borderBottom: i < activeFields.length - 1 ? "1px solid #f1f5f9" : "none" }}>
                             <Comp label={f.label} options={f.options} />
@@ -193,9 +197,9 @@ export default function App() {
                 ) : (
                   <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.08)", overflow: "hidden" }}>
                     <p style={{ margin: 0, padding: "12px 20px 0", fontSize: 12, color: "#94a3b8", textAlign: "center" }}>Clique no ✕ para remover campos que não se aplicam</p>
-                    {result.fields.map((field, i) => {
+                    {result!.fields.map((field: FormField, i: number) => {
                       if (removed.includes(i)) return null;
-                      const cfg = INPUT_CONFIG[field.inputType] || INPUT_CONFIG.text;
+                      const cfg = INPUT_CONFIG[field.inputType as keyof typeof INPUT_CONFIG] || INPUT_CONFIG.text;
                       return (
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}
                           onMouseEnter={e => e.currentTarget.style.background = "#fafafa"}
