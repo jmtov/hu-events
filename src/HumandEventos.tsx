@@ -1,11 +1,5 @@
 import { useState } from "react";
-
-const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos", um aplicativo corporativo. Sua função é ler a descrição crua de um evento fornecida por um usuário (geralmente do RH ou gestor) e classificar esse evento.
-Regras Estritas:
-1. Você deve retornar ÚNICA e EXCLUSIVAMENTE um objeto JSON válido.
-2. Não inclua saudações, não inclua a formatação \`\`\`json, não explique sua resposta. Apenas o JSON puro.
-3. REGRA DE SEGURANÇA CRÍTICA: Se a descrição for lixo, números aleatórios, caracteres sem sentido, texto incoerente ou qualquer coisa que não descreva claramente um evento corporativo real, você DEVE retornar exatamente: { "suggested_title": "Descrição Inválida", "event_type": "Outro", "location_type": "Presencial", "is_travel_required": false }. Não tente inventar ou inferir um evento a partir de descrições inválidas.
-Estrutura do JSON Esperada (Contrato): { "suggested_title": "Título curto e profissional para o evento", "event_type": "Classifique em uma destas opções: [Offsite, Hackathon, Treinamento, Confraternização, Viagem Corporativa, Palestra, Outro]", "location_type": "Classifique em: [Presencial, Remoto, Híbrido]", "is_travel_required": true ou false }`;
+import { detectEventType, type DetectedEvent } from "./lib/claudeApi";
 
 const TYPE_STYLES = {
   Offsite:             { bg: "#f3e8ff", color: "#7e22ce" },
@@ -23,7 +17,7 @@ const INVALID_TITLE = "Descrição Inválida";
 
 export default function App() {
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<DetectedEvent | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,19 +25,7 @@ export default function App() {
     if (!description.trim()) return;
     setLoading(true); setResult(null); setError("");
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: description }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
-      setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
+      setResult(await detectEventType(description));
     } catch {
       setError("Erro ao classificar o evento. Verifique a descrição e tente novamente.");
     } finally {

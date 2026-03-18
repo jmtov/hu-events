@@ -1,11 +1,5 @@
 import { useState } from "react";
-
-const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento e sugerir campos de formulário (preferências) que o organizador deveria perguntar aos participantes antes do evento.
-Regras Estritas:
-1. Retorne APENAS um objeto JSON válido. Nada de texto extra.
-2. Sugira campos específicos para o contexto do evento (não seja genérico).
-3. REGRA DE SEGURANÇA CRÍTICA: Se a descrição for lixo, números aleatórios, caracteres sem sentido, texto incoerente ou qualquer coisa que não descreva claramente um evento corporativo real, você DEVE retornar estritamente { "fields": [] }. Não tente inventar campos a partir de descrições inválidas.
-Estrutura do JSON Esperada: { "fields": [ { "label": "Pergunta ou nome do campo (ex: Restrições alimentares)", "inputType": "Classifique EXATAMENTE em: 'text', 'select', 'boolean', ou 'number'", "options": ["Opção 1", "Opção 2"] (forneça um array de strings se for 'select', senão retorne null) } ] }`;
+import { suggestPreferenceFields, type PreferenceField } from "./lib/claudeApi";
 
 const EVENT_TYPES = ["Offsite", "Hackathon", "Treinamento", "Confraternização", "Viagem Corporativa", "Palestra", "Outro"];
 
@@ -41,30 +35,17 @@ const PREVIEW = {
 export default function App() {
   const [eventType, setEventType] = useState("");
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<{ fields: PreferenceField[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(false);
-  const [removed, setRemoved] = useState([]);
+  const [removed, setRemoved] = useState<number[]>([]);
 
   const generate = async () => {
     if (!description.trim()) return;
     setLoading(true); setResult(null); setError(""); setRemoved([]); setPreview(false);
     try {
-      const userMsg = `Tipo de evento: ${eventType || "Não informado"}\nDescrição: ${description}`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: userMsg }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
-      setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
+      setResult(await suggestPreferenceFields(description, eventType || undefined));
     } catch {
       setError("Erro ao gerar o formulário. Verifique a descrição e tente novamente.");
     } finally {

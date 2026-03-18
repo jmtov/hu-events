@@ -1,12 +1,5 @@
 import { useState } from "react";
-
-const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento (e seu tipo opcional) e gerar um checklist pré-evento com as tarefas que os participantes precisam cumprir.
-Regras Estritas:
-1. Você deve retornar ÚNICA e EXCLUSIVAMENTE um objeto JSON válido.
-2. Não inclua saudações, não inclua a formatação \`\`\`json, não explique sua resposta. Apenas o JSON puro.
-3. Gere entre 3 e 8 itens relevantes para o evento.
-4. REGRA DE SEGURANÇA CRÍTICA: Se a descrição for lixo, números aleatórios, caracteres sem sentido, texto incoerente ou qualquer coisa que não descreva claramente um evento corporativo real, você DEVE retornar estritamente { "items": [] }. Não tente inventar ou inferir tarefas a partir de descrições inválidas.
-Estrutura do JSON Esperada (Contrato): { "items": [ { "name": "Nome descritivo da tarefa (ex: Enviar passaporte, Confirmar tamanho da camiseta)", "type": "Classifique EXATAMENTE em um destes três: 'task', 'document_upload', ou 'info_input'", "suggestedRequired": true ou false } ] }`;
+import { generateChecklist, type ChecklistItem } from "./lib/claudeApi";
 
 const TYPE_CONFIG = {
   task:            { label: "Tarefa",       icon: "✅", bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
@@ -19,29 +12,16 @@ const EVENT_TYPES = ["Offsite", "Hackathon", "Treinamento", "Confraternização"
 export default function App() {
   const [eventType, setEventType] = useState("");
   const [description, setDescription] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<{ items: ChecklistItem[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [toggled, setToggled] = useState({});
+  const [toggled, setToggled] = useState<Record<number, boolean>>({});
 
   const generate = async () => {
     if (!description.trim()) return;
     setLoading(true); setResult(null); setError(""); setToggled({});
     try {
-      const userMsg = `Tipo de evento: ${eventType || "Não informado"}\nDescrição: ${description}`;
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: [{ role: "user", content: userMsg }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
-      setResult(JSON.parse(text.replace(/```json|```/g, "").trim()));
+      setResult(await generateChecklist(description, eventType || undefined));
     } catch {
       setError("Erro ao gerar o checklist. Verifique a descrição e tente novamente.");
     } finally {
