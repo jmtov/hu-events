@@ -1,34 +1,51 @@
 {
+  "common": {
+    "loading": "Cargando...",
+    "eventNotFound": "Evento no encontrado."
+  },
   "registration": {
-    "title": "Confirmación de Asistencia",
-    "subtitle": "Completa los datos para confirmar tu participación.",
-    "success": {
-      "title": "¡RSVP Confirmado!",
-      "message": "Tu asistencia fue registrada con éxito.\n¡Hasta pronto!"
+    "brand": "Humand Events",
+    "subtitle": "Registro de evento",
+    "requiredHint": "Los campos marcados con * son obligatorios.",
+    "submit": "Confirmar asistencia (RSVP)",
+    "submitting": "Confirmando...",
+    "sections": {
+      "info": "Tu información",
+      "location": "Ubicación",
+      "locationHint": "Usamos esto para ayudar a planificar la logística del evento.",
+      "preferences": "Preferencias del evento",
+      "preferencesHint": "Estos campos fueron configurados por el organizador del evento."
     },
     "fields": {
       "fullName": {
-        "label": "Nombre Completo",
-        "placeholder": "Ej: Ana García",
-        "errors": {
-          "required": "El nombre completo es obligatorio."
-        }
+        "label": "Nombre completo",
+        "placeholder": "Ej: Ana García"
       },
       "email": {
-        "label": "E-mail Corporativo",
-        "placeholder": "Ej: ana.garcia@empresa.com",
-        "errors": {
-          "required": "El e-mail corporativo es obligatorio.",
-          "invalid": "Ingresa un e-mail válido."
-        }
+        "label": "E-mail corporativo",
+        "placeholder": "Ej: ana.garcia@empresa.com"
       },
-      "dietary": {
-        "label": "Restricciones Alimentarias",
-        "placeholder": "Ej: Vegetariano, sin gluten...",
-        "hint": "Este es un ejemplo de campo dinámico configurable por evento."
+      "role": {
+        "label": "Rol / equipo"
+      },
+      "city": {
+        "label": "Ciudad"
+      },
+      "region": {
+        "label": "Estado / región"
+      },
+      "country": {
+        "label": "País"
+      },
+      "preferences": {
+        "placeholder": "Tu respuesta..."
       }
     },
-    "submit": "Confirmar Asistencia (RSVP)",
-    "submitting": "Confirmando..."
+    "success": {
+      "title": "RSVP confirmado!",
+      "message": "Gracias, {{name}}! Tu asistencia fue registrada con éxito.",
+      "hint": "Recibirás un e-mail de confirmación en breve.",
+      "back": "Volver al inicio"
+    }
   }
 }

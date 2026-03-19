@@ -1,34 +1,51 @@
 {
+  "common": {
+    "loading": "Loading...",
+    "eventNotFound": "Event not found."
+  },
   "registration": {
-    "title": "Confirm Your Attendance",
-    "subtitle": "Fill in the details below to confirm your participation.",
-    "success": {
-      "title": "RSVP Confirmed!",
-      "message": "Your attendance has been successfully registered.\nSee you soon!"
+    "brand": "Humand Events",
+    "subtitle": "Event registration",
+    "requiredHint": "Fields marked with * are required.",
+    "submit": "Confirm Attendance (RSVP)",
+    "submitting": "Confirming...",
+    "sections": {
+      "info": "Your information",
+      "location": "Location",
+      "locationHint": "We use this to help plan logistics for the event.",
+      "preferences": "Event preferences",
+      "preferencesHint": "These fields were configured by the event organizer."
     },
     "fields": {
       "fullName": {
-        "label": "Full Name",
-        "placeholder": "e.g. Jane Smith",
-        "errors": {
-          "required": "Full name is required."
-        }
+        "label": "Full name",
+        "placeholder": "e.g. Jane Smith"
       },
       "email": {
-        "label": "Corporate Email",
-        "placeholder": "e.g. jane.smith@company.com",
-        "errors": {
-          "required": "Corporate email is required.",
-          "invalid": "Please enter a valid email address."
-        }
+        "label": "Corporate email",
+        "placeholder": "e.g. jane.smith@company.com"
       },
-      "dietary": {
-        "label": "Dietary Restrictions",
-        "placeholder": "e.g. Vegetarian, gluten-free...",
-        "hint": "This is an example of a dynamic field configurable per event."
+      "role": {
+        "label": "Role / team"
+      },
+      "city": {
+        "label": "City"
+      },
+      "region": {
+        "label": "State / region"
+      },
+      "country": {
+        "label": "Country"
+      },
+      "preferences": {
+        "placeholder": "Your answer..."
       }
     },
-    "submit": "Confirm Attendance (RSVP)",
-    "submitting": "Confirming..."
+    "success": {
+      "title": "RSVP confirmed!",
+      "message": "Thank you, {{name}}! Your attendance has been successfully registered.",
+      "hint": "You will receive a confirmation email shortly.",
+      "back": "Back to start"
+    }
   }
 }

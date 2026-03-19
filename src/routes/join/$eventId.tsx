@@ -1,17 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
-import AttendeeRegistrationForm from '@/features/attendee/AttendeeRegistrationForm';
+import HumandRegistrationPage from '@/features/attendee/HumandRegistrationPage';
 
 const JoinPage = () => {
   const { eventId } = Route.useParams();
-
-  return (
-    <AttendeeRegistrationForm
-      participantId={eventId}
-      onSuccess={() => {
-        // TODO: navigate to /attendee/events/:eventId once that route exists
-      }}
-    />
-  );
+  return <HumandRegistrationPage eventId={eventId} />;
 };
 
 export const Route = createFileRoute('/join/$eventId')({

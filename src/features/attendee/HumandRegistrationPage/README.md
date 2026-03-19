@@ -1,29 +1,31 @@
 # HumandRegistrationPage
 
-Demo registration page for attendees to complete their profile and RSVP.
+Registration page for attendees — complete profile and RSVP for an event.
 
 ## Route
 
-Not yet connected to TanStack Router. Intended for `/join/:eventId` once the event endpoint is ready (see F-10 in `docs/technical_docs_plan.md`).
+`/join/:eventId` — public, no auth required.
 
 ## Key files
 
 | File | Purpose |
 |---|---|
-| `index.tsx` | Main page — form orchestration, submit handler |
-| `types.ts` | Local types: `Event`, `PreferenceField`, `RegistrationValues` |
-| `constants.ts` | Zod schema, `DEMO_EVENT`, `DEMO_PREFERENCE_FIELDS` |
-| `EventHeader.tsx` | Event info card shown above the form |
-| `SuccessScreen.tsx` | Confirmation screen shown after successful RSVP |
+| `index.tsx` | Main page — form orchestration, loading/error states, submit handler |
+| `types.ts` | `RegistrationValues` (inferred from schema) |
+| `constants.ts` | Zod validation schema |
+| `components/EventHeader.tsx` | Event info card above the form |
+| `components/SuccessScreen.tsx` | Confirmation screen after successful RSVP |
 
 ## Endpoints
 
-None yet — event data and preference fields are hardcoded as `DEMO_*` constants. Replace with:
-- `GET /events/:eventId` — event details
-- `GET /events/:eventId/preference-fields` — dynamic preference fields
+| Hook | Endpoint | Purpose |
+|---|---|---|
+| `useGetEvent(eventId)` | `GET /events/:eventId` | Load event title, description, dates, location |
+| `useGetPreferenceFields(eventId)` | `GET /events/:eventId/preference-fields` | Load dynamic preference fields defined by the admin |
 
 ## Notes
 
-- `DEMO_EVENT` and `DEMO_PREFERENCE_FIELDS` are placeholders. Remove once the API is connected.
-- `useState(submitted)` is the only local UI state — all form fields use react-hook-form.
-- `z.record(z.string(), z.string())` — Zod v4 requires both key and value schemas for records.
+- Preference fields are rendered dynamically from the API — no hardcoded fields.
+- `field_type === 'select'` renders `FormSelect`; everything else renders `FormInput`.
+- The preferences card is hidden entirely when the event has no preference fields.
+- Loading and not-found states are handled before rendering the form.

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import type { AttendeeRegistrationValues } from '@/schemas/attendee';
+import type { AttendeeRegistrationValues } from '@/features/attendee/AttendeeRegistrationForm/types';
 
 export const useUpdateMyProfile = (participantId: string) => {
   const queryClient = useQueryClient();
