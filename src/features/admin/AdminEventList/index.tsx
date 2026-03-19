@@ -18,11 +18,12 @@ function getEventStatus(event: AdminEventSummary): EventStatus {
   return 'ongoing';
 }
 
-const STATUS_VARIANT: Record<EventStatus, 'default' | 'secondary' | 'outline'> = {
-  upcoming: 'default',
-  ongoing: 'secondary',
-  past: 'outline',
-};
+const STATUS_VARIANT: Record<EventStatus, 'default' | 'secondary' | 'outline'> =
+  {
+    upcoming: 'default',
+    ongoing: 'secondary',
+    past: 'outline',
+  };
 
 const AdminEventList = () => {
   const { t } = useTranslation('admin');
@@ -31,7 +32,9 @@ const AdminEventList = () => {
   if (isPending) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">{t('events.list.loading')}</p>
+        <p className="text-sm text-muted-foreground">
+          {t('events.list.loading')}
+        </p>
       </div>
     );
   }
@@ -48,8 +51,12 @@ const AdminEventList = () => {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('events.list.title')}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t('events.list.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t('events.list.title')}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('events.list.subtitle')}
+          </p>
         </div>
         <Link to="/admin/events/new" className={buttonVariants()}>
           {t('events.list.createCta')}
@@ -58,21 +65,28 @@ const AdminEventList = () => {
 
       {events.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
-          <p className="text-base font-medium text-foreground">{t('events.list.empty.title')}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{t('events.list.empty.description')}</p>
+          <p className="text-base font-medium text-foreground">
+            {t('events.list.empty.title')}
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('events.list.empty.description')}
+          </p>
           <Link to="/admin/events/new" className={cn(buttonVariants(), 'mt-6')}>
             {t('events.list.empty.cta')}
           </Link>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {events.map((event) => {
+          {events.map((event, index) => {
             const status = getEventStatus(event);
-            const formattedDate = new Date(event.date_start).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            });
+            const formattedDate = new Date(event.date_start).toLocaleDateString(
+              'en-US',
+              {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              },
+            );
 
             return (
               <Link
@@ -80,7 +94,8 @@ const AdminEventList = () => {
                 to="/admin/events/$eventId"
                 params={{ eventId: event.id }}
                 search={{ created: false }}
-                className="group block"
+                className="group block animate-appear-from-bottom"
+                style={{ animationDelay: `calc(${index} * 50ms)` }}
               >
                 <Card className="h-full transition-shadow group-hover:shadow-md">
                   <CardHeader className="pb-2">
@@ -88,7 +103,10 @@ const AdminEventList = () => {
                       <CardTitle className="text-base leading-snug group-hover:text-primary">
                         {event.title}
                       </CardTitle>
-                      <Badge variant={STATUS_VARIANT[status]} className="shrink-0 capitalize">
+                      <Badge
+                        variant={STATUS_VARIANT[status]}
+                        className="shrink-0 capitalize"
+                      >
                         {t(`events.list.status.${status}`)}
                       </Badge>
                     </div>

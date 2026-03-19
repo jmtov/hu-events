@@ -139,7 +139,7 @@ const EventConfigForm = () => {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <div className="mb-6 space-y-1">
+      <div className="mb-6 animate-appear-from-bottom space-y-1">
         <h1 className="text-2xl font-bold text-foreground">
           {t('events.create.title')}
         </h1>
@@ -151,7 +151,10 @@ const EventConfigForm = () => {
       <FormProvider {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basics */}
-          <Card>
+          <Card
+            className="animate-appear-from-bottom"
+            style={{ animationDelay: 'calc(1 * 50ms)' }}
+          >
             <CardHeader>
               <CardTitle className="text-base">
                 {t('events.create.sections.basics')}
@@ -195,7 +198,10 @@ const EventConfigForm = () => {
           </Card>
 
           {/* Schedule */}
-          <Card>
+          <Card
+            className="animate-appear-from-bottom"
+            style={{ animationDelay: 'calc(2 * 50ms)' }}
+          >
             <CardHeader>
               <CardTitle className="text-base">
                 {t('events.create.sections.schedule')}
@@ -224,10 +230,11 @@ const EventConfigForm = () => {
           </Card>
 
           {/* Modules */}
-          {MODULE_KEYS.map((key) => (
+          {MODULE_KEYS.map((key, index) => (
             <ModuleToggleRow
               key={key}
               id={key}
+              style={{ animationDelay: `calc(${index + 3} * 50ms)` }}
               label={t(`events.modules.${key}.label`)}
               description={t(`events.modules.${key}.description`)}
               enabled={modules[key]}

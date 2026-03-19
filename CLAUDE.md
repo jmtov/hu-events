@@ -101,7 +101,19 @@ Four workflows are defined — see `docs/api_layer.md` for exact webhook payload
 - Props typed with a named `type`, never `React.FC`
 - `useState` only for local UI state (open/closed, tabs) — not for server data or form fields
 - Use **shadcn/ui** components as the base for all UI — never build from scratch what shadcn covers
-- Use **Tailwind CSS** for all styling — never use inline `style` props
+- Use **Tailwind CSS** for all styling — the only exception to inline `style` props is for values that cannot be expressed statically (e.g. dynamic `animationDelay`)
+
+### Animations
+
+A custom `appear-from-bottom` animation is defined in `src/index.css` (keyframes + `--animate-appear-from-bottom` token).
+
+Apply it whenever a list or a set of stacked cards is painted for the first time — the goal is a staggered entrance that gives the UI a sense of depth and responsiveness.
+
+Rules:
+- Use the Tailwind utility class `animate-appear-from-bottom` on each element
+- Add a staggered delay via inline style: `style={{ animationDelay: `calc(${index} * 50ms)` }}`
+- The index should reflect the visual order top-to-bottom (0 = first element, including title blocks)
+- Do not apply to elements that re-render frequently or appear inside already-animating containers
 
 ### Feature module structure
 

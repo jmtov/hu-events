@@ -9,6 +9,7 @@ type ModuleToggleRowProps = {
   enabled: boolean;
   onToggle: (enabled: boolean) => void;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 };
 
 /**
@@ -27,6 +28,7 @@ const ModuleToggleRow = ({
   enabled,
   onToggle,
   children,
+  style,
 }: ModuleToggleRowProps) => {
   // isMounted controls whether children are in the DOM.
   // It lags behind `enabled` on close to let the CSS transition finish first.
@@ -42,7 +44,7 @@ const ModuleToggleRow = ({
   }, [enabled]);
 
   return (
-    <div className="rounded-xl border border-border bg-card">
+    <div className="animate-appear-from-bottom rounded-xl border border-border bg-card" style={style}>
       {/* Header row */}
       <div className="flex items-center justify-between gap-4 px-5 py-4">
         <div className="min-w-0">
