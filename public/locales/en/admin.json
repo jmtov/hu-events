@@ -52,7 +52,8 @@
         "eventType": {
           "label": "Event type",
           "detecting": "Detecting event type...",
-          "suggested": "Type suggested by AI — you can change it anytime."
+          "suggested": "Type suggested by AI — you can change it anytime.",
+          "placeholder": "e.g. Online Meeting, Sales Workshop..."
         },
         "dateStart": {
           "label": "Start date"
