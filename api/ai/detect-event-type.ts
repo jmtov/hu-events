@@ -3,11 +3,15 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `You are the intelligence engine for "Humand Events", a corporate event management platform.
-Your task is to read a raw event description and classify the event type.
-Strict rules:
-1. Return ONLY a valid JSON object. No greetings, no \`\`\`json formatting, no explanations.
-2. CRITICAL SAFETY RULE: If the description is gibberish, random characters, or anything that does not clearly describe a real corporate event, return exactly: { "event_type": "other" }. Do not invent or infer from invalid input.
-Expected JSON structure: { "event_type": "one of: hr_retreat | bdr_call | hackathon | workshop | other" }`;
+Read the event description and generate a short, clear, human-readable event type label.
+
+Rules:
+- Return ONLY valid JSON: { "event_type": "<label>" }
+- The label must be 2-4 words maximum, in the same language as the description (Portuguese, English, or Spanish)
+- Be specific and descriptive: prefer "Reunião de Vendas Remota" over "Reunião", "Hackathon de Produto" over "Hackathon"
+- If the event is remote/online, include that in the label (e.g. "Encontro Online", "Workshop Remoto")
+- Examples: "Retiro de RH", "BDR Call Comercial", "Hackathon de Inovação", "Workshop Presencial", "Reunião de Vendas", "Imersão de Produto", "Onboarding Remoto", "Encontro de Liderança"
+- If the description is gibberish, random numbers, or not a real corporate event, return: { "event_type": "Outro" }`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
