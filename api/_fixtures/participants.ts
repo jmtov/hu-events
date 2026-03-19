@@ -38,7 +38,7 @@ export const participants = [
     created_at: '2026-03-07T08:30:00Z',
     updated_at: '2026-03-08T14:00:00Z',
   },
-]
+];
 
 export const preferenceFields = [
   {
@@ -59,7 +59,7 @@ export const preferenceFields = [
     required: false,
     sort_order: 1,
   },
-]
+];
 
 export const participantPreferences = [
   {
@@ -74,4 +74,4 @@ export const participantPreferences = [
     field_id: 'c3d4e5f6-0003-0000-0000-000000000002',
     value: 'M',
   },
-]
+];

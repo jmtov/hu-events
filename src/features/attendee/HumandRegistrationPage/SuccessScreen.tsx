@@ -1,14 +1,14 @@
-import { Button } from '@/components/ui/button'
-import { IconCircleCheck } from '@tabler/icons-react'
-import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button';
+import { IconCircleCheck } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 type SuccessScreenProps = {
-  name: string
-  onBack: () => void
-}
+  name: string;
+  onBack: () => void;
+};
 
 const SuccessScreen = ({ name, onBack }: SuccessScreenProps) => {
-  const { t } = useTranslation('attendee')
+  const { t } = useTranslation('attendee');
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 py-10 text-center">
@@ -28,7 +28,7 @@ const SuccessScreen = ({ name, onBack }: SuccessScreenProps) => {
         {t('registration.success.back')}
       </Button>
     </div>
-  )
-}
+  );
+};
 
-export default SuccessScreen
+export default SuccessScreen;

@@ -1,71 +1,21 @@
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useTranslation } from 'react-i18next'
-import { z } from 'zod'
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import FormInput from '@/components/Input/form'
-import FormSelect from '@/components/Select/form'
-import EventHeader from './EventHeader'
-import SuccessScreen from './SuccessScreen'
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import FormInput from '@/components/Input/form';
+import FormSelect from '@/components/Select/form';
+import { DEMO_EVENT, DEMO_PREFERENCE_FIELDS, registrationSchema } from './constants';
+import type { RegistrationValues } from './types';
+import EventHeader from './EventHeader';
+import SuccessScreen from './SuccessScreen';
 
-// ---------------------------------------------------------------------------
-// Demo event data — replace with real API data once the event endpoint is ready
-// ---------------------------------------------------------------------------
-const DEMO_EVENT = {
-  title: 'HR Retreat 2026',
-  type: 'HR Retreat',
-  date: '14–16 April 2026',
-  location: 'Cartagena, Colombia',
-  description:
-    'Retiro anual da equipe de RH para planejamento estratégico, atividades de team building e alinhamentos para o segundo semestre.',
-}
-
-const DEMO_PREFERENCE_FIELDS = [
-  {
-    id: 'dietary',
-    labelKey: 'registration.fields.dietary.label',
-    type: 'select' as const,
-    options: ['Nenhuma', 'Vegetariano', 'Vegano', 'Sem glúten', 'Sem lactose', 'Outra'],
-  },
-  {
-    id: 'tshirt',
-    labelKey: 'registration.fields.tshirt.label',
-    type: 'select' as const,
-    options: ['PP', 'P', 'M', 'G', 'GG', 'XGG'],
-  },
-  {
-    id: 'emergency_contact',
-    labelKey: 'registration.fields.emergencyContact.label',
-    type: 'text' as const,
-    options: [],
-  },
-]
-
-// ---------------------------------------------------------------------------
-// Schema
-// ---------------------------------------------------------------------------
-const registrationSchema = z.object({
-  fullName: z.string().min(1),
-  email: z.string().min(1).email(),
-  city: z.string().min(1),
-  region: z.string().min(1),
-  country: z.string().min(1),
-  role: z.string(),
-  preferences: z.record(z.string(), z.string()),
-})
-
-type RegistrationValues = z.infer<typeof registrationSchema>
-
-// ---------------------------------------------------------------------------
-// Page component
-// ---------------------------------------------------------------------------
 const HumandRegistrationPage = () => {
-  const { t } = useTranslation('attendee')
-  const [submitted, setSubmitted] = useState(false)
+  const { t } = useTranslation('attendee');
+  const [submitted, setSubmitted] = useState(false);
 
   const form = useForm<RegistrationValues>({
     resolver: zodResolver(registrationSchema),
@@ -78,16 +28,16 @@ const HumandRegistrationPage = () => {
       role: '',
       preferences: {},
     },
-  })
+  });
 
   const handleSubmit = form.handleSubmit(() => {
-    setSubmitted(true)
-  })
+    setSubmitted(true);
+  });
 
   const handleBack = () => {
-    form.reset()
-    setSubmitted(false)
-  }
+    form.reset();
+    setSubmitted(false);
+  };
 
   if (submitted) {
     return (
@@ -101,7 +51,7 @@ const HumandRegistrationPage = () => {
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -171,7 +121,7 @@ const HumandRegistrationPage = () => {
         </FormProvider>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HumandRegistrationPage
+export default HumandRegistrationPage;

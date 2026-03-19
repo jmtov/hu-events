@@ -1,22 +1,15 @@
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { IconCalendar, IconMapPin } from '@tabler/icons-react'
-import { useTranslation } from 'react-i18next'
-
-type Event = {
-  title: string
-  type: string
-  date: string
-  location: string
-  description: string
-}
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { IconCalendar, IconMapPin } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+import type { Event } from './types';
 
 type EventHeaderProps = {
-  event: Event
-}
+  event: Event;
+};
 
 const EventHeader = ({ event }: EventHeaderProps) => {
-  const { t } = useTranslation('attendee')
+  const { t } = useTranslation('attendee');
 
   return (
     <div className="space-y-3">
@@ -53,7 +46,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default EventHeader
+export default EventHeader;

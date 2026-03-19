@@ -1,33 +1,33 @@
-import { Controller, useFormContext } from 'react-hook-form'
-import { Label } from '@/components/ui/label'
+import { Controller, useFormContext } from 'react-hook-form';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 
 type Option = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 /** Props for the FormSelect component. */
 type FormSelectProps = {
   /** Field name — must match a key in the form schema. */
-  name: string
+  name: string;
   /** Select label text. */
-  label: string
+  label: string;
   /** List of options to render. */
-  options: Option[]
+  options: Option[];
   /** Placeholder shown when no option is selected. */
-  placeholder?: string
+  placeholder?: string;
   /** Marks the field as required with a visual indicator. */
-  required?: boolean
+  required?: boolean;
   /** Hint text displayed below the select when there is no error. */
-  hint?: string
-}
+  hint?: string;
+};
 
 /**
  * Form-connected Select. Must be used inside `<FormProvider>`.
@@ -38,9 +38,16 @@ type FormSelectProps = {
  *   <FormSelect name="size" label="Size" options={[{ value: 'M', label: 'M' }]} />
  * </FormProvider>
  */
-const FormSelect = ({ name, label, options, placeholder, required, hint }: FormSelectProps) => {
-  const { control, formState } = useFormContext()
-  const error = formState.errors[name]?.message as string | undefined
+const FormSelect = ({
+  name,
+  label,
+  options,
+  placeholder,
+  required,
+  hint,
+}: FormSelectProps) => {
+  const { control, formState } = useFormContext();
+  const error = formState.errors[name]?.message as string | undefined;
 
   return (
     <div className="space-y-1.5">
@@ -72,7 +79,7 @@ const FormSelect = ({ name, label, options, placeholder, required, hint }: FormS
         <p className="text-xs text-muted-foreground">{hint}</p>
       ) : null}
     </div>
-  )
-}
+  );
+};
 
-export default FormSelect
+export default FormSelect;

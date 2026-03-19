@@ -15,4 +15,4 @@ export const contacts = [
     email: 'diego.vargas@company.com',
     phone: null,
   },
-]
+];

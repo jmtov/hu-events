@@ -51,7 +51,7 @@ export const triggers = [
     recipient: 'both',
     active: true,
   },
-]
+];
 
 export const triggerLog = [
   {
@@ -62,4 +62,4 @@ export const triggerLog = [
     status: 'sent',
     error: null,
   },
-]
+];

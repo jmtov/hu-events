@@ -8,8 +8,8 @@
  * as the mock fallback used by serverless functions when USE_MOCK_DATA=true.
  */
 
-import { writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   checklistItems,
   contacts,
@@ -20,28 +20,29 @@ import {
   preferenceFields,
   triggerLog,
   triggers,
-} from '../api/_fixtures/index'
+} from '../api/_fixtures/index';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 const escape = (v: unknown): string => {
-  if (v === null || v === undefined) return 'null'
-  if (typeof v === 'boolean') return v ? 'true' : 'false'
-  if (typeof v === 'number') return String(v)
-  if (typeof v === 'object') return `'${JSON.stringify(v).replace(/'/g, "''")}'`
-  return `'${String(v).replace(/'/g, "''")}'`
-}
+  if (v === null || v === undefined) return 'null';
+  if (typeof v === 'boolean') return v ? 'true' : 'false';
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'object')
+    return `'${JSON.stringify(v).replace(/'/g, "''")}'`;
+  return `'${String(v).replace(/'/g, "''")}'`;
+};
 
 const insert = (table: string, rows: Record<string, unknown>[]): string => {
-  if (rows.length === 0) return ''
-  const cols = Object.keys(rows[0])
+  if (rows.length === 0) return '';
+  const cols = Object.keys(rows[0]);
   const values = rows
     .map((row) => `  (${cols.map((c) => escape(row[c])).join(', ')})`)
-    .join(',\n')
-  return `insert into ${table} (${cols.join(', ')}) values\n${values};\n`
-}
+    .join(',\n');
+  return `insert into ${table} (${cols.join(', ')}) values\n${values};\n`;
+};
 
 // ---------------------------------------------------------------------------
 // Build SQL
@@ -53,17 +54,29 @@ const sections: string[] = [
   '',
   insert('events', events as unknown as Record<string, unknown>[]),
   insert('participants', participants as unknown as Record<string, unknown>[]),
-  insert('preference_fields', preferenceFields as unknown as Record<string, unknown>[]),
-  insert('participant_preferences', participantPreferences as unknown as Record<string, unknown>[]),
-  insert('checklist_items', checklistItems as unknown as Record<string, unknown>[]),
-  insert('participant_checklist_items', participantChecklistItems as unknown as Record<string, unknown>[]),
+  insert(
+    'preference_fields',
+    preferenceFields as unknown as Record<string, unknown>[],
+  ),
+  insert(
+    'participant_preferences',
+    participantPreferences as unknown as Record<string, unknown>[],
+  ),
+  insert(
+    'checklist_items',
+    checklistItems as unknown as Record<string, unknown>[],
+  ),
+  insert(
+    'participant_checklist_items',
+    participantChecklistItems as unknown as Record<string, unknown>[],
+  ),
   insert('contacts', contacts as unknown as Record<string, unknown>[]),
   insert('triggers', triggers as unknown as Record<string, unknown>[]),
   insert('trigger_log', triggerLog as unknown as Record<string, unknown>[]),
-]
+];
 
-const sql = sections.filter(Boolean).join('\n')
+const sql = sections.filter(Boolean).join('\n');
 
-const out = resolve(import.meta.dirname, '../supabase/seed.sql')
-writeFileSync(out, sql, 'utf8')
-console.log(`seed.sql written to ${out}`)
+const out = resolve(import.meta.dirname, '../supabase/seed.sql');
+writeFileSync(out, sql, 'utf8');
+console.log(`seed.sql written to ${out}`);

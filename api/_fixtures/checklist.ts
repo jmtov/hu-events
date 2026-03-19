@@ -26,7 +26,7 @@ export const checklistItems = [
     alert_if_incomplete: false,
     sort_order: 2,
   },
-]
+];
 
 export const participantChecklistItems = [
   // Ana Garcia — all done
@@ -58,4 +58,4 @@ export const participantChecklistItems = [
     document_url: null,
     value: null,
   },
-]
+];
