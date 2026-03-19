@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { CreateEventPayload, Event } from '../../src/types/event'
+import { readEvents, writeEvents } from '../_lib/mock-store'
 
 function generateId(): string {
   return `evt-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -43,6 +44,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
       created_at: now,
       updated_at: now,
     }
+    const all = readEvents()
+    writeEvents([...all, event])
     return res.status(201).json(event)
   }
 

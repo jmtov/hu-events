@@ -37,11 +37,13 @@ export type ChecklistItem = {
 export type CreateChecklistItemPayload = Omit<ChecklistItem, 'id' | 'eventId'>;
 export type UpdateChecklistItemPayload = Partial<CreateChecklistItemPayload>;
 
+export type ChecklistSuggestion = {
+  name: string;
+  type: string;
+  suggestedRequired: boolean;
+};
+
 /** Shape returned by POST /api/ai/generate-checklist */
 export type ChecklistResult = {
-  items: Array<{
-    name: string;
-    type: string;
-    suggestedRequired: boolean;
-  }>;
+  items: ChecklistSuggestion[];
 };

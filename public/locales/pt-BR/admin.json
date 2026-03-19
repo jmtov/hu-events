@@ -11,6 +11,24 @@
     "other": "Outro"
   },
   "events": {
+    "list": {
+      "title": "Meus eventos",
+      "subtitle": "Gerencie e acompanhe todos os seus eventos.",
+      "createCta": "Criar evento",
+      "loading": "Carregando eventos...",
+      "error": "Não foi possível carregar os eventos.",
+      "rsvpCount": "{{count}} confirmados",
+      "status": {
+        "upcoming": "Futuro",
+        "ongoing": "Em andamento",
+        "past": "Encerrado"
+      },
+      "empty": {
+        "title": "Nenhum evento ainda",
+        "description": "Crie seu primeiro evento para começar.",
+        "cta": "Criar evento"
+      }
+    },
     "create": {
       "title": "Criar evento",
       "subtitle": "Preencha os dados abaixo para criar um novo evento.",

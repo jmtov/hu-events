@@ -26,3 +26,5 @@ export type CreateEventPayload = Pick<
   date_end?: string;
   location?: string;
 };
+
+export type AdminEventSummary = Event & { rsvp_count: number };
