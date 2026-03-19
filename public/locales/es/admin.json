@@ -29,6 +29,35 @@
         "cta": "Crear evento"
       }
     },
+    "overview": {
+      "savedBanner": {
+        "title": "Evento guardado correctamente.",
+        "subtitle": "El panel refleja los datos más recientes.",
+        "dismiss": "Cerrar"
+      },
+      "header": {
+        "label": "Vista general del evento"
+      },
+      "rsvp": {
+        "title": "RSVP",
+        "confirmed": "Confirmados",
+        "pending": "Pendientes",
+        "declined": "Rechazaron",
+        "confirmedOf": "{{confirmed}} de {{total}} confirmados",
+        "confirmationRate": "{{pct}}% de confirmación"
+      },
+      "checklist": {
+        "title": "Checklist",
+        "averageCompletion": "Completado promedio",
+        "items": "{{count}} elemento",
+        "items_plural": "{{count}} elementos",
+        "required": "Obligatorio",
+        "completedOf": "{{completed}} de {{total}} completados",
+        "noItems": "No hay elementos en el checklist."
+      },
+      "loading": "Cargando evento...",
+      "error": "Error al cargar el evento."
+    },
     "create": {
       "title": "Crear evento",
       "subtitle": "Completa los datos para crear un nuevo evento.",

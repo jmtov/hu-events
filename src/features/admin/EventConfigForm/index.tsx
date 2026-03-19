@@ -12,6 +12,7 @@ import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { checklistService } from '@/services/checklist';
 import { normaliseChecklistType } from '@/types/checklist';
+import type { ChecklistSuggestion } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
 import ModuleToggleRow from './components/ModuleToggleRow';
 import ChecklistModule from './components/ChecklistModule';
@@ -73,7 +74,7 @@ const EventConfigForm = () => {
         eventType: form.getValues('event_type'),
       });
 
-      const newItems: DraftItem[] = result.items.map((s) => ({
+      const newItems: DraftItem[] = result.items.map((s: ChecklistSuggestion) => ({
         _key: `${Date.now()}_${Math.random()}`,
         name: s.name,
         type: normaliseChecklistType(s.type),
@@ -129,7 +130,11 @@ const EventConfigForm = () => {
       }
     }
 
-    navigate({ to: '/admin/events/$eventId', params: { eventId: event.id } });
+    navigate({
+      to: '/admin/events/$eventId',
+      params: { eventId: event.id },
+      search: { created: true },
+    });
   });
 
   return (

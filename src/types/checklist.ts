@@ -46,3 +46,15 @@ export type ChecklistSuggestion = {
 export type ChecklistResult = {
   items: ChecklistSuggestion[];
 };
+
+// ─── Per-event checklist with participant completion stats ────────────────────
+
+export type EventChecklistStat = {
+  id: string;
+  label: string;
+  item_type: ChecklistItemType;
+  required: boolean;
+  completed_count: number;
+  total_count: number;
+  completion_pct: number;
+};
