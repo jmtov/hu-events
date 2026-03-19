@@ -5,7 +5,7 @@ import {
   CHECKLIST_TYPE_COLORS,
   CHECKLIST_TYPE_LABELS,
 } from '@/types/checklist';
-import type { ChecklistItemValues } from '@/features/checklist/constants';
+import type { ChecklistItemValues } from './constants';
 
 export type DraftItem = ChecklistItemValues & { _key: string };
 

@@ -98,10 +98,37 @@ Four workflows are defined — see `docs/api_layer.md` for exact webhook payload
 ### React components
 - Functional components only, one per file, PascalCase filename
 - Feature components in `src/features/<domain>/`, shared UI in `src/components/`
-- Props typed with a named `interface`, never `React.FC`
+- Props typed with a named `type`, never `React.FC`
 - `useState` only for local UI state (open/closed, tabs) — not for server data or form fields
 - Use **shadcn/ui** components as the base for all UI — never build from scratch what shadcn covers
 - Use **Tailwind CSS** for all styling — never use inline `style` props
+
+### Feature module structure
+
+Admin feature screens live in `src/features/admin/<FeatureName>/`.
+
+If a screen contains toggleable modules (like `EventConfigForm`), each module is a subfolder under `components/<ModuleName>/`:
+
+```
+src/features/admin/EventConfigForm/
+├── index.tsx               ← main screen component
+├── constants.ts            ← Zod schema, shared constants (e.g. DEFAULT_MODULES)
+├── types.ts                ← derived types
+└── components/
+    ├── SharedWidget.tsx    ← small components used only by this screen
+    └── ChecklistModule/    ← one folder per module
+        ├── index.tsx       ← UI rendered inside the module's toggle row
+        ├── ChecklistPage.tsx   ← full-page view for this module (if any)
+        ├── ChecklistItemForm.tsx
+        ├── constants.ts    ← schema + types scoped to this module
+        └── ...
+```
+
+Rules:
+- The module's toggle row content (what expands when enabled) is always `index.tsx`
+- If a module has a dedicated full-page view (e.g. `/events/:id/checklist`), that page component lives **inside the module folder** — not in a separate `features/` directory
+- The route file in `src/routes/` imports from the module folder path
+- `components/` at the feature root is for components used by the screen itself; modules always get their own subfolder, never a flat file
 
 ## Existing code
 
@@ -109,15 +136,26 @@ There is code under `src/` written before these conventions were defined. It may
 
 ## Feature READMEs
 
-Every time you create a new feature or screen, also create a `README.md` in that feature's folder. It must cover:
+Every time you create a new feature, screen, or module subfolder, also create a `README.md` in that folder. It must cover:
 
 - **What it does** — one sentence describing the feature
-- **Route** — the URL path (from `docs/technical_docs_plan.md`)
+- **Route** — the URL path (from `docs/technical_docs_plan.md`); write `n/a` if it's a sub-component with no own route
 - **Key files** — main component, hooks used, service file, schema file
 - **Endpoints** — the API calls this feature makes
+- **Status** — checklist of items from `docs/technical_docs_plan.md`: `[x]` done, `[ ]` pending. Group by logical area if needed.
 - **Notes** — anything non-obvious about the implementation
 
 This README is for future agents and collaborators — keep it short and factual, no fluff.
+
+Example Status section:
+```md
+## Status
+
+- [x] List view with loading and empty states
+- [x] Create flow with AI type detection
+- [ ] Edit flow (F-01 — same form, pre-populated)
+- [ ] AI module suggestions (useSuggestModules)
+```
 
 ---
 

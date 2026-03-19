@@ -65,14 +65,27 @@
           "label": "Ubicación",
           "placeholder": "Ej: Buenos Aires — Hotel Alvear"
         }
+      },
+      "checklist": {
+        "description": "Define las tareas y documentos que los asistentes deben completar antes del evento. Puedes agregar más después de crear el evento.",
+        "empty": "Aún no hay ítems. Agrega uno abajo o genera sugerencias con IA.",
+        "addItem": "Agregar ítem",
+        "generateWithAI": "Generar con IA",
+        "generating": "Generando...",
+        "aiError": "No se pudieron generar sugerencias. Inténtalo de nuevo."
       }
     },
+    "config": {
+      "loading": "Cargando evento...",
+      "notFound": "Evento no encontrado.",
+      "backToHome": "Volver al inicio",
+      "successTitle": "¡Evento creado!",
+      "successDescription": "Tu evento está listo. Revisa los detalles a continuación.",
+      "dateStart": "Inicio:",
+      "location": "Ubicación:",
+      "createAnother": "Crear otro evento"
+    },
     "modules": {
-      "title": "Módulos",
-      "saveButton": "Guardar módulos",
-      "saving": "Guardando...",
-      "savedHint": "Módulos guardados correctamente.",
-      "unsavedHint": "Activa o desactiva los módulos y guarda los cambios.",
       "participantList": {
         "label": "Lista de Participantes",
         "description": "Gestiona los confirmados y los RSVPs de este evento."
