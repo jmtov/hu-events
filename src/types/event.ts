@@ -14,18 +14,40 @@ export type Event = {
   date_start: string;
   date_end: string | null;
   location: string | null;
+  expected_attendees: number | null;
+  event_day_info: string | null;
   modules: EventModules;
   created_at: string;
   updated_at: string;
 };
 
-export type CreateEventPayload = Pick<
-  Event,
-  'title' | 'description' | 'event_type' | 'date_start'
-> & {
+export type ChecklistItemPayload = {
+  label: string;
+  item_type: 'checkbox' | 'document_upload' | 'info_input';
+  required: boolean;
+  alert_if_incomplete: boolean;
+};
+
+export type PreferenceFieldPayload = {
+  label: string;
+  field_type: 'text' | 'select' | 'boolean';
+  required: boolean;
+  options?: string[];
+};
+
+export type CreateEventPayload = {
+  title: string;
+  description: string;
+  event_type: string;
+  date_start: string;
   date_end?: string;
   location?: string;
+  expected_attendees?: number;
+  event_day_info?: string;
   modules?: Partial<EventModules>;
+  participants?: Array<{ email: string }>;
+  checklist?: ChecklistItemPayload[];
+  preferenceFields?: PreferenceFieldPayload[];
 };
 
 export type AdminEventSummary = Event & { rsvp_count: number };

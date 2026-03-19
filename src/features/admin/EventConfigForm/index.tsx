@@ -10,8 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
-import { checklistService } from '@/services/checklist';
-import { participantService } from '@/services/participants';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { ChecklistSuggestion } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
@@ -118,31 +116,18 @@ const EventConfigForm = () => {
       date_end: values.date_end || undefined,
       location: values.location || undefined,
       modules,
+      participants: modules.participantList
+        ? draftEmails.map((email) => ({ email }))
+        : undefined,
+      checklist: modules.checklist
+        ? draftItems.map((item) => ({
+            label: item.name,
+            item_type: item.type,
+            required: item.required,
+            alert_if_incomplete: item.required,
+          }))
+        : undefined,
     });
-
-    // Save checklist items — failures are non-blocking so navigation always happens
-    for (const item of draftItems) {
-      try {
-        await checklistService.addItem(event.id, {
-          name: item.name,
-          type: item.type,
-          required: item.required,
-        });
-      } catch {
-        // Item will be editable on the checklist page after redirect
-      }
-    }
-
-    // Save participant emails — failures are non-blocking
-    if (modules.participantList) {
-      for (const email of draftEmails) {
-        try {
-          await participantService.add(event.id, { email });
-        } catch {
-          // Participant can be added from the participants page after redirect
-        }
-      }
-    }
 
     navigate({
       to: '/admin/events/$eventId',
