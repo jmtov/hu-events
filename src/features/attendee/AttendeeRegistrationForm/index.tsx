@@ -12,8 +12,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useUpdateMyProfile } from '@/hooks/useUpdateMyProfile';
-import type { AttendeeRegistrationValues } from '@/schemas/attendee';
-import { attendeeRegistrationSchema } from '@/schemas/attendee';
+import { attendeeRegistrationSchema } from './constants';
+import type { AttendeeRegistrationValues } from './types';
 
 type AttendeeRegistrationFormProps = {
   participantId: string;
@@ -44,7 +44,6 @@ const AttendeeRegistrationForm = ({
       <div className="min-h-screen bg-muted flex items-center justify-center p-8">
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-8 pb-6 space-y-2">
-            <p className="text-5xl">✅</p>
             <h2 className="text-xl font-bold">
               {t('attendee:registration.success.title')}
             </h2>
@@ -62,7 +61,6 @@ const AttendeeRegistrationForm = ({
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 bg-foreground text-background rounded-xl px-4 py-2">
-            <span>🗓️</span>
             <span className="font-bold text-base">{t('common:brand')}</span>
           </div>
           <h1 className="text-xl font-bold">

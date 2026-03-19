@@ -14,7 +14,3 @@ export const attendeeRegistrationSchema = () =>
       .email(i18n.t('attendee:registration.fields.email.errors.invalid')),
     dietary: z.string(),
   });
-
-export type AttendeeRegistrationValues = z.infer<
-  ReturnType<typeof attendeeRegistrationSchema>
->;

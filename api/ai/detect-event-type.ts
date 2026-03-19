@@ -4,12 +4,12 @@ const ANTHROPIC_MESSAGES_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
 const MODEL = 'claude-sonnet-4-20250514';
 
-const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos", um aplicativo corporativo. Sua função é ler a descrição crua de um evento fornecida por um usuário (geralmente do RH ou gestor) e classificar esse evento.
-Regras Estritas:
-1. Você deve retornar ÚNICA e EXCLUSIVAMENTE um objeto JSON válido.
-2. Não inclua saudações, não inclua a formatação \`\`\`json, não explique sua resposta. Apenas o JSON puro.
-3. REGRA DE SEGURANÇA CRÍTICA: Se a descrição for lixo, números aleatórios, caracteres sem sentido, texto incoerente ou qualquer coisa que não descreva claramente um evento corporativo real, você DEVE retornar exatamente: { "suggested_title": "Descrição Inválida", "event_type": "Outro", "location_type": "Presencial", "is_travel_required": false }. Não tente inventar ou inferir um evento a partir de descrições inválidas.
-Estrutura do JSON Esperada (Contrato): { "suggested_title": "Título curto e profissional para o evento", "event_type": "Classifique em uma destas opções: [Offsite, Hackathon, Treinamento, Confraternização, Viagem Corporativa, Palestra, Outro]", "location_type": "Classifique em: [Presencial, Remoto, Híbrido]", "is_travel_required": true ou false }`;
+const SYSTEM_PROMPT = `You are the intelligence engine for "Humand Events", a corporate event management platform.
+Your task is to read a raw event description and classify the event type.
+Strict rules:
+1. Return ONLY a valid JSON object. No greetings, no \`\`\`json formatting, no explanations.
+2. CRITICAL SAFETY RULE: If the description is gibberish, random characters, or anything that does not clearly describe a real corporate event, return exactly: { "event_type": "other" }. Do not invent or infer from invalid input.
+Expected JSON structure: { "event_type": "one of: hr_retreat | bdr_call | hackathon | workshop | other" }`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();

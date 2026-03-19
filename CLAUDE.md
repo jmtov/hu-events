@@ -22,10 +22,11 @@ Always cross-reference these before implementing any feature.
 | Frontend | React 19 + Vite + TypeScript |
 | Routing | TanStack Router (file-based, under `src/routes/`) |
 | Data fetching | TanStack Query (hooks under `src/hooks/`) |
-| Forms | React Hook Form + Zod (`src/schemas/`) |
-| i18n | i18next + react-i18next (`src/assets/locales/`) |
+| Forms | React Hook Form + Zod (schema co-located in `FeatureName/constants.ts`) |
+| i18n | i18next + react-i18next — JSON files in `public/locales/<lang>/` |
 | API client | axios via `src/lib/api.ts` → points to `/api` |
 | API layer | Vercel Serverless Functions under `api/` |
+| Database | Supabase (Postgres) — accessed only from serverless functions |
 | AI | Claude API — called only from serverless functions, never from the frontend |
 | Automations | n8n (cloud) — serverless functions proxy to n8n via webhooks, never called directly from the frontend |
 | Deploy | Vercel |
@@ -62,12 +63,30 @@ Four workflows are defined — see `docs/api_layer.md` for exact webhook payload
 | Deadline approaching | RSVP deadline 24h away, attendee unconfirmed | Unconfirmed attendees | Email |
 | Event ended | Event date has passed | All attendees | Email |
 
+### Database
+- The frontend never connects to Supabase directly — all DB access goes through `api/`
+- Serverless functions use `api/_lib/supabase.ts` to get the Supabase client
+- When `USE_MOCK_DATA=true`, serverless functions return data from `api/_fixtures/` instead of querying Supabase
+- `api/_fixtures/` is the **single source of truth** for test data — never edit `supabase/seed.sql` by hand
+- To regenerate `seed.sql` after changing a fixture: `npm run db:seed`
+- Schema migrations live in `supabase/migrations/`, one file per domain, named with a timestamp prefix
+- See `docs/api_layer.md` for the full database section including environment variables and local setup
+
+### Mock data
+- **All mock data lives exclusively in `api/_fixtures/`** — never define hardcoded demo data inside components, constants files, or feature folders
+- Fixtures mirror the exact shape of the Supabase tables defined in `supabase/migrations/`
+- Features that need data during development must call the real API endpoint (`USE_MOCK_DATA=true` makes the serverless function return fixture data automatically)
+- If a fixture doesn't yet exist for a new entity, add it to `api/_fixtures/` and run `npm run db:seed`
+- Inline `DEMO_*` constants or local mock arrays in component files are a convention violation
+
 ### Forms
-- TanStack Form for all form state — no `useState` for form fields
-- Zod schemas in `src/schemas/`, one file per domain
-- Connect via `@tanstack/zod-form-adapter`
+- React Hook Form for all form state — no `useState` for form fields
+- Zod schemas co-located with their feature in `FeatureName/constants.ts` — there is no global `src/schemas/` folder
+- Connect via `@hookform/resolvers/zod`
 - Never inline validation logic in components
 - Form components must be named `<Domain>Form` — e.g. `CreateEventForm`, `AttendeeRegistrationForm`
+- Use `<FormProvider>` at the form root so nested field components can access context via `useFormContext()`
+- Shared field components live in `src/components/<Input|Select|...>/form.tsx` — they use `Controller` + `useFormContext()` internally
 
 ### TypeScript
 - Prefer **`type`** over `interface`
@@ -110,3 +129,4 @@ This README is for future agents and collaborators — keep it short and factual
 - All AI output shown to users is editable — AI suggests, admin decides
 - Modules are independent — no module should assume another is enabled
 - **Never use emojis** in UI code, labels, messages, or comments unless the user explicitly requests it
+- **Never commit or open a PR unless the user explicitly asks** — finish the work, show what changed, and wait
