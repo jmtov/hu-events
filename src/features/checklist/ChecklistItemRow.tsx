@@ -4,28 +4,17 @@ import { Button } from '@/components/ui/button';
 import { useDeleteChecklistItem } from '@/hooks/useDeleteChecklistItem';
 import { useUpdateChecklistItem } from '@/hooks/useUpdateChecklistItem';
 import { cn } from '@/lib/utils';
-import type { ChecklistItemValues } from '@/schemas/checklist';
-import type { ChecklistItem, ChecklistItemType } from '@/types/checklist';
+import type { ChecklistItemValues } from './constants';
+import {
+  CHECKLIST_TYPE_COLORS,
+  CHECKLIST_TYPE_LABELS,
+  type ChecklistItem,
+} from '@/types/checklist';
 import ChecklistItemForm from './ChecklistItemForm';
 
 type ChecklistItemRowProps = {
   item: ChecklistItem;
   eventId: string;
-};
-
-const TYPE_LABELS: Record<ChecklistItemType, string> = {
-  checkbox: 'Checkbox item',
-  document_upload: 'Document upload',
-  info_input: 'Text response',
-};
-
-const TYPE_COLORS: Record<ChecklistItemType, string> = {
-  checkbox:
-    'bg-blue-50 text-blue-700 ring-blue-700/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20',
-  document_upload:
-    'bg-orange-50 text-orange-700 ring-orange-700/20 dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20',
-  info_input:
-    'bg-purple-50 text-purple-700 ring-purple-700/20 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/20',
 };
 
 const ChecklistItemRow = ({ item, eventId }: ChecklistItemRowProps) => {
@@ -62,10 +51,10 @@ const ChecklistItemRow = ({ item, eventId }: ChecklistItemRowProps) => {
         <span
           className={cn(
             'inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
-            TYPE_COLORS[item.type],
+            CHECKLIST_TYPE_COLORS[item.type],
           )}
         >
-          {TYPE_LABELS[item.type]}
+          {CHECKLIST_TYPE_LABELS[item.type]}
         </span>
       </div>
 

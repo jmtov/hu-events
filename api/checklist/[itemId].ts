@@ -11,11 +11,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method === 'PATCH') {
-      const { name, type, required, alertIfIncomplete } = req.body as {
+      const { name, type, required } = req.body as {
         name?: string;
         type?: string;
         required?: boolean;
-        alertIfIncomplete?: boolean;
       };
 
       if (type !== undefined) {
@@ -33,7 +32,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ...(name !== undefined && { name: name.trim() }),
         ...(type !== undefined && { type }),
         ...(required !== undefined && { required }),
-        ...(alertIfIncomplete !== undefined && { alertIfIncomplete }),
       };
 
       return res.status(200).json(updated);

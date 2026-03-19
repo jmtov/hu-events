@@ -16,11 +16,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'POST') {
-      const { name, type, required, alertIfIncomplete } = req.body as {
+      const { name, type, required } = req.body as {
         name?: string;
         type?: string;
         required?: boolean;
-        alertIfIncomplete?: boolean;
       };
 
       if (!name?.trim()) {
@@ -41,7 +40,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         name: name.trim(),
         type,
         required: required ?? false,
-        alertIfIncomplete: alertIfIncomplete ?? false,
       };
 
       return res.status(201).json(created);

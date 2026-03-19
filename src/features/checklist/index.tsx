@@ -6,17 +6,11 @@ import { useAddChecklistItem } from '@/hooks/useAddChecklistItem';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { useGetChecklist } from '@/hooks/useGetChecklist';
 import { useGetEvent } from '@/hooks/useGetEvent';
-import type { ChecklistItemValues } from '@/schemas/checklist';
-import type { ChecklistItemType } from '@/types/checklist';
+import type { ChecklistItemValues } from './constants';
+import { normaliseChecklistType } from '@/types/checklist';
 import ChecklistItemForm from './ChecklistItemForm';
 import ChecklistItemRow from './ChecklistItemRow';
 
-/** Maps the AI-returned 'task' type to the admin checklist 'checkbox' type. */
-const normaliseType = (raw: string): ChecklistItemType => {
-  if (raw === 'task') return 'checkbox';
-  if (raw === 'document_upload' || raw === 'info_input') return raw;
-  return 'checkbox';
-};
 
 const ChecklistPage = () => {
   const { eventId } = useParams({ from: '/admin/events/$eventId/checklist' });
@@ -46,7 +40,7 @@ const ChecklistPage = () => {
       for (const suggestion of result.items) {
         await addItem.mutateAsync({
           name: suggestion.name,
-          type: normaliseType(suggestion.type),
+          type: normaliseChecklistType(suggestion.type),
           required: suggestion.suggestedRequired,
         });
       }

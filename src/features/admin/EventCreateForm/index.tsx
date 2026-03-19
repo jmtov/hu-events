@@ -1,4 +1,4 @@
-import { IconPencil, IconSparkles, IconTrash } from '@tabler/icons-react';
+import { IconSparkles } from '@tabler/icons-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
@@ -18,83 +18,13 @@ import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { checklistService } from '@/services/checklist';
-import type { ChecklistItemValues } from '@/schemas/checklist';
-import type { ChecklistItemType } from '@/types/checklist';
+import type { ChecklistItemValues } from '@/features/checklist/constants';
+import { normaliseChecklistType } from '@/types/checklist';
 import { EVENT_TYPES } from '@/types/event';
-import { cn } from '@/lib/utils';
 import ChecklistItemForm from '@/features/checklist/ChecklistItemForm';
+import DraftItemRow, { type DraftItem } from './components/DraftItemRow';
 import { eventCreateSchema } from './constants';
 import type { EventCreateValues } from './types';
-
-const TYPE_LABELS: Record<ChecklistItemType, string> = {
-  checkbox: 'Checkbox item',
-  document_upload: 'Document upload',
-  info_input: 'Text response',
-};
-
-const TYPE_COLORS: Record<ChecklistItemType, string> = {
-  checkbox:
-    'bg-blue-50 text-blue-700 ring-blue-700/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20',
-  document_upload:
-    'bg-orange-50 text-orange-700 ring-orange-700/20 dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20',
-  info_input:
-    'bg-purple-50 text-purple-700 ring-purple-700/20 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/20',
-};
-
-const normaliseType = (raw: string): ChecklistItemType => {
-  if (raw === 'document_upload' || raw === 'info_input') return raw;
-  return 'checkbox';
-};
-
-type DraftItem = ChecklistItemValues & { _key: string };
-
-type DraftItemRowProps = {
-  item: DraftItem;
-  onEdit: () => void;
-  onDelete: () => void;
-};
-
-const DraftItemRow = ({ item, onEdit, onDelete }: DraftItemRowProps) => (
-  <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm ring-1 ring-foreground/10">
-    <div className="flex min-w-0 flex-1 items-center gap-3">
-      <span className="truncate font-medium text-card-foreground">
-        {item.name}
-      </span>
-      <span
-        className={cn(
-          'inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
-          TYPE_COLORS[item.type],
-        )}
-      >
-        {TYPE_LABELS[item.type]}
-      </span>
-    </div>
-    <div className="flex shrink-0 items-center gap-2">
-      {item.required && (
-        <span className="text-xs text-muted-foreground">Required</span>
-      )}
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={onEdit}
-        aria-label="Edit item"
-      >
-        <IconPencil size={14} />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon-sm"
-        onClick={onDelete}
-        aria-label="Delete item"
-        className="text-destructive hover:text-destructive"
-      >
-        <IconTrash size={14} />
-      </Button>
-    </div>
-  </div>
-);
 
 const EventCreateForm = () => {
   const { t } = useTranslation('admin');
@@ -152,7 +82,7 @@ const EventCreateForm = () => {
       const newItems: DraftItem[] = result.items.map((s) => ({
         _key: `${Date.now()}_${Math.random()}`,
         name: s.name,
-        type: normaliseType(s.type),
+        type: normaliseChecklistType(s.type),
         required: s.suggestedRequired,
       }));
 
