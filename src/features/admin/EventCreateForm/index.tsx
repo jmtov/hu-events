@@ -56,9 +56,9 @@ const EventCreateForm = () => {
     const description = form.getValues('description');
     if (!description.trim()) return;
 
-    // Reset field so the user sees the detecting state
-    form.setValue('event_type', '', { shouldValidate: false });
-
+    // Always fire a new detection — the hint text shows the pending state,
+    // so we don't need to clear the field (clearing it would fail validation
+    // if the user submits before the AI responds)
     detectEventType.mutate(description, {
       onSuccess: (result) => {
         if (result.event_type) {
@@ -121,13 +121,17 @@ const EventCreateForm = () => {
       location: values.location || undefined,
     });
 
-    // Save checklist items sequentially after event is created
+    // Save checklist items — failures are non-blocking so navigation always happens
     for (const item of draftItems) {
-      await checklistService.addItem(event.id, {
-        name: item.name,
-        type: item.type,
-        required: item.required,
-      });
+      try {
+        await checklistService.addItem(event.id, {
+          name: item.name,
+          type: item.type,
+          required: item.required,
+        });
+      } catch {
+        // Item will be editable on the checklist page after redirect
+      }
     }
 
     navigate({ to: '/admin/events/$eventId', params: { eventId: event.id } });
