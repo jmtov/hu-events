@@ -13,6 +13,8 @@ type ChecklistItemFormProps = {
   onSubmit: (values: ChecklistItemValues) => Promise<void> | void;
   onCancel: () => void;
   isPending?: boolean;
+  /** Render wrapper as <div> to avoid invalid nested <form> elements */
+  asDiv?: boolean;
 };
 
 const typeOptions = CHECKLIST_ITEM_TYPES.map((value) => ({
@@ -25,6 +27,7 @@ const ChecklistItemForm = ({
   onSubmit,
   onCancel,
   isPending = false,
+  asDiv = false,
 }: ChecklistItemFormProps) => {
   const form = useForm<ChecklistItemValues>({
     resolver: zodResolver(checklistItemSchema),
@@ -36,10 +39,15 @@ const ChecklistItemForm = ({
     },
   });
 
+  const Wrapper = asDiv ? 'div' : 'form';
+  const wrapperProps = asDiv
+    ? {}
+    : { onSubmit: form.handleSubmit(onSubmit) };
+
   return (
     <FormProvider {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
+      <Wrapper
+        {...wrapperProps}
         className="space-y-4 rounded-xl border border-border bg-muted/30 p-4"
       >
         <FormInput
@@ -78,7 +86,12 @@ const ChecklistItemForm = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 pt-1">
-          <Button type="submit" disabled={isPending} size="sm">
+          <Button
+            type={asDiv ? 'button' : 'submit'}
+            onClick={asDiv ? form.handleSubmit(onSubmit) : undefined}
+            disabled={isPending}
+            size="sm"
+          >
             {isPending ? 'Saving...' : 'Save item'}
           </Button>
           <Button
@@ -91,7 +104,7 @@ const ChecklistItemForm = ({
             Cancel
           </Button>
         </div>
-      </form>
+      </Wrapper>
     </FormProvider>
   );
 };

@@ -1,5 +1,10 @@
 import { api } from '@/lib/api';
-import type { AdminEventSummary, CreateEventPayload, Event } from '@/types/event';
+import type {
+  AdminEventSummary,
+  CreateEventPayload,
+  Event,
+  EventModules,
+} from '@/types/event';
 import type { PreferenceField } from '@/types/participant';
 
 export const eventService = {
@@ -11,6 +16,11 @@ export const eventService = {
 
   create: (payload: CreateEventPayload) =>
     api.post<Event>('/events', payload).then((r) => r.data),
+
+  updateModules: (eventId: string, modules: EventModules) =>
+    api
+      .patch<Event>(`/events/${eventId}/modules`, { modules })
+      .then((r) => r.data),
 
   getPreferenceFields: (eventId: string) =>
     api

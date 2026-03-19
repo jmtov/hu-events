@@ -1,32 +1,26 @@
-import { IconSparkles } from '@tabler/icons-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormInput from '@/components/Input/form';
-import FormSelect from '@/components/Select/form';
 import FormTextarea from '@/components/Textarea/form';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { checklistService } from '@/services/checklist';
-import type { ChecklistItemValues } from '@/features/checklist/constants';
 import { normaliseChecklistType } from '@/types/checklist';
-import { EVENT_TYPES } from '@/types/event';
-import ChecklistItemForm from '@/features/checklist/ChecklistItemForm';
-import DraftItemRow, { type DraftItem } from './components/DraftItemRow';
-import { eventCreateSchema } from './constants';
-import type { EventCreateValues } from './types';
+import type { EventModules } from '@/types/event';
+import ModuleToggleRow from './components/ModuleToggleRow';
+import ChecklistModule from './components/ChecklistModule';
+import type { ChecklistItemValues } from './components/ChecklistModule/constants';
+import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
+import { DEFAULT_MODULES, eventConfigSchema } from './constants';
+import type { EventConfigValues } from './types';
 
-const EventCreateForm = () => {
+const EventConfigForm = () => {
   const { t } = useTranslation('admin');
   const navigate = useNavigate();
 
@@ -38,9 +32,12 @@ const EventCreateForm = () => {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [modules, setModules] = useState<EventModules>({ ...DEFAULT_MODULES });
 
-  const form = useForm<EventCreateValues>({
-    resolver: zodResolver(eventCreateSchema),
+  const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
+
+  const form = useForm<EventConfigValues>({
+    resolver: zodResolver(eventConfigSchema),
     defaultValues: {
       title: '',
       description: '',
@@ -58,11 +55,8 @@ const EventCreateForm = () => {
 
     detectEventType.mutate(description, {
       onSuccess: (result) => {
-        // Only apply suggestion if admin hasn't manually changed the field
-        if (form.getValues('event_type') === 'other') {
-          const suggested = EVENT_TYPES.find((t) => t === result.event_type);
-          if (suggested)
-            form.setValue('event_type', suggested, { shouldValidate: true });
+        if (result.event_type) {
+          form.setValue('event_type', result.event_type, { shouldValidate: true });
         }
       },
     });
@@ -88,7 +82,7 @@ const EventCreateForm = () => {
 
       setDraftItems((prev) => [...prev, ...newItems]);
     } catch {
-      setAiError('Could not generate suggestions. Please try again.');
+      setAiError(t('events.create.checklist.aiError'));
     }
   };
 
@@ -119,24 +113,24 @@ const EventCreateForm = () => {
       date_start: values.date_start,
       date_end: values.date_end || undefined,
       location: values.location || undefined,
+      modules,
     });
 
-    // Save checklist items sequentially after event is created
+    // Save checklist items — failures are non-blocking so navigation always happens
     for (const item of draftItems) {
-      await checklistService.addItem(event.id, {
-        name: item.name,
-        type: item.type,
-        required: item.required,
-      });
+      try {
+        await checklistService.addItem(event.id, {
+          name: item.name,
+          type: item.type,
+          required: item.required,
+        });
+      } catch {
+        // Item will be editable on the checklist page after redirect
+      }
     }
 
     navigate({ to: '/admin/events/$eventId', params: { eventId: event.id } });
   });
-
-  const eventTypeOptions = EVENT_TYPES.map((type) => ({
-    value: type,
-    label: t(`eventTypes.${type}`),
-  }));
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -177,16 +171,18 @@ const EventCreateForm = () => {
                 onBlur={handleDetectEventType}
                 required
               />
-              <FormSelect
+              <FormInput
                 name="event_type"
                 label={t('events.create.fields.eventType.label')}
-                options={eventTypeOptions}
-                hint={
+                placeholder={
                   detectEventType.isPending
                     ? t('events.create.fields.eventType.detecting')
-                    : detectEventType.isSuccess
-                      ? t('events.create.fields.eventType.suggested')
-                      : undefined
+                    : t('events.create.fields.eventType.placeholder')
+                }
+                hint={
+                  detectEventType.isSuccess
+                    ? t('events.create.fields.eventType.suggested')
+                    : undefined
                 }
                 required
               />
@@ -222,77 +218,35 @@ const EventCreateForm = () => {
             </CardContent>
           </Card>
 
-          {/* Checklist */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between gap-4">
-                <CardTitle className="text-base">Pre-event checklist</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGenerateAI}
-                  disabled={generateChecklist.isPending}
-                >
-                  <IconSparkles size={14} />
-                  {generateChecklist.isPending
-                    ? 'Generating...'
-                    : 'Generate with AI'}
-                </Button>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Define tasks and documents attendees must complete before the
-                event. You can add more after creating the event.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {aiError && (
-                <p className="text-sm text-destructive">{aiError}</p>
-              )}
-
-              {draftItems.length === 0 && !isAddingItem && (
-                <div className="rounded-xl border border-dashed border-border px-6 py-8 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    No items yet. Add one below or generate suggestions with AI.
-                  </p>
-                </div>
-              )}
-
-              {draftItems.map((item) =>
-                editingKey === item._key ? (
-                  <ChecklistItemForm
-                    key={item._key}
-                    defaultValues={item}
-                    onSubmit={(values) => handleUpdateItem(item._key, values)}
-                    onCancel={() => setEditingKey(null)}
-                  />
-                ) : (
-                  <DraftItemRow
-                    key={item._key}
-                    item={item}
-                    onEdit={() => setEditingKey(item._key)}
-                    onDelete={() => handleDeleteItem(item._key)}
-                  />
-                ),
-              )}
-
-              {isAddingItem ? (
-                <ChecklistItemForm
-                  onSubmit={handleAddItem}
-                  onCancel={() => setIsAddingItem(false)}
+          {/* Modules */}
+          {MODULE_KEYS.map((key) => (
+            <ModuleToggleRow
+              key={key}
+              id={key}
+              label={t(`events.modules.${key}.label`)}
+              description={t(`events.modules.${key}.description`)}
+              enabled={modules[key]}
+              onToggle={(value) =>
+                setModules((prev) => ({ ...prev, [key]: value }))
+              }
+            >
+              {key === 'checklist' && (
+                <ChecklistModule
+                  draftItems={draftItems}
+                  isAddingItem={isAddingItem}
+                  editingKey={editingKey}
+                  aiError={aiError}
+                  isGenerating={generateChecklist.isPending}
+                  onGenerateAI={handleGenerateAI}
+                  onAddItem={handleAddItem}
+                  onUpdateItem={handleUpdateItem}
+                  onDeleteItem={handleDeleteItem}
+                  onSetAddingItem={setIsAddingItem}
+                  onSetEditingKey={setEditingKey}
                 />
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsAddingItem(true)}
-                >
-                  + Add item
-                </Button>
               )}
-            </CardContent>
-          </Card>
+            </ModuleToggleRow>
+          ))}
 
           {/* Actions */}
           <div className="flex justify-end gap-3">
@@ -315,4 +269,4 @@ const EventCreateForm = () => {
   );
 };
 
-export default EventCreateForm;
+export default EventConfigForm;
