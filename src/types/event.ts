@@ -51,3 +51,19 @@ export type CreateEventPayload = {
 };
 
 export type AdminEventSummary = Event & { rsvp_count: number };
+
+export type ChecklistEntry = {
+  id: string;
+  event_id: string;
+  label: string;
+  item_type: 'checkbox' | 'document_upload' | 'info_input';
+  required: boolean;
+  alert_if_incomplete: boolean;
+  sort_order: number;
+};
+
+export type EventDetail = Event & {
+  participants: import('./participant').Participant[];
+  checklist: ChecklistEntry[];
+  triggers: import('./trigger').Trigger[];
+};

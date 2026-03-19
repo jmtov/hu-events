@@ -48,12 +48,28 @@
       },
       "checklist": {
         "title": "Checklist",
-        "averageCompletion": "Completado promedio",
         "items": "{{count}} elemento",
         "items_plural": "{{count}} elementos",
         "required": "Obligatorio",
-        "completedOf": "{{completed}} de {{total}} completados",
-        "noItems": "No hay elementos en el checklist."
+        "noItems": "No hay elementos en el checklist.",
+        "type": {
+          "checkbox": "Checkbox",
+          "document_upload": "Documento",
+          "info_input": "Texto"
+        }
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "count": "{{count}} trigger",
+        "count_plural": "{{count}} triggers",
+        "noTriggers": "No hay triggers de notificación.",
+        "timing": {
+          "immediately": "Inmediatamente",
+          "daysBefore": "{{count}} día antes",
+          "daysBefore_plural": "{{count}} días antes",
+          "hoursAfter": "{{count}} hora después",
+          "hoursAfter_plural": "{{count}} horas después"
+        }
       },
       "participants": {
         "title": "Participantes",

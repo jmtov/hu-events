@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import type { AdminEventSummary, CreateEventPayload, Event } from '@/types/event';
+import type { AdminEventSummary, CreateEventPayload, Event, EventDetail } from '@/types/event';
 import type { EventChecklistStat } from '@/types/checklist';
 import type { PreferenceField } from '@/types/participant';
 
@@ -8,7 +8,7 @@ export const eventService = {
     api.get<AdminEventSummary[]>('/admin/events').then((r) => r.data),
 
   getById: (eventId: string) =>
-    api.get<Event>(`/events/${eventId}`).then((r) => r.data),
+    api.get<EventDetail>(`/events/${eventId}`).then((r) => r.data),
 
   create: (payload: CreateEventPayload) =>
     api.post<Event>('/events', payload).then((r) => r.data),

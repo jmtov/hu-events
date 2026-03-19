@@ -2,25 +2,22 @@ import { Link } from '@tanstack/react-router';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useGetEvent } from '@/hooks/useGetEvent';
-import { useGetParticipants } from '@/hooks/useGetParticipants';
-import { useGetEventChecklist } from '@/hooks/useGetEventChecklist';
 import SavedBanner from './components/SavedBanner';
 import EventHeader from './components/EventHeader';
 import RsvpCard from './components/RsvpCard';
 import ChecklistProgressCard from './components/ChecklistProgressCard';
 import ParticipantSummaryCard from './components/ParticipantSummaryCard';
+import NotificationsSummaryCard from './components/NotificationsSummaryCard';
 
-interface EventOverviewProps {
+type EventOverviewProps = {
   eventId: string;
   showSavedBanner: boolean;
-}
+};
 
 const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
   const { t } = useTranslation('admin');
 
   const eventQuery = useGetEvent(eventId);
-  const participantsQuery = useGetParticipants(eventId);
-  const checklistQuery = useGetEventChecklist(eventId);
 
   if (eventQuery.isLoading) {
     return (
@@ -43,8 +40,9 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
   }
 
   const event = eventQuery.data;
-  const participants = participantsQuery.data ?? [];
-  const checklistStats = checklistQuery.data ?? [];
+  const participants = event.participants ?? [];
+  const checklist = event.checklist ?? [];
+  const triggers = event.triggers ?? [];
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 px-4 py-8">
@@ -66,13 +64,24 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
         style={{ animationDelay: 'calc(2 * 50ms)' }}
       >
         <RsvpCard participants={participants} />
-        <ChecklistProgressCard stats={checklistStats} />
+        {event.modules.checklist && (
+          <ChecklistProgressCard items={checklist} />
+        )}
       </div>
+
+      {event.modules.notifications && (
+        <div
+          className="animate-appear-from-bottom"
+          style={{ animationDelay: 'calc(3 * 50ms)' }}
+        >
+          <NotificationsSummaryCard triggers={triggers} />
+        </div>
+      )}
 
       <ParticipantSummaryCard
         participants={participants}
         eventId={eventId}
-        style={{ animationDelay: 'calc(3 * 50ms)' }}
+        style={{ animationDelay: 'calc(4 * 50ms)' }}
       />
     </div>
   );
