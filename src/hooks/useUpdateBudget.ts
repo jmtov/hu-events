@@ -9,7 +9,7 @@ export const useUpdateBudget = (eventId: string) => {
     mutationFn: (payload: UpdateBudgetPayload) =>
       budgetService.updateBudget(eventId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['events', eventId, 'budget'] });
+      queryClient.invalidateQueries({ queryKey: ['events', eventId] });
     },
   });
 };

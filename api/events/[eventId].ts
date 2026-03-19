@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { CreateEventPayload, Event } from '../../src/types/event.js'
-import { readEvents, writeEvents } from '../_lib/mock-store.js'
+import type { UpdateBudgetPayload } from '../../src/types/budget.js'
+import { readEvents, writeEvents, readBudgets, writeBudgets } from '../_lib/mock-store.js'
 import { readParticipants, writeParticipants } from '../_lib/participant-store.js'
 import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
 import { readPreferenceFields, writePreferenceFields } from '../_lib/preference-field-store.js'
@@ -19,7 +20,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const participants = readParticipants().filter((p) => p.event_id === eventId)
     const checklist = readChecklistItems().filter((item) => item.event_id === eventId)
     const triggers = readTriggers().filter((t) => t.eventId === eventId)
-    return res.status(200).json({ ...event, participants, checklist, triggers })
+    const budget = readBudgets().find((b) => b.event_id === eventId) ?? null
+    return res.status(200).json({ ...event, participants, checklist, triggers, budget })
   }
 
   if (req.method === 'PUT') {
@@ -105,6 +107,29 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     writePreferenceFields([...otherFields, ...newFields])
 
     return res.status(200).json(updated)
+  }
+
+  if (req.method === 'PATCH') {
+    const { categories } = req.body as Partial<UpdateBudgetPayload>
+    if (!Array.isArray(categories)) return res.status(400).json({ message: 'categories must be an array' })
+
+    const event = readEvents().find((e) => e.id === eventId)
+    if (!event) return res.status(404).json({ message: 'Event not found' })
+
+    const budgets = readBudgets()
+    const now = new Date().toISOString()
+    const existing = budgets.find((b) => b.event_id === eventId)
+
+    if (existing) {
+      existing.categories = categories
+      existing.updated_at = now
+      writeBudgets(budgets)
+      return res.status(200).json(existing)
+    }
+
+    const created = { event_id: eventId, currency: 'USD', categories, updated_at: now }
+    writeBudgets([...budgets, created])
+    return res.status(200).json(created)
   }
 
   if (req.method === 'DELETE') {

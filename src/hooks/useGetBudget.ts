@@ -1,9 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { budgetService } from '@/services/budget';
+import { useGetEvent } from './useGetEvent';
 
-export const useGetBudget = (eventId: string) =>
-  useQuery({
-    queryKey: ['events', eventId, 'budget'],
-    queryFn: () => budgetService.getBudget(eventId),
-    enabled: !!eventId,
-  });
+export const useGetBudget = (eventId: string) => {
+  const query = useGetEvent(eventId);
+  return { ...query, data: query.data?.budget ?? null };
+};
