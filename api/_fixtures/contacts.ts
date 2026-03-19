@@ -15,8 +15,4 @@ export const contacts = [
     email: 'diego.vargas@company.com',
     phone: null,
   },
-<<<<<<< HEAD
 ];
-=======
-]
->>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)
