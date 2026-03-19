@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormInput from '@/components/Input/form';
-import FormSelect from '@/components/Select/form';
+
 import FormTextarea from '@/components/Textarea/form';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,7 +20,7 @@ import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { checklistService } from '@/services/checklist';
 import type { ChecklistItemValues } from '@/features/checklist/constants';
 import { normaliseChecklistType } from '@/types/checklist';
-import { EVENT_TYPES } from '@/types/event';
+
 import ChecklistItemForm from '@/features/checklist/ChecklistItemForm';
 import DraftItemRow, { type DraftItem } from './components/DraftItemRow';
 import { eventCreateSchema } from './constants';
@@ -56,13 +56,13 @@ const EventCreateForm = () => {
     const description = form.getValues('description');
     if (!description.trim()) return;
 
+    // Reset field so the user sees the detecting state
+    form.setValue('event_type', '', { shouldValidate: false });
+
     detectEventType.mutate(description, {
       onSuccess: (result) => {
-        // Only apply suggestion if admin hasn't manually changed the field
-        if (form.getValues('event_type') === 'other') {
-          const suggested = EVENT_TYPES.find((t) => t === result.event_type);
-          if (suggested)
-            form.setValue('event_type', suggested, { shouldValidate: true });
+        if (result.event_type) {
+          form.setValue('event_type', result.event_type, { shouldValidate: true });
         }
       },
     });
@@ -133,11 +133,6 @@ const EventCreateForm = () => {
     navigate({ to: '/admin/events/$eventId', params: { eventId: event.id } });
   });
 
-  const eventTypeOptions = EVENT_TYPES.map((type) => ({
-    value: type,
-    label: t(`eventTypes.${type}`),
-  }));
-
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-6 space-y-1">
@@ -177,16 +172,18 @@ const EventCreateForm = () => {
                 onBlur={handleDetectEventType}
                 required
               />
-              <FormSelect
+              <FormInput
                 name="event_type"
                 label={t('events.create.fields.eventType.label')}
-                options={eventTypeOptions}
-                hint={
+                placeholder={
                   detectEventType.isPending
                     ? t('events.create.fields.eventType.detecting')
-                    : detectEventType.isSuccess
-                      ? t('events.create.fields.eventType.suggested')
-                      : undefined
+                    : t('events.create.fields.eventType.placeholder')
+                }
+                hint={
+                  detectEventType.isSuccess
+                    ? t('events.create.fields.eventType.suggested')
+                    : undefined
                 }
                 required
               />

@@ -34,7 +34,8 @@
         "eventType": {
           "label": "Tipo de evento",
           "detecting": "Detectando tipo de evento...",
-          "suggested": "Tipo sugerido por la IA — puedes cambiarlo cuando quieras."
+          "suggested": "Tipo sugerido por la IA — puedes cambiarlo cuando quieras.",
+          "placeholder": "Ej: Reunión Online, Taller de Ventas..."
         },
         "dateStart": {
           "label": "Fecha de inicio"
