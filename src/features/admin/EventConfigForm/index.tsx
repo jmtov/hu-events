@@ -10,8 +10,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
-import { checklistService } from '@/services/checklist';
-import { triggersService } from '@/services/triggers';
 import type { ChecklistSuggestion } from '@/types/checklist';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
@@ -183,45 +181,17 @@ const EventConfigForm = () => {
             alert_if_incomplete: item.required,
           }))
         : undefined,
+      triggers: modules.notifications
+        ? draftTriggers.map((t) => ({
+            name: t.name,
+            source: t.source,
+            timing: t.timing,
+            timingValue: t.timingValue,
+            channel: t.channel,
+            recipient: t.recipient,
+          }))
+        : undefined,
     });
-
-    navigate({
-      to: '/admin/events/$eventId',
-      params: { eventId: event.id },
-      search: { created: true },
-    });
-    // Save checklist items — failures are non-blocking so navigation always happens
-    for (const item of draftItems) {
-      try {
-        await checklistService.addItem(event.id, {
-          name: item.name,
-          type: item.type,
-          required: item.required,
-        });
-      } catch {
-        // Item will be editable on the checklist page after redirect
-      }
-    }
-
-    // Apply draft trigger configurations — failures are non-blocking
-    if (modules.notifications) {
-      try {
-        const savedTriggers = await triggersService.getByEvent(event.id);
-        for (const saved of savedTriggers) {
-          const draft = draftTriggers.find((d) => d.name === saved.name);
-          if (draft) {
-            await triggersService.update(saved.id, {
-              timing: draft.timing,
-              timingValue: draft.timingValue,
-              channel: draft.channel,
-              recipient: draft.recipient,
-            });
-          }
-        }
-      } catch {
-        // User can adjust on the notifications page after redirect
-      }
-    }
 
     navigate({
       to: '/admin/events/$eventId',

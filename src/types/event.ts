@@ -35,6 +35,15 @@ export type PreferenceFieldPayload = {
   options?: string[];
 };
 
+export type TriggerPayload = {
+  name: string;
+  source: 'milestone' | 'checklist';
+  timing: 'immediately' | 'days_before' | 'hours_after';
+  timingValue: number;
+  channel: 'slack' | 'email' | 'whatsapp';
+  recipient: 'attendee' | 'hr_admin' | 'both';
+};
+
 export type CreateEventPayload = {
   title: string;
   description: string;
@@ -48,6 +57,7 @@ export type CreateEventPayload = {
   participants?: Array<{ email: string }>;
   checklist?: ChecklistItemPayload[];
   preferenceFields?: PreferenceFieldPayload[];
+  triggers?: TriggerPayload[];
 };
 
 export type AdminEventSummary = Event & { rsvp_count: number };
