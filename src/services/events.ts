@@ -1,6 +1,5 @@
 import { api } from '@/lib/api';
 import type { AdminEventSummary, CreateEventPayload, Event, EventDetail } from '@/types/event';
-import type { EventChecklistStat } from '@/types/checklist';
 import type { PreferenceField } from '@/types/participant';
 
 export const eventService = {
@@ -19,13 +18,7 @@ export const eventService = {
   delete: (eventId: string) =>
     api.delete(`/events/${eventId}`).then((r) => r.data),
 
-  // Read-only — data is written via the full event save payload
-  getEventChecklist: (eventId: string) =>
-    api.get<EventChecklistStat[]>(`/events/${eventId}/checklist`).then((r) => r.data),
-
+  // Used by the attendee registration form
   getPreferenceFields: (eventId: string) =>
     api.get<PreferenceField[]>(`/events/${eventId}/preference-fields`).then((r) => r.data),
-
-  getParticipants: (eventId: string) =>
-    api.get(`/events/${eventId}/participants`).then((r) => r.data),
 };

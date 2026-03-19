@@ -80,7 +80,6 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
 
       <ParticipantSummaryCard
         participants={participants}
-        eventId={eventId}
         style={{ animationDelay: 'calc(4 * 50ms)' }}
       />
     </div>
