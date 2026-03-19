@@ -27,17 +27,6 @@ const TIMING_LABELS: Record<TriggerTiming, string> = {
   hours_after: 'Hours after',
 };
 
-const CHANNEL_LABELS: Record<TriggerChannel, string> = {
-  slack: 'Slack',
-  email: 'Email',
-  whatsapp: 'WhatsApp',
-};
-
-const RECIPIENT_LABELS: Record<TriggerRecipient, string> = {
-  attendee: 'Attendee',
-  hr_admin: 'HR Admin',
-  both: 'Both',
-};
 
 interface TriggerRowProps {
   trigger: Trigger;
