@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento e sugerir campos de formulário (preferências) que o organizador deveria perguntar aos participantes antes do evento.
 Regras Estritas:
@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: 'user', parts: [{ text: userContent }] }],
-        generationConfig: { maxOutputTokens: 1000 },
+        generationConfig: { maxOutputTokens: 1000, responseMimeType: 'application/json' },
       }),
     });
 
@@ -54,8 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }>
       )?.[0]?.content?.parts?.[0]?.text ?? '';
 
-    const cleaned = text.replace(/```json|```/g, '').trim();
-    const parsed: unknown = JSON.parse(cleaned);
+    const parsed: unknown = JSON.parse(text.trim());
 
     return res.status(200).json(parsed);
   } catch (err) {
