@@ -14,8 +14,7 @@ import { Route as JoinEventIdRouteImport } from './routes/join/$eventId'
 import { Route as AdminEventsIndexRouteImport } from './routes/admin/events/index'
 import { Route as AdminEventsNewRouteImport } from './routes/admin/events/new'
 import { Route as AdminEventsEventIdRouteImport } from './routes/admin/events/$eventId'
-import { Route as AdminEventsEventIdParticipantsRouteImport } from './routes/admin/events/$eventId/participants'
-import { Route as AdminEventsEventIdChecklistRouteImport } from './routes/admin/events/$eventId/checklist'
+import { Route as AdminEventsEventIdIndexRouteImport } from './routes/admin/events/$eventId/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -42,18 +41,11 @@ const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
   path: '/admin/events/$eventId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminEventsEventIdParticipantsRoute =
-  AdminEventsEventIdParticipantsRouteImport.update({
-    id: '/participants',
-    path: '/participants',
-    getParentRoute: () => AdminEventsEventIdRoute,
-  } as any)
-const AdminEventsEventIdChecklistRoute =
-  AdminEventsEventIdChecklistRouteImport.update({
-    id: '/checklist',
-    path: '/checklist',
-    getParentRoute: () => AdminEventsEventIdRoute,
-  } as any)
+const AdminEventsEventIdIndexRoute = AdminEventsEventIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminEventsEventIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,17 +53,14 @@ export interface FileRoutesByFullPath {
   '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
   '/admin/events/': typeof AdminEventsIndexRoute
-  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
-  '/admin/events/$eventId/participants': typeof AdminEventsEventIdParticipantsRoute
+  '/admin/events/$eventId/': typeof AdminEventsEventIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join/$eventId': typeof JoinEventIdRoute
-  '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
   '/admin/events': typeof AdminEventsIndexRoute
-  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
-  '/admin/events/$eventId/participants': typeof AdminEventsEventIdParticipantsRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,8 +69,7 @@ export interface FileRoutesById {
   '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
   '/admin/events/': typeof AdminEventsIndexRoute
-  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
-  '/admin/events/$eventId/participants': typeof AdminEventsEventIdParticipantsRoute
+  '/admin/events/$eventId/': typeof AdminEventsEventIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,17 +79,14 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId'
     | '/admin/events/new'
     | '/admin/events/'
-    | '/admin/events/$eventId/checklist'
-    | '/admin/events/$eventId/participants'
+    | '/admin/events/$eventId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/join/$eventId'
-    | '/admin/events/$eventId'
     | '/admin/events/new'
     | '/admin/events'
-    | '/admin/events/$eventId/checklist'
-    | '/admin/events/$eventId/participants'
+    | '/admin/events/$eventId'
   id:
     | '__root__'
     | '/'
@@ -109,8 +94,7 @@ export interface FileRouteTypes {
     | '/admin/events/$eventId'
     | '/admin/events/new'
     | '/admin/events/'
-    | '/admin/events/$eventId/checklist'
-    | '/admin/events/$eventId/participants'
+    | '/admin/events/$eventId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,31 +142,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsEventIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/events/$eventId/participants': {
-      id: '/admin/events/$eventId/participants'
-      path: '/participants'
-      fullPath: '/admin/events/$eventId/participants'
-      preLoaderRoute: typeof AdminEventsEventIdParticipantsRouteImport
-      parentRoute: typeof AdminEventsEventIdRoute
-    }
-    '/admin/events/$eventId/checklist': {
-      id: '/admin/events/$eventId/checklist'
-      path: '/checklist'
-      fullPath: '/admin/events/$eventId/checklist'
-      preLoaderRoute: typeof AdminEventsEventIdChecklistRouteImport
+    '/admin/events/$eventId/': {
+      id: '/admin/events/$eventId/'
+      path: '/'
+      fullPath: '/admin/events/$eventId/'
+      preLoaderRoute: typeof AdminEventsEventIdIndexRouteImport
       parentRoute: typeof AdminEventsEventIdRoute
     }
   }
 }
 
 interface AdminEventsEventIdRouteChildren {
-  AdminEventsEventIdChecklistRoute: typeof AdminEventsEventIdChecklistRoute
-  AdminEventsEventIdParticipantsRoute: typeof AdminEventsEventIdParticipantsRoute
+  AdminEventsEventIdIndexRoute: typeof AdminEventsEventIdIndexRoute
 }
 
 const AdminEventsEventIdRouteChildren: AdminEventsEventIdRouteChildren = {
-  AdminEventsEventIdChecklistRoute: AdminEventsEventIdChecklistRoute,
-  AdminEventsEventIdParticipantsRoute: AdminEventsEventIdParticipantsRoute,
+  AdminEventsEventIdIndexRoute: AdminEventsEventIdIndexRoute,
 }
 
 const AdminEventsEventIdRouteWithChildren =

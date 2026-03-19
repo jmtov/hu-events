@@ -4,6 +4,7 @@ import { readEvents, writeEvents } from '../_lib/mock-store.js'
 import { readParticipants, writeParticipants } from '../_lib/participant-store.js'
 import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
 import { readPreferenceFields, writePreferenceFields } from '../_lib/preference-field-store.js'
+import { readTriggers } from '../_lib/trigger-store.js'
 
 function generateId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -15,7 +16,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'GET') {
     const event = readEvents().find((e) => e.id === eventId)
     if (!event) return res.status(404).json({ message: 'Event not found' })
-    return res.status(200).json(event)
+    const participants = readParticipants().filter((p) => p.event_id === eventId)
+    const checklist = readChecklistItems().filter((item) => item.event_id === eventId)
+    const triggers = readTriggers().filter((t) => t.eventId === eventId)
+    return res.status(200).json({ ...event, participants, checklist, triggers })
   }
 
   if (req.method === 'PUT') {

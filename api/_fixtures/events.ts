@@ -37,4 +37,27 @@ export const events = [
     created_at: '2026-03-05T10:00:00Z',
     updated_at: '2026-03-05T10:00:00Z',
   },
+
+  // ─── Leadership Summit 2026 (event 003) — full-module test event ─────────
+  {
+    id: 'a1b2c3d4-0001-0000-0000-000000000003',
+    title: 'Leadership Summit 2026',
+    description:
+      'Annual offsite for people managers across all regions. Agenda includes strategy alignment sessions, leadership workshops, and an evening networking dinner.',
+    event_type: 'hr_retreat',
+    date_start: '2026-06-18T08:00:00Z',
+    date_end: '2026-06-19T20:00:00Z',
+    location: 'Cartagena, Colombia',
+    expected_attendees: 40,
+    event_day_info: 'Hotel Santa Clara, Sala Bolívar. Dress code: smart casual.',
+    modules: {
+      participantList: true,
+      checklist: true,
+      budget: true,
+      notifications: true,
+      contacts: true,
+    },
+    created_at: '2026-03-15T10:00:00Z',
+    updated_at: '2026-03-15T10:00:00Z',
+  },
 ];

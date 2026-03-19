@@ -56,6 +56,44 @@ export const checklistItems = [
     alert_if_incomplete: false,
     sort_order: 2,
   },
+
+  // ─── Leadership Summit 2026 (event 003) ───────────────────────────────────
+  {
+    id: 'e5f6a7b8-0005-0000-0000-000000000021',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
+    label: 'Confirm attendance',
+    item_type: 'checkbox',
+    required: true,
+    alert_if_incomplete: true,
+    sort_order: 0,
+  },
+  {
+    id: 'e5f6a7b8-0005-0000-0000-000000000022',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
+    label: 'Upload valid ID or passport',
+    item_type: 'document_upload',
+    required: true,
+    alert_if_incomplete: true,
+    sort_order: 1,
+  },
+  {
+    id: 'e5f6a7b8-0005-0000-0000-000000000023',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
+    label: 'Sign leadership commitment form',
+    item_type: 'document_upload',
+    required: true,
+    alert_if_incomplete: true,
+    sort_order: 2,
+  },
+  {
+    id: 'e5f6a7b8-0005-0000-0000-000000000024',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
+    label: 'Submit dietary restrictions',
+    item_type: 'info_input',
+    required: false,
+    alert_if_incomplete: false,
+    sort_order: 3,
+  },
 ];
 
 export const participantChecklistItems = [

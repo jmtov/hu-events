@@ -4,6 +4,7 @@ import { readEvents, writeEvents } from '../_lib/mock-store.js'
 import { readParticipants, writeParticipants } from '../_lib/participant-store.js'
 import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
 import { readPreferenceFields, writePreferenceFields } from '../_lib/preference-field-store.js'
+import { readTriggers, writeTriggers } from '../_lib/trigger-store.js'
 
 function generateId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -90,6 +91,20 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         sort_order: i,
       }))
       writePreferenceFields([...readPreferenceFields(), ...newFields])
+    }
+
+    if (body.modules?.notifications && body.triggers?.length) {
+      const newTriggers = body.triggers.map((t) => ({
+        id: generateId('trig'),
+        eventId,
+        name: t.name,
+        source: t.source,
+        timing: t.timing,
+        timingValue: t.timingValue,
+        channel: t.channel,
+        recipient: t.recipient,
+      }))
+      writeTriggers([...readTriggers(), ...newTriggers])
     }
 
     return res.status(201).json(event)
