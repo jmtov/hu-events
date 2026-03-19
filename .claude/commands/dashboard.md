@@ -17,21 +17,23 @@ Each screen/component that has more than one file gets its own folder named afte
 
 ```
 src/features/events/
-├── types.ts          ← shared types across the domain
-├── services.ts       ← shared API calls across the domain
-├── constants.ts      ← shared constants across the domain
+├── types.ts                    ← shared types across the domain
+├── services.ts                 ← shared API calls across the domain
+├── constants.ts                ← shared constants across the domain
 ├── EventListPage/
-│   ├── index.tsx     ← main component, default export
-│   ├── types.ts      ← types local to this screen
-│   ├── constants.ts  ← constants local to this screen
-│   ├── EventRow.tsx  ← sub-components as sibling files
+│   ├── index.tsx               ← main component, default export
+│   ├── types.ts                ← types local to this screen
+│   ├── constants.ts            ← constants and schema local to this screen
+│   ├── components/
+│   │   └── EventRow.tsx        ← sub-components used only by this screen
 │   └── README.md
 └── EventDetailPage/
     ├── index.tsx
     ├── types.ts
     ├── constants.ts
-    ├── EventHeader.tsx
-    ├── ChecklistPanel.tsx
+    ├── components/
+    │   ├── EventHeader.tsx
+    │   └── ChecklistPanel.tsx
     └── README.md
 ```
 
@@ -42,7 +44,7 @@ src/features/events/
 | New screen | `src/features/<domain>/ScreenName/index.tsx` |
 | Local types for a screen | `ScreenName/types.ts` |
 | Local constants / schema for a screen | `ScreenName/constants.ts` |
-| Sub-component of a screen | `ScreenName/SubComponentName.tsx` |
+| Sub-component of a screen | `ScreenName/components/SubComponentName.tsx` |
 | New form | `ScreenName/FormName/` (own folder, same pattern) |
 | Types (feature-only) | That feature's `types.ts` |
 | Types (shared across features) | `src/types/<domain>.ts` |

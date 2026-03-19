@@ -286,11 +286,16 @@ USE_MOCK_DATA=false         # use real Supabase (requires SUPABASE_URL + SUPABAS
 
 - Serverless functions import them directly when `USE_MOCK_DATA=true`
 - `supabase/seed.sql` is generated from them — never edit seed.sql by hand
+- Fixture shapes must match the Supabase table schemas defined in `supabase/migrations/`
 
 To regenerate seed.sql after changing a fixture:
 ```bash
 npm run db:seed
 ```
+
+**Fixtures are the only source of mock data — no exceptions.**
+
+Do not define `DEMO_*` constants, local mock arrays, or hardcoded test objects inside components, feature folders, or constants files. If a feature needs data during development, the serverless function returns fixture data automatically when `USE_MOCK_DATA=true`. The frontend code does not need to know whether data is real or mocked.
 
 ### Schema migrations
 

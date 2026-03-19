@@ -5,6 +5,15 @@ alwaysApply: true
 
 # Commit and PR conventions
 
+## When to commit or open a PR
+
+**Never commit or create a PR unless the user explicitly asks.**
+
+This means:
+- Do not commit after finishing a task unless the user says "commitea", "haz un commit", "commit this", or similar.
+- Do not open a PR unless the user says "abre un PR", "create a PR", or similar.
+- When in doubt, show the changes and wait for the user to decide.
+
 ## Commit messages
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/). Every commit message must have the form:

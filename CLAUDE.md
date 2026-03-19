@@ -22,7 +22,7 @@ Always cross-reference these before implementing any feature.
 | Frontend | React 19 + Vite + TypeScript |
 | Routing | TanStack Router (file-based, under `src/routes/`) |
 | Data fetching | TanStack Query (hooks under `src/hooks/`) |
-| Forms | React Hook Form + Zod (`src/schemas/`) |
+| Forms | React Hook Form + Zod (schema co-located in `FeatureName/constants.ts`) |
 | i18n | i18next + react-i18next — JSON files in `public/locales/<lang>/` |
 | API client | axios via `src/lib/api.ts` → points to `/api` |
 | API layer | Vercel Serverless Functions under `api/` |
@@ -72,9 +72,16 @@ Four workflows are defined — see `docs/api_layer.md` for exact webhook payload
 - Schema migrations live in `supabase/migrations/`, one file per domain, named with a timestamp prefix
 - See `docs/api_layer.md` for the full database section including environment variables and local setup
 
+### Mock data
+- **All mock data lives exclusively in `api/_fixtures/`** — never define hardcoded demo data inside components, constants files, or feature folders
+- Fixtures mirror the exact shape of the Supabase tables defined in `supabase/migrations/`
+- Features that need data during development must call the real API endpoint (`USE_MOCK_DATA=true` makes the serverless function return fixture data automatically)
+- If a fixture doesn't yet exist for a new entity, add it to `api/_fixtures/` and run `npm run db:seed`
+- Inline `DEMO_*` constants or local mock arrays in component files are a convention violation
+
 ### Forms
 - React Hook Form for all form state — no `useState` for form fields
-- Zod schemas in `src/schemas/`, one file per domain
+- Zod schemas co-located with their feature in `FeatureName/constants.ts` — there is no global `src/schemas/` folder
 - Connect via `@hookform/resolvers/zod`
 - Never inline validation logic in components
 - Form components must be named `<Domain>Form` — e.g. `CreateEventForm`, `AttendeeRegistrationForm`
@@ -122,3 +129,4 @@ This README is for future agents and collaborators — keep it short and factual
 - All AI output shown to users is editable — AI suggests, admin decides
 - Modules are independent — no module should assume another is enabled
 - **Never use emojis** in UI code, labels, messages, or comments unless the user explicitly requests it
+- **Never commit or open a PR unless the user explicitly asks** — finish the work, show what changed, and wait
