@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconLink } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useGetEvent } from '@/hooks/useGetEvent';
+import { Button } from '@/components/ui/button';
 import SavedBanner from './components/SavedBanner';
 import EventHeader from './components/EventHeader';
 import RsvpCard from './components/RsvpCard';
@@ -39,6 +41,19 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
     );
   }
 
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyInviteLink = async () => {
+    const url = `${window.location.origin}/join/${eventId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable — silently ignore
+    }
+  };
+
   const event = eventQuery.data;
   const participants = event.participants ?? [];
   const checklist = event.checklist ?? [];
@@ -60,8 +75,20 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       <EventHeader event={event} style={{ animationDelay: 'calc(1 * 50ms)' }} />
 
       <div
-        className="animate-appear-from-bottom grid grid-cols-1 gap-4 sm:grid-cols-2"
+        className="animate-appear-from-bottom flex justify-end"
         style={{ animationDelay: 'calc(2 * 50ms)' }}
+      >
+        <Button variant="outline" size="sm" onClick={handleCopyInviteLink}>
+          <IconLink size={16} />
+          {copied
+            ? t('events.overview.inviteLink.copied')
+            : t('events.overview.inviteLink.copy')}
+        </Button>
+      </div>
+
+      <div
+        className="animate-appear-from-bottom grid grid-cols-1 gap-4 sm:grid-cols-2"
+        style={{ animationDelay: 'calc(3 * 50ms)' }}
       >
         <RsvpCard participants={participants} />
         {event.modules.checklist && (
@@ -72,7 +99,7 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       {event.modules.notifications && (
         <div
           className="animate-appear-from-bottom"
-          style={{ animationDelay: 'calc(3 * 50ms)' }}
+          style={{ animationDelay: 'calc(4 * 50ms)' }}
         >
           <NotificationsSummaryCard triggers={triggers} />
         </div>
@@ -80,7 +107,7 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
 
       <ParticipantSummaryCard
         participants={participants}
-        style={{ animationDelay: 'calc(4 * 50ms)' }}
+        style={{ animationDelay: 'calc(5 * 50ms)' }}
       />
     </div>
   );

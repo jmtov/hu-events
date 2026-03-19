@@ -8,6 +8,7 @@ export const events = [
     date_start: '2026-04-14T09:00:00Z',
     date_end: '2026-04-15T18:00:00Z',
     location: 'Buenos Aires, Argentina',
+    expected_attendees: 8,
     modules: {
       participantList: true,
       checklist: true,
@@ -27,6 +28,7 @@ export const events = [
     date_start: '2026-05-02T08:00:00Z',
     date_end: '2026-05-04T20:00:00Z',
     location: 'Montevideo, Uruguay',
+    expected_attendees: 6,
     modules: {
       participantList: true,
       checklist: true,

@@ -82,7 +82,7 @@ No authentication is required for any endpoint in this MVP.
 
 | Method | Path | Description |
 |---|---|---|
-| PATCH | `/api/events/:eventId/attendance` | Action-based attendee endpoint — covers RSVP, checklist, file upload, profile |
+| PATCH | `/api/events/:eventId/attendance` | Action-based attendee endpoint — covers RSVP, checklist, file upload, profile. When `action: 'rsvp'` crosses the 50% threshold, fires n8n Workflow 1 + Workflow 2 server-side. |
 
 ### Uploads
 
@@ -398,6 +398,8 @@ await fetch(process.env.N8N_WEBHOOK_URL, {
 ```
 
 n8n must validate this header at the start of every workflow and reject requests that don't include it.
+
+> ⚠️ TODO: currently all n8n calls go to a single `N8N_WEBHOOK_URL`. The webhook payload includes a `type` field (`rsvp_milestone` | `checklist_incomplete` | ...) so n8n can route to the correct workflow. In production, consider using separate webhook URLs per workflow for better isolation.
 
 ---
 

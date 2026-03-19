@@ -77,6 +77,10 @@
         "empty": "No participants yet.",
         "more": "more"
       },
+      "inviteLink": {
+        "copy": "Copy invite link",
+        "copied": "Link copied!"
+      },
       "loading": "Loading event...",
       "error": "Failed to load event."
     },

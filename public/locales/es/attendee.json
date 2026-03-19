@@ -3,12 +3,54 @@
     "loading": "Cargando...",
     "eventNotFound": "Evento no encontrado."
   },
+  "eventTypes": {
+    "hr_retreat": "Retiro de RR.HH.",
+    "bdr_call": "Llamada BDR",
+    "hackathon": "Hackathon",
+    "workshop": "Workshop",
+    "other": "Otro"
+  },
+  "login": {
+    "brand": "Humand Events",
+    "title": "Bienvenido",
+    "subtitle": "Ingresá tu e-mail corporativo para ver tus eventos.",
+    "email": {
+      "label": "E-mail corporativo",
+      "placeholder": "tu@empresa.com"
+    },
+    "submit": "Continuar",
+    "submitting": "Cargando..."
+  },
+  "eventList": {
+    "title": "Mis eventos",
+    "subtitle": "Eventos en los que estás registrado.",
+    "loading": "Cargando tus eventos...",
+    "error": "No se pudieron cargar tus eventos.",
+    "checklist": "{{completed}}/{{total}} tareas",
+    "changeEmail": "¿No eres tú? Cambiar e-mail",
+    "rsvp": {
+      "confirmed": "Confirmado",
+      "pending": "Pendiente",
+      "declined": "Rechazado"
+    },
+    "status": {
+      "upcoming": "Próximo",
+      "ongoing": "En curso",
+      "past": "Finalizado"
+    },
+    "empty": {
+      "title": "Sin eventos",
+      "description": "No se encontraron eventos para este e-mail.",
+      "cta": "Probar con otro e-mail"
+    }
+  },
   "registration": {
     "brand": "Humand Events",
     "subtitle": "Registro de evento",
     "requiredHint": "Los campos marcados con * son obligatorios.",
     "submit": "Confirmar asistencia (RSVP)",
     "submitting": "Confirmando...",
+    "submitError": "Ocurrió un error. Por favor, inténtalo de nuevo.",
     "sections": {
       "info": "Tu información",
       "location": "Ubicación",
@@ -41,11 +83,52 @@
         "placeholder": "Tu respuesta..."
       }
     },
+    "checklist": {
+      "title": "Qué completar antes del evento",
+      "subtitle": "Después de confirmar, deberás completar estas tareas.",
+      "required": "Obligatorio",
+      "type": {
+        "checkbox": "Tarea",
+        "document_upload": "Documento",
+        "info_input": "Información"
+      }
+    },
     "success": {
       "title": "RSVP confirmado!",
       "message": "Gracias, {{name}}! Tu asistencia fue registrada con éxito.",
       "hint": "Recibirás un e-mail de confirmación en breve.",
       "back": "Volver al inicio"
+    }
+  },
+  "eventView": {
+    "loading": "Cargando tu registro...",
+    "notFound": "Registro no encontrado.",
+    "noEmail": "Accedé al evento a través del link de invitación para ver tus detalles.",
+    "rsvpBanner": {
+      "title": "¡Registro confirmado!",
+      "subtitle": "Tu asistencia fue registrada. Revisá tus datos a continuación."
+    },
+    "profile": {
+      "title": "Tu información",
+      "name": "Nombre",
+      "email": "E-mail",
+      "city": "Ciudad",
+      "region": "Región",
+      "country": "País",
+      "role": "Rol"
+    },
+    "checklist": {
+      "title": "Tu checklist",
+      "subtitle": "Tareas y documentos que debes completar antes del evento.",
+      "empty": "No hay ítems en el checklist para este evento.",
+      "pending": "Pendiente",
+      "done": "Listo",
+      "required": "Obligatorio",
+      "type": {
+        "checkbox": "Tarea",
+        "document_upload": "Documento",
+        "info_input": "Información"
+      }
     }
   }
 }

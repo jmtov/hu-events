@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from '@tanstack/react-router';
+import { useAttendanceAction } from '@/hooks/useAttendanceAction';
+import { Badge } from '@/components/ui/badge';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,11 +30,14 @@ type HumandRegistrationPageProps = {
 
 const HumandRegistrationPage = ({ eventId }: HumandRegistrationPageProps) => {
   const { t } = useTranslation('attendee');
+  const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const { data: event, isLoading: eventLoading } = useGetEvent(eventId);
   const { data: preferenceFields = [], isLoading: fieldsLoading } =
     useGetPreferenceFields(eventId);
+  const attendanceMutation = useAttendanceAction(eventId);
 
   const form = useForm<RegistrationValues>({
     resolver: zodResolver(registrationSchema),
@@ -46,8 +52,29 @@ const HumandRegistrationPage = ({ eventId }: HumandRegistrationPageProps) => {
     },
   });
 
-  const handleSubmit = form.handleSubmit(() => {
-    setSubmitted(true);
+  const handleSubmit = form.handleSubmit((values) => {
+    setSubmitError(false);
+    attendanceMutation.mutate(
+      {
+        email: values.email,
+        full_name: values.fullName,
+        location_city: values.city,
+        location_region: values.region,
+        location_country: values.country,
+        role: values.role || undefined,
+      },
+      {
+        onSuccess: () => {
+          sessionStorage.setItem('humand_attendee_email', values.email);
+          router.navigate({
+            to: '/attendee/events/$eventId',
+            params: { eventId },
+          });
+          setSubmitted(true);
+        },
+        onError: () => setSubmitError(true),
+      },
+    );
   });
 
   const handleBack = () => {
@@ -202,8 +229,45 @@ const HumandRegistrationPage = ({ eventId }: HumandRegistrationPageProps) => {
               </Card>
             )}
 
-            <Button type="submit" className="w-full">
-              {t('registration.submit')}
+            {event.modules.checklist && event.checklist && event.checklist.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    {t('registration.checklist.title')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('registration.checklist.subtitle')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {event.checklist.map((item) => (
+                      <li key={item.id} className="flex items-center justify-between gap-3 text-sm">
+                        <span className="text-foreground">{item.label}</span>
+                        <div className="flex shrink-0 gap-1">
+                          <Badge variant="secondary" className="text-xs">
+                            {t(`registration.checklist.type.${item.item_type}`)}
+                          </Badge>
+                          {item.required && (
+                            <Badge variant="outline" className="text-xs">
+                              {t('registration.checklist.required')}
+                            </Badge>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {submitError && (
+              <p className="text-sm text-destructive">{t('registration.submitError')}</p>
+            )}
+            <Button type="submit" className="w-full" disabled={attendanceMutation.isPending}>
+              {attendanceMutation.isPending
+                ? t('registration.submitting')
+                : t('registration.submit')}
             </Button>
           </form>
         </FormProvider>

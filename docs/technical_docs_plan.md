@@ -198,24 +198,38 @@ The entire form state is saved in one request on submit. There are no intermedia
 
 ---
 
-### F-07 — Attendee onboarding
+### F-07 — Attendee onboarding (join link)
 
 **Route:** `/join/:eventId`
 
-**Description:** Attendee lands on the event join page (linked from invite email or shared directly). They enter their name, location, and any required preference fields, then confirm their RSVP. No authentication required for MVP.
+**Description:** Attendee lands on the event join page via a shareable link. They enter their name, email, location, and any required preference fields, then confirm their RSVP. No authentication required. The join link is available on the admin event detail page as "Copy invite link".
+
+> ⚠️ TODO: add a token parameter to the join URL (e.g. `/join/:eventId?token=...`) to prevent unauthorized access to private events. For now the link is open.
 
 **Services to consume:**
 - `GET /api/events/:eventId` — load event details (title, description, date, preference fields)
-- `PATCH /api/events/:eventId/attendance` — save profile + RSVP (`action: 'profile'` then `action: 'rsvp'`)
+- `GET /api/events/:eventId/preference-fields` — load custom preference fields
+- `PATCH /api/events/:eventId/attendance` — two sequential calls:
+  1. `action: 'profile'` — upsert participant by email
+  2. `action: 'rsvp', status: 'confirmed'` — confirm RSVP; triggers n8n threshold check server-side
 
 **Hooks:**
 - `useGetEvent(eventId)` — query
-- `useAttendanceAction(eventId)` — mutation (action-based)
+- `useGetPreferenceFields(eventId)` — query
+- `useAttendanceAction(eventId)` — mutation (calls profile + rsvp sequentially)
+
+**n8n threshold logic (server-side, in the attendance endpoint):**
+When `action: 'rsvp'` crosses 50% of `expected_attendees`:
+1. Fires **Workflow 1** (RSVP milestone → Slack → HR admin)
+2. For each confirmed participant with incomplete `alert_if_incomplete` checklist items:
+   - Fires **Workflow 2** (Checklist incomplete → Email/WhatsApp → attendee)
+   - `daysBeforeEvent` is taken from the minimum `timingValue` among checklist-sourced triggers for the event (configured by admin in the notifications module)
 
 **Notes:**
-- No session or token — attendee is identified by email (entered as part of the profile action)
-- On submit, sends `action: 'profile'` with name/email/location, followed by `action: 'rsvp'` with `status: 'confirmed'`
-- After saving, redirect to `/attendee/events/:eventId`
+- No session or token — attendee is identified by email (entered in the profile form)
+- If the attendee already exists (same email + event), the profile action updates their record
+- After saving, shows a success screen (no redirect in MVP — attendee stays on the join page)
+- The join link is displayed on `/admin/events/:eventId` as a "Copy invite link" button
 
 ---
 

@@ -3,12 +3,54 @@
     "loading": "Loading...",
     "eventNotFound": "Event not found."
   },
+  "eventTypes": {
+    "hr_retreat": "HR Retreat",
+    "bdr_call": "BDR Call",
+    "hackathon": "Hackathon",
+    "workshop": "Workshop",
+    "other": "Other"
+  },
+  "login": {
+    "brand": "Humand Events",
+    "title": "Welcome",
+    "subtitle": "Enter your corporate email to see your events.",
+    "email": {
+      "label": "Corporate email",
+      "placeholder": "your@company.com"
+    },
+    "submit": "Continue",
+    "submitting": "Loading..."
+  },
+  "eventList": {
+    "title": "My events",
+    "subtitle": "Events you are registered for.",
+    "loading": "Loading your events...",
+    "error": "Could not load your events.",
+    "checklist": "{{completed}}/{{total}} tasks",
+    "changeEmail": "Not you? Change email",
+    "rsvp": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "declined": "Declined"
+    },
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "past": "Past"
+    },
+    "empty": {
+      "title": "No events found",
+      "description": "No events found for this email address.",
+      "cta": "Try a different email"
+    }
+  },
   "registration": {
     "brand": "Humand Events",
     "subtitle": "Event registration",
     "requiredHint": "Fields marked with * are required.",
     "submit": "Confirm Attendance (RSVP)",
     "submitting": "Confirming...",
+    "submitError": "Something went wrong. Please try again.",
     "sections": {
       "info": "Your information",
       "location": "Location",
@@ -41,11 +83,52 @@
         "placeholder": "Your answer..."
       }
     },
+    "checklist": {
+      "title": "What to complete before the event",
+      "subtitle": "After confirming, you will need to complete these tasks.",
+      "required": "Required",
+      "type": {
+        "checkbox": "Task",
+        "document_upload": "Document",
+        "info_input": "Info"
+      }
+    },
     "success": {
       "title": "RSVP confirmed!",
       "message": "Thank you, {{name}}! Your attendance has been successfully registered.",
       "hint": "You will receive a confirmation email shortly.",
       "back": "Back to start"
+    }
+  },
+  "eventView": {
+    "loading": "Loading your registration...",
+    "notFound": "Registration not found.",
+    "noEmail": "Please register via the invite link to access your event details.",
+    "rsvpBanner": {
+      "title": "Registration confirmed!",
+      "subtitle": "Your attendance has been registered. See your details below."
+    },
+    "profile": {
+      "title": "Your information",
+      "name": "Name",
+      "email": "Email",
+      "city": "City",
+      "region": "Region",
+      "country": "Country",
+      "role": "Role"
+    },
+    "checklist": {
+      "title": "Your checklist",
+      "subtitle": "Tasks and documents you need to complete before the event.",
+      "empty": "No checklist items for this event.",
+      "pending": "Pending",
+      "done": "Done",
+      "required": "Required",
+      "type": {
+        "checkbox": "Task",
+        "document_upload": "Document",
+        "info_input": "Info"
+      }
     }
   }
 }
