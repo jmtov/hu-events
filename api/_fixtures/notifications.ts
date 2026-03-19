@@ -51,7 +51,11 @@ export const triggers = [
     recipient: 'both',
     active: true,
   },
+<<<<<<< HEAD
 ];
+=======
+]
+>>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)
 
 export const triggerLog = [
   {
@@ -62,4 +66,8 @@ export const triggerLog = [
     status: 'sent',
     error: null,
   },
+<<<<<<< HEAD
 ];
+=======
+]
+>>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)

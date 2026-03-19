@@ -37,4 +37,8 @@ export const events = [
     created_at: '2026-03-05T10:00:00Z',
     updated_at: '2026-03-05T10:00:00Z',
   },
+<<<<<<< HEAD
 ];
+=======
+]
+>>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)
