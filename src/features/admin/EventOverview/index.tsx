@@ -18,6 +18,7 @@ type EventOverviewProps = {
 
 const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
   const { t } = useTranslation('admin');
+  const [copied, setCopied] = useState(false);
 
   const eventQuery = useGetEvent(eventId);
 
@@ -40,8 +41,6 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       </div>
     );
   }
-
-  const [copied, setCopied] = useState(false);
 
   const handleCopyInviteLink = async () => {
     const url = `${window.location.origin}/join/${eventId}`;
