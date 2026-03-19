@@ -11,11 +11,13 @@ import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { checklistService } from '@/services/checklist';
+import { participantService } from '@/services/participants';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { ChecklistSuggestion } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
 import ModuleToggleRow from './components/ModuleToggleRow';
 import ChecklistModule from './components/ChecklistModule';
+import ParticipantModule from './components/ParticipantModule';
 import type { ChecklistItemValues } from './components/ChecklistModule/constants';
 import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
 import { DEFAULT_MODULES, eventConfigSchema } from './constants';
@@ -34,6 +36,7 @@ const EventConfigForm = () => {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [modules, setModules] = useState<EventModules>({ ...DEFAULT_MODULES });
+  const [draftEmails, setDraftEmails] = useState<string[]>([]);
 
   const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
 
@@ -127,6 +130,17 @@ const EventConfigForm = () => {
         });
       } catch {
         // Item will be editable on the checklist page after redirect
+      }
+    }
+
+    // Save participant emails — failures are non-blocking
+    if (modules.participantList) {
+      for (const email of draftEmails) {
+        try {
+          await participantService.add(event.id, { email });
+        } catch {
+          // Participant can be added from the participants page after redirect
+        }
       }
     }
 
@@ -255,6 +269,15 @@ const EventConfigForm = () => {
                   onDeleteItem={handleDeleteItem}
                   onSetAddingItem={setIsAddingItem}
                   onSetEditingKey={setEditingKey}
+                />
+              )}
+              {key === 'participantList' && (
+                <ParticipantModule
+                  emails={draftEmails}
+                  onAdd={(email) => setDraftEmails((prev) => [...prev, email])}
+                  onRemove={(email) =>
+                    setDraftEmails((prev) => prev.filter((e) => e !== email))
+                  }
                 />
               )}
             </ModuleToggleRow>

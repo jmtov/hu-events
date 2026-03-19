@@ -55,6 +55,12 @@
         "completedOf": "{{completed}} of {{total}} completed",
         "noItems": "No checklist items."
       },
+      "participants": {
+        "title": "Participants",
+        "manage": "Manage",
+        "empty": "No participants yet.",
+        "more": "more"
+      },
       "loading": "Loading event...",
       "error": "Failed to load event."
     },
@@ -102,6 +108,15 @@
         "generateWithAI": "Generate with AI",
         "generating": "Generating...",
         "aiError": "Could not generate suggestions. Please try again."
+      },
+      "participants": {
+        "description": "Add attendees by email. You can add more after creating the event.",
+        "empty": "No participants added yet.",
+        "addPlaceholder": "colleague@company.com",
+        "add": "Add",
+        "remove": "Remove",
+        "invalidEmail": "Please enter a valid email address.",
+        "duplicateEmail": "This email has already been added."
       }
     },
     "config": {

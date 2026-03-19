@@ -55,6 +55,12 @@
         "completedOf": "{{completed}} de {{total}} concluídos",
         "noItems": "Nenhum item no checklist."
       },
+      "participants": {
+        "title": "Participantes",
+        "manage": "Gerenciar",
+        "empty": "Nenhum participante ainda.",
+        "more": "mais"
+      },
       "loading": "Carregando evento...",
       "error": "Falha ao carregar o evento."
     },
@@ -102,6 +108,15 @@
         "generateWithAI": "Gerar com IA",
         "generating": "Gerando...",
         "aiError": "Não foi possível gerar sugestões. Tente novamente."
+      },
+      "participants": {
+        "description": "Adicione participantes por e-mail. Você pode adicionar mais após criar o evento.",
+        "empty": "Nenhum participante adicionado ainda.",
+        "addPlaceholder": "colega@empresa.com",
+        "add": "Adicionar",
+        "remove": "Remover",
+        "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
+        "duplicateEmail": "Este e-mail já foi adicionado."
       }
     },
     "config": {

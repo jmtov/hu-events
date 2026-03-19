@@ -4,9 +4,10 @@ import type { Event } from '@/types/event';
 
 interface EventHeaderProps {
   event: Event;
+  style?: React.CSSProperties;
 }
 
-const EventHeader = ({ event }: EventHeaderProps) => {
+const EventHeader = ({ event, style }: EventHeaderProps) => {
   const { t } = useTranslation('admin');
 
   const formattedStart = new Date(event.date_start).toLocaleDateString(
@@ -23,7 +24,7 @@ const EventHeader = ({ event }: EventHeaderProps) => {
     : null;
 
   return (
-    <div className="rounded-xl border bg-card px-6 py-5 shadow-sm">
+    <div className="animate-appear-from-bottom rounded-xl border bg-card px-6 py-5 shadow-sm" style={style}>
       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {t('events.overview.header.label')}
       </p>
