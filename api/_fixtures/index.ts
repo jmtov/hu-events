@@ -1,3 +1,4 @@
+export { budgets } from './budget.js';
 export { checklistItems, participantChecklistItems } from './checklist.js';
 export { contacts } from './contacts.js';
 export { events } from './events.js';

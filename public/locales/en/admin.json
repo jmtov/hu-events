@@ -81,6 +81,12 @@
         "copy": "Copy invite link",
         "copied": "Link copied!"
       },
+      "budget": {
+        "title": "Budget",
+        "totalMax": "Total max per person",
+        "noCaps": "No categories configured.",
+        "manage": "Manage Budget"
+      },
       "loading": "Loading event...",
       "error": "Failed to load event."
     },
@@ -137,6 +143,26 @@
         "remove": "Remove",
         "invalidEmail": "Please enter a valid email address.",
         "duplicateEmail": "This email has already been added."
+      },
+      "budget": {
+        "description": "Enable categories and set a max allocation per person. Use AI to get estimates based on event dates and destination.",
+        "estimateWithAI": "Estimate with AI",
+        "estimating": "Estimating...",
+        "totalMax": "Total max per person",
+        "totalMaxNone": "No caps set",
+        "capPlaceholder": "Cap",
+        "addCustom": "Add custom category",
+        "addCustomConfirm": "Add",
+        "customLabelPlaceholder": "Category name",
+        "removeCategory": "Remove category",
+        "aiError": "Could not get estimates. Please try again.",
+        "categories": {
+          "flights": "Flights",
+          "accommodation": "Accommodation",
+          "food": "Food & Beverages",
+          "comms": "Communications & Equipment",
+          "misc": "Miscellaneous"
+        }
       }
     },
     "config": {

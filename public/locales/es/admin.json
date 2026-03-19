@@ -81,6 +81,12 @@
         "copy": "Copiar link de invitación",
         "copied": "¡Link copiado!"
       },
+      "budget": {
+        "title": "Presupuesto",
+        "totalMax": "Total máximo por persona",
+        "noCaps": "Sin categorías configuradas.",
+        "manage": "Gestionar Presupuesto"
+      },
       "loading": "Cargando evento...",
       "error": "Error al cargar el evento."
     },
@@ -137,6 +143,26 @@
         "remove": "Quitar",
         "invalidEmail": "Por favor ingresa un correo electrónico válido.",
         "duplicateEmail": "Este correo ya fue agregado."
+      },
+      "budget": {
+        "description": "Activa categorías y define un tope de asignación por persona. Usa la IA para obtener estimaciones según las fechas y el destino del evento.",
+        "estimateWithAI": "Estimar con IA",
+        "estimating": "Estimando...",
+        "totalMax": "Total máximo por persona",
+        "totalMaxNone": "Sin topes definidos",
+        "capPlaceholder": "Tope",
+        "addCustom": "Agregar categoría personalizada",
+        "addCustomConfirm": "Agregar",
+        "customLabelPlaceholder": "Nombre de la categoría",
+        "removeCategory": "Eliminar categoría",
+        "aiError": "No se pudieron obtener estimaciones. Inténtalo de nuevo.",
+        "categories": {
+          "flights": "Vuelos",
+          "accommodation": "Alojamiento",
+          "food": "Alimentación y bebidas",
+          "comms": "Comunicaciones y equipos",
+          "misc": "Gastos varios"
+        }
       }
     },
     "config": {
