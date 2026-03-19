@@ -19,7 +19,8 @@
       "placeholder": "your@company.com"
     },
     "submit": "Continue",
-    "submitting": "Loading..."
+    "submitting": "Loading...",
+    "adminAccess": "Admin access"
   },
   "eventList": {
     "title": "My events",

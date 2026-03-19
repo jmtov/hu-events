@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,16 @@ const AttendeeLogin = () => {
           <p className="mt-1 text-sm text-muted-foreground">{t('login.subtitle')}</p>
         </div>
 
-        <Card className="animate-appear-from-bottom" style={{ animationDelay: 'calc(1 * 50ms)' }}>
+        <div className="animate-appear-from-bottom text-center" style={{ animationDelay: 'calc(1 * 50ms)' }}>
+          <Link
+            to="/admin/events"
+            className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+          >
+            {t('login.adminAccess')}
+          </Link>
+        </div>
+
+        <Card className="animate-appear-from-bottom" style={{ animationDelay: 'calc(2 * 50ms)' }}>
           <CardHeader className="pb-4">
             <CardTitle className="text-base">{t('login.email.label')}</CardTitle>
             <CardDescription>{t('login.subtitle')}</CardDescription>
