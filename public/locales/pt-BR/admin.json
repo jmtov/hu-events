@@ -66,6 +66,33 @@
           "placeholder": "Ex: São Paulo — Hotel Unique"
         }
       }
+    },
+    "modules": {
+      "title": "Módulos",
+      "saveButton": "Salvar módulos",
+      "saving": "Salvando...",
+      "savedHint": "Módulos salvos com sucesso.",
+      "unsavedHint": "Ative ou desative os módulos e salve as alterações.",
+      "participantList": {
+        "label": "Lista de Participantes",
+        "description": "Gerencie os confirmados e os RSVPs deste evento."
+      },
+      "checklist": {
+        "label": "Checklist Pré-evento",
+        "description": "Tarefas e documentos que os participantes devem concluir antes do evento."
+      },
+      "budget": {
+        "label": "Orçamento e Custos",
+        "description": "Controle despesas e defina um teto de orçamento para o evento."
+      },
+      "notifications": {
+        "label": "Notificações",
+        "description": "Envie lembretes e alertas automáticos para os participantes."
+      },
+      "contacts": {
+        "label": "Informações de Contato",
+        "description": "Colete contatos de emergência e preferências alimentares."
+      }
     }
   }
 }
