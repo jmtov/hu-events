@@ -28,11 +28,13 @@
         "description": {
           "label": "Descripción",
           "placeholder": "Describe el objetivo, la agenda y cualquier detalle relevante del evento...",
-          "hint": "Una buena descripción ayuda a la IA a sugerir el tipo de evento correcto."
+          "hint": "Una buena descripción ayuda a la IA a sugerir el tipo de evento correcto.",
+          "analyzing": "Analizando descripción..."
         },
         "eventType": {
           "label": "Tipo de evento",
-          "detecting": "Detectando tipo de evento..."
+          "detecting": "Detectando tipo de evento...",
+          "suggested": "Tipo sugerido por la IA — puedes cambiarlo cuando quieras."
         },
         "dateStart": {
           "label": "Fecha de inicio"

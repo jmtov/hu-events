@@ -169,7 +169,11 @@ const EventCreateForm = () => {
                 name="description"
                 label={t('events.create.fields.description.label')}
                 placeholder={t('events.create.fields.description.placeholder')}
-                hint={t('events.create.fields.description.hint')}
+                hint={
+                  detectEventType.isPending
+                    ? t('events.create.fields.description.analyzing')
+                    : t('events.create.fields.description.hint')
+                }
                 onBlur={handleDetectEventType}
                 required
               />
@@ -180,7 +184,9 @@ const EventCreateForm = () => {
                 hint={
                   detectEventType.isPending
                     ? t('events.create.fields.eventType.detecting')
-                    : undefined
+                    : detectEventType.isSuccess
+                      ? t('events.create.fields.eventType.suggested')
+                      : undefined
                 }
                 required
               />
