@@ -79,6 +79,7 @@ const AdminEventList = () => {
                 key={event.id}
                 to="/admin/events/$eventId"
                 params={{ eventId: event.id }}
+                search={{ created: false }}
                 className="group block"
               >
                 <Card className="h-full transition-shadow group-hover:shadow-md">

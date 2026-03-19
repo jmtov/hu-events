@@ -29,6 +29,35 @@
         "cta": "Create event"
       }
     },
+    "overview": {
+      "savedBanner": {
+        "title": "Event saved successfully.",
+        "subtitle": "The dashboard reflects the latest data.",
+        "dismiss": "Dismiss"
+      },
+      "header": {
+        "label": "Event overview"
+      },
+      "rsvp": {
+        "title": "RSVP",
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "declined": "Declined",
+        "confirmedOf": "{{confirmed}} of {{total}} confirmed",
+        "confirmationRate": "{{pct}}% confirmation rate"
+      },
+      "checklist": {
+        "title": "Checklist",
+        "averageCompletion": "Average completion",
+        "items": "{{count}} item",
+        "items_plural": "{{count}} items",
+        "required": "Required",
+        "completedOf": "{{completed}} of {{total}} completed",
+        "noItems": "No checklist items."
+      },
+      "loading": "Loading event...",
+      "error": "Failed to load event."
+    },
     "create": {
       "title": "Create event",
       "subtitle": "Fill in the details below to create a new event.",
