@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinEventIdRouteImport } from './routes/join/$eventId'
 import { Route as AdminEventsNewRouteImport } from './routes/admin/events/new'
 import { Route as AdminEventsEventIdRouteImport } from './routes/admin/events/$eventId'
+import { Route as AdminEventsEventIdChecklistRouteImport } from './routes/admin/events/$eventId/checklist'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,25 +35,34 @@ const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
   path: '/admin/events/$eventId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminEventsEventIdChecklistRoute =
+  AdminEventsEventIdChecklistRouteImport.update({
+    id: '/checklist',
+    path: '/checklist',
+    getParentRoute: () => AdminEventsEventIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/join/$eventId': typeof JoinEventIdRoute
-  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join/$eventId': typeof JoinEventIdRoute
-  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/join/$eventId': typeof JoinEventIdRoute
-  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
   '/admin/events/new': typeof AdminEventsNewRoute
+  '/admin/events/$eventId/checklist': typeof AdminEventsEventIdChecklistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -61,20 +71,27 @@ export interface FileRouteTypes {
     | '/join/$eventId'
     | '/admin/events/$eventId'
     | '/admin/events/new'
+    | '/admin/events/$eventId/checklist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/join/$eventId' | '/admin/events/$eventId' | '/admin/events/new'
+  to:
+    | '/'
+    | '/join/$eventId'
+    | '/admin/events/$eventId'
+    | '/admin/events/new'
+    | '/admin/events/$eventId/checklist'
   id:
     | '__root__'
     | '/'
     | '/join/$eventId'
     | '/admin/events/$eventId'
     | '/admin/events/new'
+    | '/admin/events/$eventId/checklist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JoinEventIdRoute: typeof JoinEventIdRoute
-  AdminEventsEventIdRoute: typeof AdminEventsEventIdRoute
+  AdminEventsEventIdRoute: typeof AdminEventsEventIdRouteWithChildren
   AdminEventsNewRoute: typeof AdminEventsNewRoute
 }
 
@@ -108,13 +125,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsEventIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/events/$eventId/checklist': {
+      id: '/admin/events/$eventId/checklist'
+      path: '/checklist'
+      fullPath: '/admin/events/$eventId/checklist'
+      preLoaderRoute: typeof AdminEventsEventIdChecklistRouteImport
+      parentRoute: typeof AdminEventsEventIdRoute
+    }
   }
 }
+
+interface AdminEventsEventIdRouteChildren {
+  AdminEventsEventIdChecklistRoute: typeof AdminEventsEventIdChecklistRoute
+}
+
+const AdminEventsEventIdRouteChildren: AdminEventsEventIdRouteChildren = {
+  AdminEventsEventIdChecklistRoute: AdminEventsEventIdChecklistRoute,
+}
+
+const AdminEventsEventIdRouteWithChildren =
+  AdminEventsEventIdRoute._addFileChildren(AdminEventsEventIdRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JoinEventIdRoute: JoinEventIdRoute,
-  AdminEventsEventIdRoute: AdminEventsEventIdRoute,
+  AdminEventsEventIdRoute: AdminEventsEventIdRouteWithChildren,
   AdminEventsNewRoute: AdminEventsNewRoute,
 }
 export const routeTree = rootRouteImport
