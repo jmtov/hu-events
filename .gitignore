@@ -15,6 +15,14 @@ dist-ssr
 # Claude Code — versioned commands/skills; keep local overrides private
 .claude/settings.local.json
 
+# Local dev API server (not needed in production)
+dev-api-server.mjs
+
+# Environment variables — never commit secrets
+.env
+.env.local
+.env*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
