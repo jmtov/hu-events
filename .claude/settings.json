@@ -19,5 +19,18 @@
       "Bash(npx shadcn@latest *",
       "Bash(npx tsc:*)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git fetch origin 2>/dev/null; BEHIND=$(git rev-list HEAD..origin/main --count 2>/dev/null || echo 0); if [ \"$BEHIND\" -gt 0 ] 2>/dev/null; then git pull origin main 2>/dev/null && printf '{\"systemMessage\":\"Pulled %s new commit(s) from origin/main.\"}' \"$BEHIND\"; else printf '{\"systemMessage\":\"Branch is up to date with origin/main.\"}'; fi",
+            "statusMessage": "Syncing with origin/main..."
+          }
+        ]
+      }
+    ]
   }
 }

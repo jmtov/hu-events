@@ -26,17 +26,20 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - Secrets (Claude API key, Google OAuth, etc.) live only in serverless functions via `process.env` — never in the frontend
 
 ### Forms & validation
-- Use **TanStack Form** for all form state management — no controlled components with `useState` for form fields
-- Use **Zod** for all validation schemas — define schemas in `src/schemas/` alongside the feature they belong to
-- Connect Zod to TanStack Form via the official `@tanstack/zod-form-adapter`
-- Naming convention: one schema file per feature, e.g. `src/schemas/event.ts`, `src/schemas/participant.ts`
-- Never inline validation logic in components — always import from the schema file
-- Reuse partial schemas with `z.pick()` or `z.omit()` when a form only covers a subset of an entity
+- Use **React Hook Form** for all form state management — no `useState` for form fields
+- Use **Zod** for all validation schemas — schemas co-located with their feature in `FeatureName/constants.ts` (no global `src/schemas/` folder)
+- Connect via `@hookform/resolvers/zod`
+- Never inline validation logic in components — always import from the feature's `constants.ts`
+- Form components must be named `<Domain>Form` — e.g. `CreateEventForm`, `AttendeeRegistrationForm`
+- Use `<FormProvider>` at the form root so nested field components can access context via `useFormContext()`
+- Shared field components live in `src/components/<Input|Select|...>/form.tsx` — they use `Controller` + `useFormContext()` internally
 
 ### Auth
-- Google Sign-In via OAuth 2.0
+- **Admin:** Google Sign-In via OAuth 2.0 — on login, redirect to event list
+- **Attendee:** Email magic link (no password) — attendee clicks a link in their invite or a magic link sent to their email; the link carries a short-lived token that is verified server-side to create a session
+- After a successful magic link verification, attendees can optionally connect their Google account to auto-fill name, last name, and email in their profile
 - Auth state managed globally (context or Zustand store)
-- On login, store token and user profile (name, email) — do not re-fetch from Google on every render
+- On login, store token and user profile (name, email) — do not re-fetch from the identity provider on every render
 
 ---
 
@@ -52,12 +55,17 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Services to consume:**
 - `POST /events` — create event
-- `POST /ai/detect-event-type` — send title + description, receive suggested event type
-- `POST /ai/suggest-modules` *(v2)* — receive boolean flags per module
+- `POST /ai/detect-event-type` — send title + description, receive suggested event type and modules to enable
+- `POST /ai/suggest-modules` — receive boolean flags per module
+- `POST /ai/generate-checklist` — receive suggested checklist items (same endpoint as F-05, called during creation)
+- `POST /ai/suggest-preference-fields` — receive suggested attendee preference fields (same endpoint as F-04, called during creation)
 
 **Hooks:**
 - `useCreateEvent()` — mutation
 - `useDetectEventType()` — mutation (called on description blur or button press)
+- `useSuggestModules()` — mutation
+- `useGenerateChecklist()` — mutation (reused from F-05)
+- `useSuggestPreferenceFields()` — mutation (reused from F-04)
 
 **Notes:**
 - AI suggestions are non-blocking — form is usable before AI responds
@@ -104,9 +112,16 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useUpdateParticipant()` — mutation
 - `useRemoveParticipant()` — mutation
 
+**AI services:**
+- `POST /ai/detect-document-requirements` — send attendee locations array, receive required documents per location (e.g. passport required for Spain)
+
+**Additional hooks:**
+- `useDetectDocumentRequirements()` — mutation (called when attendee locations change)
+
 **Notes:**
 - Adding an attendee by email triggers an invite notification (handled by n8n, not the frontend)
 - Location field is city + region + country — not just country (needed for cost estimation and document detection)
+- Document requirements are surfaced as a suggestion to the admin — admin decides whether to add a document upload item to the checklist
 
 ---
 
@@ -243,20 +258,29 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 ---
 
-### F-10 — Attendee onboarding (Google Sign-In)
+### F-10 — Attendee onboarding
 
 **Route:** `/join/:eventId`
 
-**Description:** Attendee receives an invite link, lands on the event join page, and signs in with Google. Name, last name, and email are auto-filled from Google profile. Attendee then completes remaining required fields.
+**Description:** Attendee receives an invite email or a direct magic link. Clicking it lands them on the event join page. The link carries a short-lived token; the server validates it and creates a session. After auth, the attendee can optionally connect Google to auto-fill their name, last name, and email. They then complete any remaining required profile fields.
+
+**Auth flow:**
+1. Attendee lands on `/join/:eventId?token=<magic-token>` (from invite email or explicit magic link request)
+2. `POST /auth/magic-link/verify` validates the token → returns session token + participant ID
+3. Attendee optionally clicks "Auto-fill with Google" → Google OAuth flow → `POST /auth/google/connect` — links Google profile, auto-fills name/last name/email
+4. Attendee completes remaining required fields and saves
 
 **Services to consume:**
-- Google OAuth 2.0 — handled client-side via Google Identity Services SDK
-- `POST /auth/google` — exchange Google token for app session token
+- `POST /auth/magic-link/verify` — validate token, create session
+- `POST /auth/magic-link/request` — request a new magic link (for expired links)
+- `POST /auth/google/connect` — optional; link Google account to auto-fill profile fields
 - `GET /participants/:participantId/profile` — load attendee's current profile state
 - `PATCH /participants/:participantId` — save completed profile fields
 
 **Hooks:**
-- `useGoogleSignIn()` — handles OAuth flow, calls `POST /auth/google`
+- `useVerifyMagicLink()` — mutation, called on mount with token from URL
+- `useRequestMagicLink()` — mutation, for expired link recovery
+- `useConnectGoogle()` — mutation, optional Google profile auto-fill
 - `useGetMyProfile(participantId)` — query
 - `useUpdateMyProfile()` — mutation
 
@@ -266,10 +290,10 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Route:** `/attendee/events/:eventId`
 
-**Description:** Attendee sees event details, their personal checklist, contact persons, and can complete checklist items.
+**Description:** Attendee sees event details, their personal checklist, contact persons, and can complete checklist items (pre-event). During and after the event, the same route surfaces event info (directions, agenda) and allows receipt uploads. The view adapts based on the event's current phase (pre / during / post).
 
 **Services to consume:**
-- `GET /events/:eventId` — event details (title, description, date, location)
+- `GET /events/:eventId` — event details (title, description, date, location, directions, agenda)
 - `GET /events/:eventId/contacts` — contact persons (reused from F-08)
 - `GET /participants/:participantId/checklist` — personal checklist with completion status
 - `PATCH /checklist-items/:itemId/complete` — mark item complete / upload document / submit input
@@ -279,6 +303,11 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useGetContacts(eventId)` — query (reused from F-08)
 - `useGetMyChecklist(participantId)` — query
 - `useCompleteChecklistItem()` — mutation
+
+**Notes:**
+- Phase is derived from event date: `pre` = before event date, `during` = event day, `post` = after event date
+- Directions and agenda fields are part of the event entity — rendered only in `during` and `post` phases
+- Receipt upload (F-12) is surfaced in the `during` and `post` phases from within this same view
 
 ---
 
@@ -299,3 +328,21 @@ These rules apply to every feature. Claude Code must follow them without excepti
 **Notes:**
 - File upload via multipart — handle loading state carefully (uploads can be slow)
 - Accepted formats: PDF, JPG, PNG
+
+---
+
+### F-13 — Attendee event list
+
+**Route:** `/attendee/events`
+
+**Description:** After signing in, the attendee lands on a list of all events they have been invited to. Each card shows the event name, date, and the attendee's overall checklist completion status. Clicking a card navigates to the attendee event view (F-11).
+
+**Services to consume:**
+- `GET /participants/me/events` — list all events the authenticated attendee is invited to, with their checklist completion percentage per event
+
+**Hooks:**
+- `useGetMyEvents()` — query
+
+**Notes:**
+- This is the default landing route for authenticated attendees — after magic link verification (F-10), redirect here if no specific event context is present
+- Checklist completion is a percentage derived server-side (completed items / total required items)
