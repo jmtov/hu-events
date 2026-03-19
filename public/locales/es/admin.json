@@ -48,6 +48,33 @@
           "placeholder": "Ej: Buenos Aires — Hotel Alvear"
         }
       }
+    },
+    "modules": {
+      "title": "Módulos",
+      "saveButton": "Guardar módulos",
+      "saving": "Guardando...",
+      "savedHint": "Módulos guardados correctamente.",
+      "unsavedHint": "Activa o desactiva los módulos y guarda los cambios.",
+      "participantList": {
+        "label": "Lista de Participantes",
+        "description": "Gestiona los confirmados y los RSVPs de este evento."
+      },
+      "checklist": {
+        "label": "Checklist Pre-evento",
+        "description": "Tareas y documentos que los asistentes deben completar antes del evento."
+      },
+      "budget": {
+        "label": "Presupuesto y Costos",
+        "description": "Controla los gastos y define un tope de presupuesto para el evento."
+      },
+      "notifications": {
+        "label": "Notificaciones",
+        "description": "Envía recordatorios y alertas automáticas a los asistentes."
+      },
+      "contacts": {
+        "label": "Información de Contacto",
+        "description": "Recopila contactos de emergencia y preferencias alimentarias."
+      }
     }
   }
 }

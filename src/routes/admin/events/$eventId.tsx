@@ -3,6 +3,7 @@ import { useGetEvent } from '@/hooks/useGetEvent';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ModulePanel from '@/features/events/ModulePanel';
 import { cn } from '@/lib/utils';
 
 const EventConfigPage = () => {
@@ -75,12 +76,12 @@ const EventConfigPage = () => {
           </CardContent>
         </Card>
 
-        {/* Placeholder for future modules */}
-        <div className="mt-6 rounded-lg border border-dashed border-border p-6 text-center">
-          <p className="text-sm font-medium text-foreground">Module configuration</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            F-02 — Module toggle panel coming soon.
-          </p>
+        {/* Module toggle panel */}
+        <div className="mt-6">
+          <h2 className="mb-3 text-sm font-semibold text-foreground">
+            Modules
+          </h2>
+          <ModulePanel event={event} />
         </div>
 
         <div className="mt-6 flex justify-start">
