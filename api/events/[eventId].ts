@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { Event } from '../../src/types/event'
-import { readEvents, writeEvents } from '../_lib/mock-store'
+import { readEvents, writeEvents } from '../_lib/mock-store.js'
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   const { eventId } = req.query as { eventId: string }

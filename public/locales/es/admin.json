@@ -65,6 +65,46 @@
           "label": "Ubicación",
           "placeholder": "Ej: Buenos Aires — Hotel Alvear"
         }
+      },
+      "checklist": {
+        "description": "Define las tareas y documentos que los asistentes deben completar antes del evento. Puedes agregar más después de crear el evento.",
+        "empty": "Aún no hay ítems. Agrega uno abajo o genera sugerencias con IA.",
+        "addItem": "Agregar ítem",
+        "generateWithAI": "Generar con IA",
+        "generating": "Generando...",
+        "aiError": "No se pudieron generar sugerencias. Inténtalo de nuevo."
+      }
+    },
+    "config": {
+      "loading": "Cargando evento...",
+      "notFound": "Evento no encontrado.",
+      "backToHome": "Volver al inicio",
+      "successTitle": "¡Evento creado!",
+      "successDescription": "Tu evento está listo. Revisa los detalles a continuación.",
+      "dateStart": "Inicio:",
+      "location": "Ubicación:",
+      "createAnother": "Crear otro evento"
+    },
+    "modules": {
+      "participantList": {
+        "label": "Lista de Participantes",
+        "description": "Gestiona los confirmados y los RSVPs de este evento."
+      },
+      "checklist": {
+        "label": "Checklist Pre-evento",
+        "description": "Tareas y documentos que los asistentes deben completar antes del evento."
+      },
+      "budget": {
+        "label": "Presupuesto y Costos",
+        "description": "Controla los gastos y define un tope de presupuesto para el evento."
+      },
+      "notifications": {
+        "label": "Notificaciones",
+        "description": "Envía recordatorios y alertas automáticas a los asistentes."
+      },
+      "contacts": {
+        "label": "Información de Contacto",
+        "description": "Recopila contactos de emergencia y preferencias alimentarias."
       }
     },
     "modules": {

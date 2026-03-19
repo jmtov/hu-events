@@ -1,5 +1,10 @@
 import { api } from '@/lib/api';
-import type { AdminEventSummary, CreateEventPayload, Event, EventModules } from '@/types/event';
+import type {
+  AdminEventSummary,
+  CreateEventPayload,
+  Event,
+  EventModules,
+} from '@/types/event';
 import type { PreferenceField } from '@/types/participant';
 
 export const eventService = {

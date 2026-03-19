@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import ModulePanel from '@/features/events/ModulePanel';
 import { cn } from '@/lib/utils';
 
 const EventConfigPage = () => {
+  const { t } = useTranslation('admin');
   const { eventId } = Route.useParams();
   const isOnChildRoute = useRouterState({
     select: (s) => s.location.pathname !== `/admin/events/${eventId}`,
@@ -19,7 +21,7 @@ const EventConfigPage = () => {
   if (isPending) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <p className="text-sm text-muted-foreground">Loading event...</p>
+        <p className="text-sm text-muted-foreground">{t('events.config.loading')}</p>
       </div>
     );
   }
@@ -27,9 +29,9 @@ const EventConfigPage = () => {
   if (isError || !event) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <p className="text-sm text-destructive">Event not found.</p>
+        <p className="text-sm text-destructive">{t('events.config.notFound')}</p>
         <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'mt-4')}>
-          Back to home
+          {t('events.config.backToHome')}
         </Link>
       </div>
     );
@@ -48,10 +50,10 @@ const EventConfigPage = () => {
         {/* Success banner */}
         <div className="mb-8 rounded-lg border border-green-200 bg-green-50 px-5 py-4">
           <p className="text-sm font-medium text-green-800">
-            Event created successfully!
+            {t('events.config.successTitle')}
           </p>
           <p className="mt-0.5 text-sm text-green-700">
-            Your event is ready. You can now configure its modules below.
+            {t('events.config.successDescription')}
           </p>
         </div>
 
@@ -69,12 +71,16 @@ const EventConfigPage = () => {
             <p>{event.description}</p>
             <div className="flex flex-wrap gap-x-6 gap-y-1 border-t pt-3">
               <span>
-                <span className="font-medium text-foreground">Start: </span>
+                <span className="font-medium text-foreground">
+                  {t('events.config.dateStart')}
+                </span>{' '}
                 {formattedDate}
               </span>
               {event.location && (
                 <span>
-                  <span className="font-medium text-foreground">Location: </span>
+                  <span className="font-medium text-foreground">
+                    {t('events.config.location')}
+                  </span>{' '}
                   {event.location}
                 </span>
               )}
@@ -85,7 +91,7 @@ const EventConfigPage = () => {
         {/* Module toggle panel */}
         <div className="mt-6">
           <h2 className="mb-3 text-sm font-semibold text-foreground">
-            Modules
+            {t('events.modules.title')}
           </h2>
           <ModulePanel event={event} />
         </div>
@@ -95,7 +101,7 @@ const EventConfigPage = () => {
             to="/admin/events/new"
             className={buttonVariants({ variant: 'outline' })}
           >
-            Create another event
+            {t('events.config.createAnother')}
           </Link>
         </div>
       </div>

@@ -1,6 +1,15 @@
 import { z } from 'zod';
+import type { EventModules } from '@/types/event';
 
-export const eventCreateSchema = z.object({
+export const DEFAULT_MODULES: EventModules = {
+  participantList: true,
+  checklist: true,
+  budget: false,
+  notifications: true,
+  contacts: false,
+};
+
+export const eventConfigSchema = z.object({
   title: z.string().min(1, 'Event title is required'),
   description: z.string().min(1, 'Description cannot be blank'),
   event_type: z.string().min(1, 'Event type is required'),

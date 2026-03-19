@@ -47,50 +47,57 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 ---
 
-### F-01 — Create event
+### F-01 — Create & edit event
 
-**Route:** `/admin/events/new`
+**Routes:**
+- `/admin/events/new` — create
+- `/admin/events/:eventId/edit` — edit (same form component, pre-populated)
 
-**Description:** Admin fills in event basics. AI reads the description and auto-suggests event type and modules to enable.
+**Description:** A single form used for both creating and editing an event. Event basics at the top (title, description, date/time, event type). Below the basics, five toggleable module sections — each is an independent collapsible row. Enabling a module expands its inline config; disabling it collapses and unmounts it. AI auto-detects event type on description blur and auto-suggests which modules to enable.
 
 **Services to consume:**
-- `POST /events` — create event
-- `POST /ai/detect-event-type` — send title + description, receive suggested event type and modules to enable
-- `POST /ai/suggest-modules` — receive boolean flags per module
-- `POST /ai/generate-checklist` — receive suggested checklist items (same endpoint as F-05, called during creation)
-- `POST /ai/suggest-preference-fields` — receive suggested attendee preference fields (same endpoint as F-04, called during creation)
+- `POST /events` — create event (includes initial module toggle state)
+- `GET /events/:eventId` — load existing event for edit mode
+- `PATCH /events/:eventId` — save edits (event basics + module state)
+- `POST /ai/detect-event-type` — send description, receive suggested event type
+- `POST /ai/suggest-modules` — send description, receive boolean flags per module
+- `POST /ai/generate-checklist` — receive suggested checklist items (same endpoint as F-05)
 
 **Hooks:**
-- `useCreateEvent()` — mutation
-- `useDetectEventType()` — mutation (called on description blur or button press)
-- `useSuggestModules()` — mutation
-- `useGenerateChecklist()` — mutation (reused from F-05)
-- `useSuggestPreferenceFields()` — mutation (reused from F-04)
+- `useCreateEvent()` — mutation (create mode)
+- `useGetEvent(eventId)` — query (edit mode, to pre-populate the form)
+- `useUpdateEvent(eventId)` — mutation (edit mode)
+- `useDetectEventType()` — mutation (called on description blur)
+- `useSuggestModules()` — mutation (called on description blur, non-blocking)
+- `useGenerateChecklist()` — mutation (reused from F-05, called from inside the checklist module row)
 
 **Notes:**
 - AI suggestions are non-blocking — form is usable before AI responds
 - Admin can override any AI suggestion
-- On success, redirect to `/admin/events/:eventId`
+- Modules are part of the form payload — `POST /events` and `PATCH /events/:eventId` both include the full module toggle state
+- The checklist module row expands to show the full checklist builder (add/edit/delete items, AI generation) — no separate navigation required for initial setup
+- Checklist items drafted during creation are saved via `POST /events/:eventId/checklist` after the event is created, before redirecting
+- On create success: redirect to `/admin/events/:eventId` (summary page)
+- On edit success: redirect to `/admin/events/:eventId` or back to the event list (TBD)
 
 ---
 
-### F-02 — Module toggle panel
+### F-02 — Event summary page
 
-**Route:** `/admin/events/:eventId` (main event config view)
+**Route:** `/admin/events/:eventId`
 
-**Description:** Admin enables/disables modules. Each module is a collapsible panel with its own config fields. Modules are independent — no module should assume another is enabled.
+**Description:** Post-creation summary view. Shows the event title, type, date, and location. Serves as the landing page after creating a new event. No module configuration here — all config lives in the create/edit form (F-01).
 
 **Services to consume:**
-- `GET /events/:eventId` — load current event + module config
-- `PATCH /events/:eventId/modules` — save module toggle state
+- `GET /events/:eventId` — load event details
 
 **Hooks:**
 - `useGetEvent(eventId)` — query
-- `useUpdateEventModules(eventId)` — mutation
 
 **Notes:**
-- Module state is persisted on every toggle change (debounced PATCH or explicit save button — TBD)
-- Disabled modules must not render their child components
+- Displays a success banner after creation (navigated to from F-01)
+- Provides a link to create another event
+- Does not manage module state — modules are configured in F-01
 
 ---
 

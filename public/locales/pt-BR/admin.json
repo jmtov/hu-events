@@ -65,6 +65,46 @@
           "label": "Localização",
           "placeholder": "Ex: São Paulo — Hotel Unique"
         }
+      },
+      "checklist": {
+        "description": "Defina tarefas e documentos que os participantes devem concluir antes do evento. Você pode adicionar mais após criar o evento.",
+        "empty": "Nenhum item ainda. Adicione um abaixo ou gere sugestões com IA.",
+        "addItem": "Adicionar item",
+        "generateWithAI": "Gerar com IA",
+        "generating": "Gerando...",
+        "aiError": "Não foi possível gerar sugestões. Tente novamente."
+      }
+    },
+    "config": {
+      "loading": "Carregando evento...",
+      "notFound": "Evento não encontrado.",
+      "backToHome": "Voltar ao início",
+      "successTitle": "Evento criado!",
+      "successDescription": "Seu evento está pronto. Confira os detalhes abaixo.",
+      "dateStart": "Início:",
+      "location": "Localização:",
+      "createAnother": "Criar outro evento"
+    },
+    "modules": {
+      "participantList": {
+        "label": "Lista de Participantes",
+        "description": "Gerencie os confirmados e os RSVPs deste evento."
+      },
+      "checklist": {
+        "label": "Checklist Pré-evento",
+        "description": "Tarefas e documentos que os participantes devem concluir antes do evento."
+      },
+      "budget": {
+        "label": "Orçamento e Custos",
+        "description": "Controle despesas e defina um teto de orçamento para o evento."
+      },
+      "notifications": {
+        "label": "Notificações",
+        "description": "Envie lembretes e alertas automáticos para os participantes."
+      },
+      "contacts": {
+        "label": "Informações de Contato",
+        "description": "Colete contatos de emergência e preferências alimentares."
       }
     },
     "modules": {

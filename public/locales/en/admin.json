@@ -65,6 +65,46 @@
           "label": "Location",
           "placeholder": "e.g. São Paulo — Hotel Unique"
         }
+      },
+      "checklist": {
+        "description": "Define tasks and documents attendees must complete before the event. You can add more after creating the event.",
+        "empty": "No items yet. Add one below or generate suggestions with AI.",
+        "addItem": "Add item",
+        "generateWithAI": "Generate with AI",
+        "generating": "Generating...",
+        "aiError": "Could not generate suggestions. Please try again."
+      }
+    },
+    "config": {
+      "loading": "Loading event...",
+      "notFound": "Event not found.",
+      "backToHome": "Back to home",
+      "successTitle": "Event created!",
+      "successDescription": "Your event is ready. Review the details below.",
+      "dateStart": "Start:",
+      "location": "Location:",
+      "createAnother": "Create another event"
+    },
+    "modules": {
+      "participantList": {
+        "label": "Participant List",
+        "description": "Track confirmed attendees and manage RSVPs for this event."
+      },
+      "checklist": {
+        "label": "Pre-event Checklist",
+        "description": "Tasks and documents attendees must complete before the event."
+      },
+      "budget": {
+        "label": "Budget & Cost",
+        "description": "Track expenses and set a budget cap for this event."
+      },
+      "notifications": {
+        "label": "Notifications",
+        "description": "Send automated reminders and alerts to attendees."
+      },
+      "contacts": {
+        "label": "Contact Info",
+        "description": "Collect emergency contacts and dietary preferences."
       }
     },
     "modules": {
