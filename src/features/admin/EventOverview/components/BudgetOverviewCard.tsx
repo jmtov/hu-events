@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetBudget } from '@/hooks/useGetBudget';
@@ -64,13 +63,6 @@ const BudgetOverviewCard = ({ eventId }: BudgetOverviewCardProps) => {
           </div>
         )}
 
-        <Link
-          to="/admin/events/$eventId/edit"
-          params={{ eventId }}
-          className="inline-flex items-center text-xs font-medium text-primary hover:underline"
-        >
-          {t('events.overview.budget.manage')}
-        </Link>
       </CardContent>
     </Card>
   );

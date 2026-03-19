@@ -1,11 +1,4 @@
 {
   "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "vercel-dev",
-      "runtimeExecutable": "/tmp/hu-events-dev.sh",
-      "runtimeArgs": [],
-      "port": 3000
-    }
-  ]
+  "configurations": []
 }
