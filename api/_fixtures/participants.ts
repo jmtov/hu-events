@@ -1,4 +1,5 @@
 export const participants = [
+  // ─── Q2 Sales Kickoff (event 001) ────────────────────────────────────────
   {
     id: 'b2c3d4e5-0002-0000-0000-000000000001',
     event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
@@ -38,11 +39,87 @@ export const participants = [
     created_at: '2026-03-07T08:30:00Z',
     updated_at: '2026-03-08T14:00:00Z',
   },
-<<<<<<< HEAD
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000004',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    email: 'mario.rodriguez@company.com',
+    full_name: 'Mario Rodriguez',
+    google_uid: null,
+    location_city: 'Mexico City',
+    location_region: 'CDMX',
+    location_country: 'Mexico',
+    rsvp_status: 'declined',
+    created_at: '2026-03-08T09:00:00Z',
+    updated_at: '2026-03-09T10:00:00Z',
+  },
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000005',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    email: 'sofia.lima@company.com',
+    full_name: 'Sofia Lima',
+    google_uid: 'google-uid-005',
+    location_city: 'Santiago',
+    location_region: 'Metropolitana',
+    location_country: 'Chile',
+    rsvp_status: 'confirmed',
+    created_at: '2026-03-09T14:00:00Z',
+    updated_at: '2026-03-10T08:00:00Z',
+  },
+
+  // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000011',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    email: 'pedro.alves@company.com',
+    full_name: 'Pedro Alves',
+    google_uid: 'google-uid-011',
+    location_city: 'Montevideo',
+    location_region: 'Montevideo',
+    location_country: 'Uruguay',
+    rsvp_status: 'confirmed',
+    created_at: '2026-03-10T10:00:00Z',
+    updated_at: '2026-03-11T09:00:00Z',
+  },
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000012',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    email: 'julia.santos@company.com',
+    full_name: 'Julia Santos',
+    google_uid: 'google-uid-012',
+    location_city: 'Porto Alegre',
+    location_region: 'Rio Grande do Sul',
+    location_country: 'Brazil',
+    rsvp_status: 'confirmed',
+    created_at: '2026-03-10T11:00:00Z',
+    updated_at: '2026-03-11T10:00:00Z',
+  },
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000013',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    email: 'tomas.herrera@company.com',
+    full_name: 'Tomas Herrera',
+    google_uid: null,
+    location_city: 'Cordoba',
+    location_region: 'Cordoba',
+    location_country: 'Argentina',
+    rsvp_status: 'pending',
+    created_at: '2026-03-11T08:00:00Z',
+    updated_at: '2026-03-11T08:00:00Z',
+  },
+  {
+    id: 'b2c3d4e5-0002-0000-0000-000000000014',
+    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    email: 'valentina.mora@company.com',
+    full_name: 'Valentina Mora',
+    google_uid: 'google-uid-014',
+    location_city: 'Bogota',
+    location_region: 'Cundinamarca',
+    location_country: 'Colombia',
+    rsvp_status: 'pending',
+    created_at: '2026-03-11T09:30:00Z',
+    updated_at: '2026-03-11T09:30:00Z',
+  },
 ];
-=======
-]
->>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)
 
 export const preferenceFields = [
   {
@@ -63,11 +140,7 @@ export const preferenceFields = [
     required: false,
     sort_order: 1,
   },
-<<<<<<< HEAD
 ];
-=======
-]
->>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)
 
 export const participantPreferences = [
   {
@@ -82,8 +155,4 @@ export const participantPreferences = [
     field_id: 'c3d4e5f6-0003-0000-0000-000000000002',
     value: 'M',
   },
-<<<<<<< HEAD
 ];
-=======
-]
->>>>>>> 9ddbae8 (chore(infra): add supabase schema, fixtures, and env setup)

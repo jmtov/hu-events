@@ -41,13 +41,23 @@ api/
       complete.ts
   triggers/
     [triggerId].ts
+  participants/
+    me/
+      events.ts             # GET /api/participants/me/events
   ai/
     detect-event-type.ts
+    suggest-modules.ts
     generate-checklist.ts
     suggest-preference-fields.ts
+    detect-document-requirements.ts
     estimate-budget.ts
   auth/
     google.ts
+    google/
+      connect.ts            # POST /api/auth/google/connect (attendee profile auto-fill)
+    magic-link/
+      verify.ts             # POST /api/auth/magic-link/verify
+      request.ts            # POST /api/auth/magic-link/request
 ```
 
 ---
@@ -126,9 +136,11 @@ Secrets live in `.env.local` for development and in the Vercel dashboard for pro
 |---|---|---|
 | `ANTHROPIC_API_KEY` | `api/ai/*` | Claude API key |
 | `N8N_WEBHOOK_SECRET` | `api/triggers/*` | Shared secret to validate n8n webhook calls |
-| `GOOGLE_CLIENT_ID` | `api/auth/google.ts` | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | `api/auth/google.ts` | Google OAuth client secret |
-| `SESSION_SECRET` | `api/auth/google.ts` | Secret for signing session tokens |
+| `GOOGLE_CLIENT_ID` | `api/auth/google.ts`, `api/auth/google/connect.ts` | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | `api/auth/google.ts`, `api/auth/google/connect.ts` | Google OAuth client secret |
+| `SESSION_SECRET` | `api/auth/*` | Secret for signing session tokens |
+| `MAGIC_LINK_SECRET` | `api/auth/magic-link/*` | Secret for signing and verifying magic link tokens |
+| `MAGIC_LINK_EXPIRY_SECONDS` | `api/auth/magic-link/*` | Token TTL in seconds (default: 900 = 15 min) |
 
 ---
 
@@ -139,8 +151,10 @@ All Claude API calls live in `api/ai/`. Each function receives a payload from th
 | Route | Method | Input | Output |
 |---|---|---|---|
 | `/api/ai/detect-event-type` | POST | `{ title, description }` | `{ eventType }` |
-| `/api/ai/generate-checklist` | POST | `{ description }` | `{ items: ChecklistItem[] }` |
-| `/api/ai/suggest-preference-fields` | POST | `{ description }` | `{ fields: PreferenceField[] }` |
+| `/api/ai/suggest-modules` | POST | `{ title, description, eventType }` | `{ modules: Record<string, boolean> }` |
+| `/api/ai/generate-checklist` | POST | `{ description, eventType }` | `{ items: ChecklistItem[] }` |
+| `/api/ai/suggest-preference-fields` | POST | `{ description, eventType }` | `{ fields: PreferenceField[] }` |
+| `/api/ai/detect-document-requirements` | POST | `{ locations: string[] }` | `{ requirements: DocumentRequirement[] }` |
 | `/api/ai/estimate-budget` | POST | `{ attendees, eventDates }` | `{ breakdown: BudgetBreakdown }` |
 
 All prompts must instruct the model to return **only valid JSON — no markdown fences, no preamble**.

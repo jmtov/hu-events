@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
-import EventCreateForm from '@/features/admin/EventCreateForm';
+import EventConfigForm from '@/features/admin/EventConfigForm';
 
 export const Route = createFileRoute('/admin/events/new')({
-  component: EventCreateForm,
+  component: EventConfigForm,
 });

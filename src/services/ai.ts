@@ -1,9 +1,8 @@
 import { api } from '@/lib/api';
 import type { ChecklistResult } from '@/types/checklist';
-import type { EventType } from '@/types/event';
 import type { PreferenceFieldSuggestionResult } from '@/types/participant';
 
-export type DetectEventTypeResult = { event_type: EventType };
+export type DetectEventTypeResult = { event_type: string };
 
 export const aiService = {
   detectEventType: (description: string): Promise<DetectEventTypeResult> =>

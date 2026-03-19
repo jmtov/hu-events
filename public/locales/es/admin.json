@@ -11,6 +11,53 @@
     "other": "Otro"
   },
   "events": {
+    "list": {
+      "title": "Mis eventos",
+      "subtitle": "Gestiona y monitorea todos tus eventos.",
+      "createCta": "Crear evento",
+      "loading": "Cargando eventos...",
+      "error": "No se pudieron cargar los eventos.",
+      "rsvpCount": "{{count}} confirmados",
+      "status": {
+        "upcoming": "Próximo",
+        "ongoing": "En curso",
+        "past": "Finalizado"
+      },
+      "empty": {
+        "title": "Aún no hay eventos",
+        "description": "Crea tu primer evento para comenzar.",
+        "cta": "Crear evento"
+      }
+    },
+    "overview": {
+      "savedBanner": {
+        "title": "Evento guardado correctamente.",
+        "subtitle": "El panel refleja los datos más recientes.",
+        "dismiss": "Cerrar"
+      },
+      "header": {
+        "label": "Vista general del evento"
+      },
+      "rsvp": {
+        "title": "RSVP",
+        "confirmed": "Confirmados",
+        "pending": "Pendientes",
+        "declined": "Rechazaron",
+        "confirmedOf": "{{confirmed}} de {{total}} confirmados",
+        "confirmationRate": "{{pct}}% de confirmación"
+      },
+      "checklist": {
+        "title": "Checklist",
+        "averageCompletion": "Completado promedio",
+        "items": "{{count}} elemento",
+        "items_plural": "{{count}} elementos",
+        "required": "Obligatorio",
+        "completedOf": "{{completed}} de {{total}} completados",
+        "noItems": "No hay elementos en el checklist."
+      },
+      "loading": "Cargando evento...",
+      "error": "Error al cargar el evento."
+    },
     "create": {
       "title": "Crear evento",
       "subtitle": "Completa los datos para crear un nuevo evento.",
@@ -34,7 +81,8 @@
         "eventType": {
           "label": "Tipo de evento",
           "detecting": "Detectando tipo de evento...",
-          "suggested": "Tipo sugerido por la IA — puedes cambiarlo cuando quieras."
+          "suggested": "Tipo sugerido por la IA — puedes cambiarlo cuando quieras.",
+          "placeholder": "Ej: Reunión Online, Taller de Ventas..."
         },
         "dateStart": {
           "label": "Fecha de inicio"
@@ -46,6 +94,46 @@
           "label": "Ubicación",
           "placeholder": "Ej: Buenos Aires — Hotel Alvear"
         }
+      },
+      "checklist": {
+        "description": "Define las tareas y documentos que los asistentes deben completar antes del evento. Puedes agregar más después de crear el evento.",
+        "empty": "Aún no hay ítems. Agrega uno abajo o genera sugerencias con IA.",
+        "addItem": "Agregar ítem",
+        "generateWithAI": "Generar con IA",
+        "generating": "Generando...",
+        "aiError": "No se pudieron generar sugerencias. Inténtalo de nuevo."
+      }
+    },
+    "config": {
+      "loading": "Cargando evento...",
+      "notFound": "Evento no encontrado.",
+      "backToHome": "Volver al inicio",
+      "successTitle": "¡Evento creado!",
+      "successDescription": "Tu evento está listo. Revisa los detalles a continuación.",
+      "dateStart": "Inicio:",
+      "location": "Ubicación:",
+      "createAnother": "Crear otro evento"
+    },
+    "modules": {
+      "participantList": {
+        "label": "Lista de Participantes",
+        "description": "Gestiona los confirmados y los RSVPs de este evento."
+      },
+      "checklist": {
+        "label": "Checklist Pre-evento",
+        "description": "Tareas y documentos que los asistentes deben completar antes del evento."
+      },
+      "budget": {
+        "label": "Presupuesto y Costos",
+        "description": "Controla los gastos y define un tope de presupuesto para el evento."
+      },
+      "notifications": {
+        "label": "Notificaciones",
+        "description": "Envía recordatorios y alertas automáticas a los asistentes."
+      },
+      "contacts": {
+        "label": "Información de Contacto",
+        "description": "Recopila contactos de emergencia y preferencias alimentarias."
       }
     }
   }

@@ -26,17 +26,24 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - Secrets (Claude API key, Google OAuth, etc.) live only in serverless functions via `process.env` — never in the frontend
 
 ### Forms & validation
-- Use **TanStack Form** for all form state management — no controlled components with `useState` for form fields
-- Use **Zod** for all validation schemas — define schemas in `src/schemas/` alongside the feature they belong to
-- Connect Zod to TanStack Form via the official `@tanstack/zod-form-adapter`
-- Naming convention: one schema file per feature, e.g. `src/schemas/event.ts`, `src/schemas/participant.ts`
-- Never inline validation logic in components — always import from the schema file
-- Reuse partial schemas with `z.pick()` or `z.omit()` when a form only covers a subset of an entity
+- Use **React Hook Form** for all form state management — no `useState` for form fields
+- Use **Zod** for all validation schemas — schemas co-located with their feature in `FeatureName/constants.ts` (no global `src/schemas/` folder)
+- Connect via `@hookform/resolvers/zod`
+- Never inline validation logic in components — always import from the feature's `constants.ts`
+- Form components must be named `<Domain>Form` — e.g. `CreateEventForm`, `AttendeeRegistrationForm`
+- Use `<FormProvider>` at the form root so nested field components can access context via `useFormContext()`
+- Shared field components live in `src/components/<Input|Select|...>/form.tsx` — they use `Controller` + `useFormContext()` internally
 
 ### Auth
-- Google Sign-In via OAuth 2.0
+- **Admin:** Google Sign-In via OAuth 2.0 — on login, redirect to `/admin/events`
+- **Attendee:** Email magic link (no password) — attendee clicks a link in their invite or requests a new one; the link carries a short-lived token that is verified server-side to create a session
+- After a successful magic link verification, attendees can optionally connect their Google account to auto-fill name, last name, and email in their profile
+- A person can have both roles (admin and attendee) under the same email. When the backend confirms dual roles, a switcher appears in the app header that navigates to the other context's event list
+  - The switcher calls `GET /auth/me/roles` to determine whether to show it — do not show it speculatively
+- Sessions are persistent — token stored in `localStorage` with a 30-day expiration
+- Admin role is verified via `GET /auth/me/roles` — never inferred client-side from the token payload
 - Auth state managed globally (context or Zustand store)
-- On login, store token and user profile (name, email) — do not re-fetch from Google on every render
+- On login, store token and user profile (name, email) — do not re-fetch from the identity provider on every render
 
 ---
 
@@ -44,45 +51,82 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 ---
 
-### F-01 — Create event
+### F-00 — Admin event list
 
-**Route:** `/admin/events/new`
+**Route:** `/admin/events`
 
-**Description:** Admin fills in event basics. AI reads the description and auto-suggests event type and modules to enable.
+**Description:** Landing screen for admins. Shows all events created by the admin with key metadata per card (name, date, status, RSVP count). Provides navigation to create a new event or enter an existing one. Supports deleting an event with an explicit confirmation step.
 
 **Services to consume:**
-- `POST /events` — create event
-- `POST /ai/detect-event-type` — send title + description, receive suggested event type
-- `POST /ai/suggest-modules` *(v2)* — receive boolean flags per module
+- `GET /admin/events` — list all events with RSVP count
+- `DELETE /events/:eventId` — delete event and all associated data (participants, checklist, budget, triggers, contacts)
 
 **Hooks:**
-- `useCreateEvent()` — mutation
-- `useDetectEventType()` — mutation (called on description blur or button press)
+- `useGetAdminEvents()` — query
+- `useDeleteEvent()` — mutation (requires confirmation before calling)
+
+**Notes:**
+- Event status badge (upcoming / ongoing / past) is derived client-side from `date_start` and `date_end`
+- Deletion is permanent and irreversible — UI must show a confirmation dialog before calling the endpoint
+- On successful deletion, invalidate the admin events query to update the list
+
+---
+
+### F-01 — Create & edit event
+
+**Routes:**
+- `/admin/events/new` — create
+- `/admin/events/:eventId/edit` — edit (same form component, pre-populated)
+
+**Description:** A single form used for both creating and editing an event. Event basics at the top (title, description, date/time, event type, and a free-text `event_day_info` field — visible to attendees only on the event day). Below the basics, five toggleable module sections — each is an independent collapsible row. Enabling a module expands its inline config; disabling it collapses and unmounts it. AI auto-detects event type on description blur and auto-suggests which modules to enable.
+
+> ⚠️ TODO: evolve `event_day_info` into a structured agenda builder in a future iteration.
+
+**Services to consume:**
+- `POST /events` — create event (includes initial module toggle state and `event_day_info`)
+- `GET /events/:eventId` — load existing event for edit mode
+- `PATCH /events/:eventId` — save edits (event basics + module state)
+- `DELETE /events/:eventId` — delete event and all associated data (called from the event list, not this form — see F-00)
+- `POST /ai/detect-event-type` — send description, receive suggested event type
+- `POST /ai/suggest-modules` — send description, receive boolean flags per module
+- `POST /ai/generate-checklist` — receive suggested checklist items (same endpoint as F-05)
+
+**Hooks:**
+- `useCreateEvent()` — mutation (create mode)
+- `useGetEvent(eventId)` — query (edit mode, to pre-populate the form)
+- `useUpdateEvent(eventId)` — mutation (edit mode)
+- `useDetectEventType()` — mutation (called on description blur)
+- `useSuggestModules()` — mutation (called on description blur, non-blocking)
+- `useGenerateChecklist()` — mutation (reused from F-05, called from inside the checklist module row)
 
 **Notes:**
 - AI suggestions are non-blocking — form is usable before AI responds
 - Admin can override any AI suggestion
-- On success, redirect to `/admin/events/:eventId`
+- Modules are part of the form payload — `POST /events` and `PATCH /events/:eventId` both include the full module toggle state
+- The checklist module row expands to show the full checklist builder (add/edit/delete items, AI generation) — no separate navigation required for initial setup
+- Checklist items drafted during creation are saved via `POST /events/:eventId/checklist` after the event is created, before redirecting
+- Invites to participants are sent automatically by the backend when the event is saved — the frontend does not call any invite endpoint directly; on subsequent saves, only newly added participants receive an invite
+- On create success: redirect to `/admin/events/:eventId` (summary page)
+- On edit success: redirect to `/admin/events/:eventId` or back to the event list (TBD)
 
 ---
 
-### F-02 — Module toggle panel
+### F-02 — Event summary page
 
-**Route:** `/admin/events/:eventId` (main event config view)
+**Route:** `/admin/events/:eventId`
 
-**Description:** Admin enables/disables modules. Each module is a collapsible panel with its own config fields. Modules are independent — no module should assume another is enabled.
+**Description:** Post-creation summary view. Shows the event title, type, date, and location. Serves as the landing page after creating a new event. No module configuration here — all config lives in the create/edit form (F-01).
 
 **Services to consume:**
-- `GET /events/:eventId` — load current event + module config
-- `PATCH /events/:eventId/modules` — save module toggle state
+- `GET /events/:eventId` — load event details
 
 **Hooks:**
 - `useGetEvent(eventId)` — query
-- `useUpdateEventModules(eventId)` — mutation
 
 **Notes:**
-- Module state is persisted on every toggle change (debounced PATCH or explicit save button — TBD)
-- Disabled modules must not render their child components
+- Displays a success banner after creation (navigated to from F-01)
+- Provides a link to create another event
+- Does not manage module state — modules are configured in F-01
 
 ---
 
@@ -104,9 +148,16 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useUpdateParticipant()` — mutation
 - `useRemoveParticipant()` — mutation
 
+**AI services:**
+- `POST /ai/detect-document-requirements` — send attendee locations array, receive required documents per location (e.g. passport required for Spain)
+
+**Additional hooks:**
+- `useDetectDocumentRequirements()` — mutation (called when attendee locations change)
+
 **Notes:**
 - Adding an attendee by email triggers an invite notification (handled by n8n, not the frontend)
 - Location field is city + region + country — not just country (needed for cost estimation and document detection)
+- Document requirements are surfaced as a suggestion to the admin — admin decides whether to add a document upload item to the checklist
 
 ---
 
@@ -153,6 +204,9 @@ These rules apply to every feature. Claude Code must follow them without excepti
 **Notes:**
 - Items with `alertIfIncomplete: true` automatically appear in the notifications module as triggers
 - Item types: `checkbox` | `document_upload` | `info_input`
+- The same checklist applies to all attendees — no per-person customization in MVP
+- New attendees added after the first save receive the checklist as it stands at that moment — the backend handles this on participant creation
+- ⚠️ TODO: define behavior when admin edits checklist items after attendees have already recorded progress (e.g. deleting an item that has completions)
 
 ---
 
@@ -176,6 +230,7 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - AI estimate is per person per category, not a single total
 - Admin can override any AI-estimated value
 - Running total max per person must recalculate reactively as caps change
+- Attendees can see their budget allocation per category in their event view (F-11) — the `GET /events/:eventId/budget` endpoint must return attendee-visible data
 
 ---
 
@@ -196,6 +251,11 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Notes:**
 - Checklist-sourced triggers are read-only in name — only timing/channel/recipient is editable
+- Fixed milestone triggers come pre-loaded with defaults:
+  - RSVP hits 50% → Slack → HR admin
+  - Event ended → Email → all attendees
+- The condition of milestone triggers (50% threshold, event end date) is immutable — only timing, channel, and recipient are configurable
+- Changes to a trigger's config apply only to future sends — already-sent notifications are not affected
 - Channels: `slack` | `email` | `whatsapp`
 - Recipients: `attendee` | `hr_admin` | `both`
 - The frontend does not call n8n directly — it calls `api/triggers/:triggerId`, which proxies to n8n. See `api-layer.md` for webhook payloads and authentication details.
@@ -226,7 +286,7 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Route:** `/admin/events/:eventId/dashboard`
 
-**Description:** Admin monitors event progress: RSVP count, checklist completion per attendee, and trigger activity log.
+**Description:** Separate screen accessible from the event detail screen, visible only to the admin who created the event. Admin monitors live event progress: RSVP count vs total expected attendees, checklist completion per attendee per item, and trigger activity log (what fired, when, through which channel, and to whom). Data refetches automatically on a short interval.
 
 **Services to consume:**
 - `GET /events/:eventId/dashboard` — aggregated stats (RSVP count, completion rates)
@@ -239,24 +299,34 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useGetTriggerLog(eventId)` — query
 
 **Notes:**
-- Dashboard data should refetch on a short interval or via websocket (TBD) to reflect live RSVP changes during the demo
+- Dashboard data refetches on a short polling interval — websocket is out of scope for now
+- Only the event creator can access this screen — enforce on both the API (`GET /events/:eventId/dashboard` returns 403 for non-creators) and the route guard
 
 ---
 
-### F-10 — Attendee onboarding (Google Sign-In)
+### F-10 — Attendee onboarding
 
 **Route:** `/join/:eventId`
 
-**Description:** Attendee receives an invite link, lands on the event join page, and signs in with Google. Name, last name, and email are auto-filled from Google profile. Attendee then completes remaining required fields.
+**Description:** Attendee receives an invite email or a direct magic link. Clicking it lands them on the event join page. The link carries a short-lived token; the server validates it and creates a session. After auth, the attendee can optionally connect Google to auto-fill their name, last name, and email. They then complete any remaining required profile fields.
+
+**Auth flow:**
+1. Attendee lands on `/join/:eventId?token=<magic-token>` (from invite email or explicit magic link request)
+2. `POST /auth/magic-link/verify` validates the token → returns session token + participant ID
+3. Attendee optionally clicks "Auto-fill with Google" → Google OAuth flow → `POST /auth/google/connect` — links Google profile, auto-fills name/last name/email
+4. Attendee completes remaining required fields and saves
 
 **Services to consume:**
-- Google OAuth 2.0 — handled client-side via Google Identity Services SDK
-- `POST /auth/google` — exchange Google token for app session token
+- `POST /auth/magic-link/verify` — validate token, create session
+- `POST /auth/magic-link/request` — request a new magic link (for expired links)
+- `POST /auth/google/connect` — optional; link Google account to auto-fill profile fields
 - `GET /participants/:participantId/profile` — load attendee's current profile state
 - `PATCH /participants/:participantId` — save completed profile fields
 
 **Hooks:**
-- `useGoogleSignIn()` — handles OAuth flow, calls `POST /auth/google`
+- `useVerifyMagicLink()` — mutation, called on mount with token from URL
+- `useRequestMagicLink()` — mutation, for expired link recovery
+- `useConnectGoogle()` — mutation, optional Google profile auto-fill
 - `useGetMyProfile(participantId)` — query
 - `useUpdateMyProfile()` — mutation
 
@@ -266,10 +336,10 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Route:** `/attendee/events/:eventId`
 
-**Description:** Attendee sees event details, their personal checklist, contact persons, and can complete checklist items.
+**Description:** Attendee sees event details, their personal checklist, contact persons, and can complete checklist items (pre-event). During and after the event, the same route surfaces event info (directions, agenda) and allows receipt uploads. The view adapts based on the event's current phase (pre / during / post).
 
 **Services to consume:**
-- `GET /events/:eventId` — event details (title, description, date, location)
+- `GET /events/:eventId` — event details (title, description, date, location, directions, agenda)
 - `GET /events/:eventId/contacts` — contact persons (reused from F-08)
 - `GET /participants/:participantId/checklist` — personal checklist with completion status
 - `PATCH /checklist-items/:itemId/complete` — mark item complete / upload document / submit input
@@ -279,6 +349,18 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useGetContacts(eventId)` — query (reused from F-08)
 - `useGetMyChecklist(participantId)` — query
 - `useCompleteChecklistItem()` — mutation
+
+**Notes:**
+- Phase is derived from event date: `pre` = before event date, `during` = event day, `post` = after event date
+- `event_day_info` (agenda / what's happening) is part of the event entity — rendered only in `during` and `post` phases; do not surface it in `pre`
+- Receipt upload (F-12) is surfaced in the `during` and `post` phases from within this same view
+- Attendee's checklist shows no visibility into other attendees' progress
+- Checklist item actions and their editability by phase:
+  - RSVP confirmation — toggle, reversible at any time
+  - Document uploads — replaceable at any time
+  - Info inputs (preferences, dietary, etc.) — editable at any time
+  - Checkbox tasks — reversible at any time
+- If the budget module is enabled, attendees see their allocation per category (sourced from `GET /events/:eventId/budget`)
 
 ---
 
@@ -299,3 +381,21 @@ These rules apply to every feature. Claude Code must follow them without excepti
 **Notes:**
 - File upload via multipart — handle loading state carefully (uploads can be slow)
 - Accepted formats: PDF, JPG, PNG
+
+---
+
+### F-13 — Attendee event list
+
+**Route:** `/attendee/events`
+
+**Description:** After signing in, the attendee lands on a list of all events they have been invited to. Each card shows the event name, date, and the attendee's overall checklist completion status. Clicking a card navigates to the attendee event view (F-11).
+
+**Services to consume:**
+- `GET /participants/me/events` — list all events the authenticated attendee is invited to, with their checklist completion percentage per event
+
+**Hooks:**
+- `useGetMyEvents()` — query
+
+**Notes:**
+- This is the default landing route for authenticated attendees — after magic link verification (F-10), redirect here if no specific event context is present
+- Checklist completion is a percentage derived server-side (completed items / total required items)

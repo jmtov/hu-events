@@ -1,8 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const ANTHROPIC_MESSAGES_URL = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_VERSION = '2023-06-01';
-const MODEL = 'claude-sonnet-4-20250514';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `Contexto: Você é o motor de inteligência do "Humand Eventos". Sua função é ler a descrição de um evento (e seu tipo opcional) e gerar um checklist pré-evento com as tarefas que os participantes precisam cumprir.
 Regras Estritas:
@@ -23,28 +21,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ message: 'description is required' });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res
-      .status(500)
-      .json({ message: 'ANTHROPIC_API_KEY is not configured' });
+    return res.status(500).json({ message: 'GEMINI_API_KEY is not configured' });
   }
 
   const userContent = `Tipo de evento: ${eventType?.trim() || 'Não informado'}\nDescrição: ${description.trim()}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
   try {
-    const response = await fetch(ANTHROPIC_MESSAGES_URL, {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': ANTHROPIC_VERSION,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userContent }],
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: 'user', parts: [{ text: userContent }] }],
+        generationConfig: { maxOutputTokens: 1000, responseMimeType: 'application/json' },
       }),
     });
 
@@ -52,30 +44,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!response.ok) {
       const message =
         (data.error as { message?: string } | undefined)?.message ??
-        `Anthropic error (${response.status})`;
+        `Gemini error (${response.status})`;
       return res.status(502).json({ message });
     }
 
-    const content = data.content;
-    if (!Array.isArray(content))
-      return res
-        .status(502)
-        .json({ message: 'Unexpected Anthropic response shape' });
+    const text: string =
+      (
+        data.candidates as Array<{
+          content: { parts: Array<{ text: string }> };
+        }>
+      )?.[0]?.content?.parts?.[0]?.text ?? '';
 
-    const text =
-      content.find(
-        (b): b is { type: 'text'; text: string } =>
-          b !== null &&
-          typeof b === 'object' &&
-          (b as Record<string, unknown>).type === 'text',
-      )?.text ?? '';
-    const cleaned = text.replace(/```json|```/g, '').trim();
-    const parsed: unknown = JSON.parse(cleaned);
+    const parsed: unknown = JSON.parse(text.trim());
 
     return res.status(200).json(parsed);
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Internal server error';
+    const message = err instanceof Error ? err.message : 'Internal server error';
     return res.status(500).json({ message });
   }
 }

@@ -1,9 +1,9 @@
-export { checklistItems, participantChecklistItems } from './checklist';
-export { contacts } from './contacts';
-export { events } from './events';
-export { triggerLog, triggers } from './notifications';
+export { checklistItems, participantChecklistItems } from './checklist.js';
+export { contacts } from './contacts.js';
+export { events } from './events.js';
+export { triggerLog, triggers } from './notifications.js';
 export {
   participantPreferences,
   participants,
   preferenceFields,
-} from './participants';
+} from './participants.js';

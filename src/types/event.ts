@@ -1,12 +1,3 @@
-export const EVENT_TYPES = [
-  'hr_retreat',
-  'bdr_call',
-  'hackathon',
-  'workshop',
-  'other',
-] as const;
-export type EventType = (typeof EVENT_TYPES)[number];
-
 export type EventModules = {
   participantList: boolean;
   checklist: boolean;
@@ -19,7 +10,7 @@ export type Event = {
   id: string;
   title: string;
   description: string;
-  event_type: EventType;
+  event_type: string;
   date_start: string;
   date_end: string | null;
   location: string | null;
@@ -34,4 +25,7 @@ export type CreateEventPayload = Pick<
 > & {
   date_end?: string;
   location?: string;
+  modules?: Partial<EventModules>;
 };
+
+export type AdminEventSummary = Event & { rsvp_count: number };

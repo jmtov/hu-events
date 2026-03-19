@@ -1,15 +1,17 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const ANTHROPIC_MESSAGES_URL = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_VERSION = '2023-06-01';
-const MODEL = 'claude-sonnet-4-20250514';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 const SYSTEM_PROMPT = `You are the intelligence engine for "Humand Events", a corporate event management platform.
-Your task is to read a raw event description and classify the event type.
-Strict rules:
-1. Return ONLY a valid JSON object. No greetings, no \`\`\`json formatting, no explanations.
-2. CRITICAL SAFETY RULE: If the description is gibberish, random characters, or anything that does not clearly describe a real corporate event, return exactly: { "event_type": "other" }. Do not invent or infer from invalid input.
-Expected JSON structure: { "event_type": "one of: hr_retreat | bdr_call | hackathon | workshop | other" }`;
+Read the event description and generate a short, clear, human-readable event type label.
+
+Rules:
+- Return ONLY valid JSON: { "event_type": "<label>" }
+- The label must be 2-4 words maximum, in the same language as the description (Portuguese, English, or Spanish)
+- Be specific and descriptive: prefer "Reunião de Vendas Remota" over "Reunião", "Hackathon de Produto" over "Hackathon"
+- If the event is remote/online, include that in the label (e.g. "Encontro Online", "Workshop Remoto")
+- Examples: "Retiro de RH", "BDR Call Comercial", "Hackathon de Inovação", "Workshop Presencial", "Reunião de Vendas", "Imersão de Produto", "Onboarding Remoto", "Encontro de Liderança"
+- If the description is gibberish, random numbers, or not a real corporate event, return: { "event_type": "Outro" }`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -19,26 +21,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ message: 'description is required' });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res
-      .status(500)
-      .json({ message: 'ANTHROPIC_API_KEY is not configured' });
+    return res.status(500).json({ message: 'GEMINI_API_KEY is not configured' });
   }
 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
   try {
-    const response = await fetch(ANTHROPIC_MESSAGES_URL, {
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': ANTHROPIC_VERSION,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 512,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: description.trim() }],
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        contents: [{ role: 'user', parts: [{ text: description.trim() }] }],
+        generationConfig: { maxOutputTokens: 256, responseMimeType: 'application/json' },
       }),
     });
 
@@ -46,30 +43,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!response.ok) {
       const message =
         (data.error as { message?: string } | undefined)?.message ??
-        `Anthropic error (${response.status})`;
+        `Gemini error (${response.status})`;
       return res.status(502).json({ message });
     }
 
-    const content = data.content;
-    if (!Array.isArray(content))
-      return res
-        .status(502)
-        .json({ message: 'Unexpected Anthropic response shape' });
+    const text: string =
+      (
+        data.candidates as Array<{
+          content: { parts: Array<{ text: string }> };
+        }>
+      )?.[0]?.content?.parts?.[0]?.text ?? '';
 
-    const text =
-      content.find(
-        (b): b is { type: 'text'; text: string } =>
-          b !== null &&
-          typeof b === 'object' &&
-          (b as Record<string, unknown>).type === 'text',
-      )?.text ?? '';
-    const cleaned = text.replace(/```json|```/g, '').trim();
-    const parsed: unknown = JSON.parse(cleaned);
+    const parsed: unknown = JSON.parse(text.trim());
 
     return res.status(200).json(parsed);
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Internal server error';
+    const message = err instanceof Error ? err.message : 'Internal server error';
     return res.status(500).json({ message });
   }
 }

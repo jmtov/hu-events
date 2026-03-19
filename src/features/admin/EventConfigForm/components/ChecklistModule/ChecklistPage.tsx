@@ -6,11 +6,10 @@ import { useAddChecklistItem } from '@/hooks/useAddChecklistItem';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import { useGetChecklist } from '@/hooks/useGetChecklist';
 import { useGetEvent } from '@/hooks/useGetEvent';
-import type { ChecklistItemValues } from './constants';
 import { normaliseChecklistType } from '@/types/checklist';
+import type { ChecklistItemValues } from './constants';
 import ChecklistItemForm from './ChecklistItemForm';
 import ChecklistItemRow from './ChecklistItemRow';
-
 
 const ChecklistPage = () => {
   const { eventId } = useParams({ from: '/admin/events/$eventId/checklist' });

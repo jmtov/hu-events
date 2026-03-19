@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "vercel dev",
+    "start": "vercel dev --local-config vercel.dev.json --token $(grep '^VERCEL_TOKEN=' .env.local | cut -d= -f2-)",
     "build": "tsc -b && vite build",
     "lint": "biome check .",
     "format": "biome format --write .",
