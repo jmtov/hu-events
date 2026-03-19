@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
@@ -8,7 +8,13 @@ import { cn } from '@/lib/utils';
 
 const EventConfigPage = () => {
   const { eventId } = Route.useParams();
+  const isOnChildRoute = useRouterState({
+    select: (s) => s.location.pathname !== `/admin/events/${eventId}`,
+  });
   const { data: event, isPending, isError } = useGetEvent(eventId);
+
+  // Sub-routes (e.g. checklist) render as standalone pages — not nested below this layout
+  if (isOnChildRoute) return <Outlet />;
 
   if (isPending) {
     return (
