@@ -265,6 +265,7 @@ const EventCreateForm = () => {
                     defaultValues={item}
                     onSubmit={(values) => handleUpdateItem(item._key, values)}
                     onCancel={() => setEditingKey(null)}
+                    asDiv
                   />
                 ) : (
                   <DraftItemRow
@@ -280,6 +281,7 @@ const EventCreateForm = () => {
                 <ChecklistItemForm
                   onSubmit={handleAddItem}
                   onCancel={() => setIsAddingItem(false)}
+                  asDiv
                 />
               ) : (
                 <Button
