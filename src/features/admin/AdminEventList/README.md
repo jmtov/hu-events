@@ -19,6 +19,7 @@ Landing screen for admins after login. Shows all events created by the admin wit
 | Hook | Endpoint | Purpose |
 |---|---|---|
 | `useGetAdminEvents()` | `GET /api/admin/events` | Returns all events with `rsvp_count` |
+| `useDeleteEvent()` | `DELETE /api/events/:eventId` | Delete event and all associated data |
 
 ## Status
 
@@ -26,6 +27,7 @@ Landing screen for admins after login. Shows all events created by the admin wit
 - [x] Empty state with create CTA
 - [x] Event status badge (upcoming / ongoing / past) derived client-side
 - [x] RSVP count per card
+- [ ] Delete event with confirmation dialog (`useDeleteEvent`)
 - [ ] Search / filter
 - [ ] Pagination or infinite scroll
 
@@ -34,3 +36,4 @@ Landing screen for admins after login. Shows all events created by the admin wit
 - Event status is derived client-side from `date_start` and `date_end`
 - RSVP count is computed server-side (`rsvp_status === 'confirmed'`)
 - Empty state renders when the events array is empty
+- Deletion is permanent — UI must require explicit confirmation before calling the endpoint

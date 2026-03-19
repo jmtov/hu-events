@@ -35,9 +35,13 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - Shared field components live in `src/components/<Input|Select|...>/form.tsx` — they use `Controller` + `useFormContext()` internally
 
 ### Auth
-- **Admin:** Google Sign-In via OAuth 2.0 — on login, redirect to event list
-- **Attendee:** Email magic link (no password) — attendee clicks a link in their invite or a magic link sent to their email; the link carries a short-lived token that is verified server-side to create a session
+- **Admin:** Google Sign-In via OAuth 2.0 — on login, redirect to `/admin/events`
+- **Attendee:** Email magic link (no password) — attendee clicks a link in their invite or requests a new one; the link carries a short-lived token that is verified server-side to create a session
 - After a successful magic link verification, attendees can optionally connect their Google account to auto-fill name, last name, and email in their profile
+- A person can have both roles (admin and attendee) under the same email. When the backend confirms dual roles, a switcher appears in the app header that navigates to the other context's event list
+  - The switcher calls `GET /auth/me/roles` to determine whether to show it — do not show it speculatively
+- Sessions are persistent — token stored in `localStorage` with a 30-day expiration
+- Admin role is verified via `GET /auth/me/roles` — never inferred client-side from the token payload
 - Auth state managed globally (context or Zustand store)
 - On login, store token and user profile (name, email) — do not re-fetch from the identity provider on every render
 
@@ -47,18 +51,42 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 ---
 
+### F-00 — Admin event list
+
+**Route:** `/admin/events`
+
+**Description:** Landing screen for admins. Shows all events created by the admin with key metadata per card (name, date, status, RSVP count). Provides navigation to create a new event or enter an existing one. Supports deleting an event with an explicit confirmation step.
+
+**Services to consume:**
+- `GET /admin/events` — list all events with RSVP count
+- `DELETE /events/:eventId` — delete event and all associated data (participants, checklist, budget, triggers, contacts)
+
+**Hooks:**
+- `useGetAdminEvents()` — query
+- `useDeleteEvent()` — mutation (requires confirmation before calling)
+
+**Notes:**
+- Event status badge (upcoming / ongoing / past) is derived client-side from `date_start` and `date_end`
+- Deletion is permanent and irreversible — UI must show a confirmation dialog before calling the endpoint
+- On successful deletion, invalidate the admin events query to update the list
+
+---
+
 ### F-01 — Create & edit event
 
 **Routes:**
 - `/admin/events/new` — create
 - `/admin/events/:eventId/edit` — edit (same form component, pre-populated)
 
-**Description:** A single form used for both creating and editing an event. Event basics at the top (title, description, date/time, event type). Below the basics, five toggleable module sections — each is an independent collapsible row. Enabling a module expands its inline config; disabling it collapses and unmounts it. AI auto-detects event type on description blur and auto-suggests which modules to enable.
+**Description:** A single form used for both creating and editing an event. Event basics at the top (title, description, date/time, event type, and a free-text `event_day_info` field — visible to attendees only on the event day). Below the basics, five toggleable module sections — each is an independent collapsible row. Enabling a module expands its inline config; disabling it collapses and unmounts it. AI auto-detects event type on description blur and auto-suggests which modules to enable.
+
+> ⚠️ TODO: evolve `event_day_info` into a structured agenda builder in a future iteration.
 
 **Services to consume:**
-- `POST /events` — create event (includes initial module toggle state)
+- `POST /events` — create event (includes initial module toggle state and `event_day_info`)
 - `GET /events/:eventId` — load existing event for edit mode
 - `PATCH /events/:eventId` — save edits (event basics + module state)
+- `DELETE /events/:eventId` — delete event and all associated data (called from the event list, not this form — see F-00)
 - `POST /ai/detect-event-type` — send description, receive suggested event type
 - `POST /ai/suggest-modules` — send description, receive boolean flags per module
 - `POST /ai/generate-checklist` — receive suggested checklist items (same endpoint as F-05)
@@ -77,6 +105,7 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - Modules are part of the form payload — `POST /events` and `PATCH /events/:eventId` both include the full module toggle state
 - The checklist module row expands to show the full checklist builder (add/edit/delete items, AI generation) — no separate navigation required for initial setup
 - Checklist items drafted during creation are saved via `POST /events/:eventId/checklist` after the event is created, before redirecting
+- Invites to participants are sent automatically by the backend when the event is saved — the frontend does not call any invite endpoint directly; on subsequent saves, only newly added participants receive an invite
 - On create success: redirect to `/admin/events/:eventId` (summary page)
 - On edit success: redirect to `/admin/events/:eventId` or back to the event list (TBD)
 
@@ -175,6 +204,9 @@ These rules apply to every feature. Claude Code must follow them without excepti
 **Notes:**
 - Items with `alertIfIncomplete: true` automatically appear in the notifications module as triggers
 - Item types: `checkbox` | `document_upload` | `info_input`
+- The same checklist applies to all attendees — no per-person customization in MVP
+- New attendees added after the first save receive the checklist as it stands at that moment — the backend handles this on participant creation
+- ⚠️ TODO: define behavior when admin edits checklist items after attendees have already recorded progress (e.g. deleting an item that has completions)
 
 ---
 
@@ -198,6 +230,7 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - AI estimate is per person per category, not a single total
 - Admin can override any AI-estimated value
 - Running total max per person must recalculate reactively as caps change
+- Attendees can see their budget allocation per category in their event view (F-11) — the `GET /events/:eventId/budget` endpoint must return attendee-visible data
 
 ---
 
@@ -218,6 +251,11 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Notes:**
 - Checklist-sourced triggers are read-only in name — only timing/channel/recipient is editable
+- Fixed milestone triggers come pre-loaded with defaults:
+  - RSVP hits 50% → Slack → HR admin
+  - Event ended → Email → all attendees
+- The condition of milestone triggers (50% threshold, event end date) is immutable — only timing, channel, and recipient are configurable
+- Changes to a trigger's config apply only to future sends — already-sent notifications are not affected
 - Channels: `slack` | `email` | `whatsapp`
 - Recipients: `attendee` | `hr_admin` | `both`
 - The frontend does not call n8n directly — it calls `api/triggers/:triggerId`, which proxies to n8n. See `api-layer.md` for webhook payloads and authentication details.
@@ -248,7 +286,7 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Route:** `/admin/events/:eventId/dashboard`
 
-**Description:** Admin monitors event progress: RSVP count, checklist completion per attendee, and trigger activity log.
+**Description:** Separate screen accessible from the event detail screen, visible only to the admin who created the event. Admin monitors live event progress: RSVP count vs total expected attendees, checklist completion per attendee per item, and trigger activity log (what fired, when, through which channel, and to whom). Data refetches automatically on a short interval.
 
 **Services to consume:**
 - `GET /events/:eventId/dashboard` — aggregated stats (RSVP count, completion rates)
@@ -261,7 +299,8 @@ These rules apply to every feature. Claude Code must follow them without excepti
 - `useGetTriggerLog(eventId)` — query
 
 **Notes:**
-- Dashboard data should refetch on a short interval or via websocket (TBD) to reflect live RSVP changes during the demo
+- Dashboard data refetches on a short polling interval — websocket is out of scope for now
+- Only the event creator can access this screen — enforce on both the API (`GET /events/:eventId/dashboard` returns 403 for non-creators) and the route guard
 
 ---
 
@@ -313,8 +352,15 @@ These rules apply to every feature. Claude Code must follow them without excepti
 
 **Notes:**
 - Phase is derived from event date: `pre` = before event date, `during` = event day, `post` = after event date
-- Directions and agenda fields are part of the event entity — rendered only in `during` and `post` phases
+- `event_day_info` (agenda / what's happening) is part of the event entity — rendered only in `during` and `post` phases; do not surface it in `pre`
 - Receipt upload (F-12) is surfaced in the `during` and `post` phases from within this same view
+- Attendee's checklist shows no visibility into other attendees' progress
+- Checklist item actions and their editability by phase:
+  - RSVP confirmation — toggle, reversible at any time
+  - Document uploads — replaceable at any time
+  - Info inputs (preferences, dietary, etc.) — editable at any time
+  - Checkbox tasks — reversible at any time
+- If the budget module is enabled, attendees see their allocation per category (sourced from `GET /events/:eventId/budget`)
 
 ---
 

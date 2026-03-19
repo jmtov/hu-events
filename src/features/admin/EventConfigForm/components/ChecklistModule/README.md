@@ -35,10 +35,13 @@ Pre-event checklist module. Contains both the inline config shown inside the Eve
 - [x] Inline edit per item (ChecklistItemRow)
 - [x] Item types: checkbox, document_upload, info_input
 - [x] Required toggle per item
-- [ ] "Alert if incomplete" toggle per item (auto-creates notification trigger)
+- [ ] "Alert if incomplete" toggle per item (auto-creates notification trigger in F-07)
 
 ## Notes
 
 - `DraftItemRow` is only used during event creation (items are not yet persisted)
 - `ChecklistItemRow` is only used in `ChecklistPage` (items are already persisted with an `id`)
 - `index.tsx` receives all state and handlers as props from `EventConfigForm` — it owns no state itself
+- The same checklist applies to all attendees — no per-person customization in MVP
+- New attendees added after the first save receive the checklist as it stands at that moment — handled backend-side on participant creation, no frontend action required
+- ⚠️ TODO: behavior when admin edits checklist items after attendees have already recorded progress (e.g. deleting an item with existing completions) is undefined — do not implement deletion in that case until resolved
