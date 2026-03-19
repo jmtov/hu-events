@@ -10,14 +10,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
-import { normaliseChecklistType } from '@/types/checklist';
+import { checklistService } from '@/services/checklist';
+import { triggersService } from '@/services/triggers';
 import type { ChecklistSuggestion } from '@/types/checklist';
+import { normaliseChecklistType } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
-import ModuleToggleRow from './components/ModuleToggleRow';
 import ChecklistModule from './components/ChecklistModule';
-import ParticipantModule from './components/ParticipantModule';
 import type { ChecklistItemValues } from './components/ChecklistModule/constants';
 import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
+import ModuleToggleRow from './components/ModuleToggleRow';
+import NotificationsModule from './components/NotificationsModule';
+import {
+  DEFAULT_CHECKLIST_TRIGGER,
+  DEFAULT_DRAFT_TRIGGERS,
+  type DraftTrigger,
+} from './components/NotificationsModule/constants';
+import ParticipantModule from './components/ParticipantModule';
 import { DEFAULT_MODULES, eventConfigSchema } from './constants';
 import type { EventConfigValues } from './types';
 
@@ -35,6 +43,9 @@ const EventConfigForm = () => {
   const [aiError, setAiError] = useState<string | null>(null);
   const [modules, setModules] = useState<EventModules>({ ...DEFAULT_MODULES });
   const [draftEmails, setDraftEmails] = useState<string[]>([]);
+  const [draftTriggers, setDraftTriggers] = useState<DraftTrigger[]>(
+    DEFAULT_DRAFT_TRIGGERS.map((t) => ({ ...t })),
+  );
 
   const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
 
@@ -58,7 +69,9 @@ const EventConfigForm = () => {
     detectEventType.mutate(description, {
       onSuccess: (result) => {
         if (result.event_type) {
-          form.setValue('event_type', result.event_type, { shouldValidate: true });
+          form.setValue('event_type', result.event_type, {
+            shouldValidate: true,
+          });
         }
       },
     });
@@ -75,12 +88,14 @@ const EventConfigForm = () => {
         eventType: form.getValues('event_type'),
       });
 
-      const newItems: DraftItem[] = result.items.map((s: ChecklistSuggestion) => ({
-        _key: `${Date.now()}_${Math.random()}`,
-        name: s.name,
-        type: normaliseChecklistType(s.type),
-        required: s.suggestedRequired,
-      }));
+      const newItems: DraftItem[] = result.items.map(
+        (s: ChecklistSuggestion) => ({
+          _key: `${Date.now()}_${Math.random()}`,
+          name: s.name,
+          type: normaliseChecklistType(s.type),
+          required: s.suggestedRequired,
+        }),
+      );
 
       setDraftItems((prev) => [...prev, ...newItems]);
     } catch {
@@ -93,18 +108,59 @@ const EventConfigForm = () => {
       ...prev,
       { ...values, _key: `${Date.now()}_${Math.random()}` },
     ]);
+    if (values.required) {
+      setDraftTriggers((prev) => [
+        {
+          name: values.name,
+          source: 'checklist',
+          ...DEFAULT_CHECKLIST_TRIGGER,
+        },
+        ...prev,
+      ]);
+    }
     setIsAddingItem(false);
   };
 
   const handleUpdateItem = (key: string, values: ChecklistItemValues) => {
+    const existing = draftItems.find((item) => item._key === key);
     setDraftItems((prev) =>
       prev.map((item) => (item._key === key ? { ...values, _key: key } : item)),
     );
+    if (existing) {
+      setDraftTriggers((prev) => {
+        const withoutOld = prev.filter(
+          (t) => t.source !== 'checklist' || t.name !== existing.name,
+        );
+        if (values.required) {
+          return [
+            {
+              name: values.name,
+              source: 'checklist',
+              ...DEFAULT_CHECKLIST_TRIGGER,
+            },
+            ...withoutOld,
+          ];
+        }
+        return withoutOld;
+      });
+    }
     setEditingKey(null);
   };
 
   const handleDeleteItem = (key: string) => {
-    setDraftItems((prev) => prev.filter((item) => item._key !== key));
+    const item = draftItems.find((i) => i._key === key);
+    setDraftItems((prev) => prev.filter((i) => i._key !== key));
+    if (item?.required) {
+      setDraftTriggers((prev) =>
+        prev.filter((t) => t.source !== 'checklist' || t.name !== item.name),
+      );
+    }
+  };
+
+  const handleUpdateTrigger = (index: number, patch: Partial<DraftTrigger>) => {
+    setDraftTriggers((prev) =>
+      prev.map((t, i) => (i === index ? { ...t, ...patch } : t)),
+    );
   };
 
   const handleSubmit = form.handleSubmit(async (values) => {
@@ -128,6 +184,44 @@ const EventConfigForm = () => {
           }))
         : undefined,
     });
+
+    navigate({
+      to: '/admin/events/$eventId',
+      params: { eventId: event.id },
+      search: { created: true },
+    });
+    // Save checklist items — failures are non-blocking so navigation always happens
+    for (const item of draftItems) {
+      try {
+        await checklistService.addItem(event.id, {
+          name: item.name,
+          type: item.type,
+          required: item.required,
+        });
+      } catch {
+        // Item will be editable on the checklist page after redirect
+      }
+    }
+
+    // Apply draft trigger configurations — failures are non-blocking
+    if (modules.notifications) {
+      try {
+        const savedTriggers = await triggersService.getByEvent(event.id);
+        for (const saved of savedTriggers) {
+          const draft = draftTriggers.find((d) => d.name === saved.name);
+          if (draft) {
+            await triggersService.update(saved.id, {
+              timing: draft.timing,
+              timingValue: draft.timingValue,
+              channel: draft.channel,
+              recipient: draft.recipient,
+            });
+          }
+        }
+      } catch {
+        // User can adjust on the notifications page after redirect
+      }
+    }
 
     navigate({
       to: '/admin/events/$eventId',
@@ -263,6 +357,13 @@ const EventConfigForm = () => {
                   onRemove={(email) =>
                     setDraftEmails((prev) => prev.filter((e) => e !== email))
                   }
+                />
+              )}
+
+              {key === 'notifications' && (
+                <NotificationsModule
+                  draftTriggers={draftTriggers}
+                  onUpdateTrigger={handleUpdateTrigger}
                 />
               )}
             </ModuleToggleRow>

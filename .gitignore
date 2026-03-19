@@ -37,3 +37,4 @@ dev-api-server.mjs
 
 # Mock data store — local dev only, derived from fixtures
 api/_fixtures/store/
+.env*.local
