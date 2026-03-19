@@ -12,8 +12,11 @@ Two user roles: **Admin** (creates and manages events) and **Attendee** (receive
 | `docs/features_list.md` | Full feature list, organized by module and user role |
 | `docs/technical_docs_plan.md` | One entry per feature: route, endpoints, hooks, notes. Also contains global stack conventions |
 | `docs/api_layer.md` | API layer architecture, serverless function structure, environment variables, and rules |
+| `docs/screens.md` | Complete screen map — every route and its purpose. This is the authoritative list of screens in the app |
 
 Always cross-reference these before implementing any feature.
+
+> **No new screens or routes may be added beyond what is defined in `docs/screens.md`.** If a feature seems to require a new screen, stop and ask before creating it.
 
 ## Stack
 
