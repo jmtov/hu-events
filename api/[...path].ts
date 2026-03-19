@@ -21,8 +21,8 @@ type Route = {
 }
 
 /**
- * Matches URL path segments against a pattern.
- * Segments starting with ":" are dynamic params — extracted and returned.
+ * Matches path segments against a pattern.
+ * Tokens starting with ":" are dynamic params — extracted and returned.
  * Returns null if the pattern doesn't match.
  */
 function matchPath(
@@ -44,34 +44,41 @@ function matchPath(
 }
 
 const routes: Route[] = [
-  { pattern: ['admin', 'events'],                            handler: adminEventsHandler },
-  { pattern: ['events'],                                     handler: eventsIndexHandler },
-  { pattern: ['events', ':eventId'],                         handler: eventHandler },
-  { pattern: ['events', ':eventId', 'checklist'],            handler: eventChecklistHandler },
-  { pattern: ['events', ':eventId', 'modules'],              handler: eventModulesHandler },
-  { pattern: ['events', ':eventId', 'participants'],         handler: eventParticipantsHandler },
-  { pattern: ['events', ':eventId', 'preference-fields'],    handler: eventPreferenceFieldsHandler },
-  { pattern: ['checklist', ':itemId'],                       handler: checklistItemHandler },
-  { pattern: ['participants', ':participantId'],              handler: participantHandler },
-  { pattern: ['ai', 'detect-event-type'],                    handler: detectEventTypeHandler },
-  { pattern: ['ai', 'generate-checklist'],                   handler: generateChecklistHandler },
-  { pattern: ['ai', 'suggest-preference-fields'],            handler: suggestPreferenceFieldsHandler },
+  { pattern: ['admin', 'events'],                         handler: adminEventsHandler },
+  { pattern: ['events'],                                  handler: eventsIndexHandler },
+  { pattern: ['events', ':eventId'],                      handler: eventHandler },
+  { pattern: ['events', ':eventId', 'checklist'],         handler: eventChecklistHandler },
+  { pattern: ['events', ':eventId', 'modules'],           handler: eventModulesHandler },
+  { pattern: ['events', ':eventId', 'participants'],      handler: eventParticipantsHandler },
+  { pattern: ['events', ':eventId', 'preference-fields'], handler: eventPreferenceFieldsHandler },
+  { pattern: ['checklist', ':itemId'],                    handler: checklistItemHandler },
+  { pattern: ['participants', ':participantId'],          handler: participantHandler },
+  { pattern: ['ai', 'detect-event-type'],                 handler: detectEventTypeHandler },
+  { pattern: ['ai', 'generate-checklist'],                handler: generateChecklistHandler },
+  { pattern: ['ai', 'suggest-preference-fields'],         handler: suggestPreferenceFieldsHandler },
 ]
 
+/**
+ * Catch-all handler for all /api/* routes.
+ *
+ * Vercel populates req.query.path with the matched segments as a string array.
+ * Example: GET /api/events/abc/checklist → req.query.path = ['events', 'abc', 'checklist']
+ *
+ * This is more reliable than parsing req.url, which may point to the rewrite
+ * destination in production rather than the original request path.
+ */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = req.url ?? ''
-  const pathOnly = url.split('?')[0]
-
-  // Strip leading /api prefix and split into segments
-  const segments = pathOnly
-    .replace(/^\/api\/?/, '')
-    .split('/')
-    .filter(Boolean)
+  const raw = req.query['path']
+  const segments: string[] = Array.isArray(raw)
+    ? raw.map(decodeURIComponent)
+    : typeof raw === 'string'
+      ? raw.split('/').filter(Boolean).map(decodeURIComponent)
+      : []
 
   for (const route of routes) {
     const params = matchPath(route.pattern, segments)
     if (params !== null) {
-      // Inject dynamic path params into req.query so handlers can read them normally
+      // Inject dynamic path params so handlers can read them via req.query normally
       Object.assign(req.query, params)
       return route.handler(req, res)
     }
