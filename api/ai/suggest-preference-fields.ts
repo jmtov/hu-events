@@ -54,7 +54,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }>
       )?.[0]?.content?.parts?.[0]?.text ?? '';
 
-    const parsed: unknown = JSON.parse(text.trim());
+    // Gemini occasionally wraps the JSON in markdown code fences (```json ... ```)
+    // even when responseMimeType is set. Extract the raw JSON object defensively.
+    const raw = text.trim();
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return res.status(502).json({ message: 'No JSON object found in Gemini response' });
+    }
+    const parsed: unknown = JSON.parse(jsonMatch[0]);
 
     return res.status(200).json(parsed);
   } catch (err) {

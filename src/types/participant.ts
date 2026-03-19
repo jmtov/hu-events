@@ -58,3 +58,9 @@ export type PreferenceFieldSuggestion = {
 export type PreferenceFieldSuggestionResult = {
   fields: PreferenceFieldSuggestion[];
 };
+
+/** Maps AI suggestion inputType to a stored PreferenceFieldType. 'number' falls back to 'text'. */
+export function normaliseSuggestionType(inputType: SuggestionFieldType): PreferenceFieldType {
+  if (inputType === 'text' || inputType === 'select' || inputType === 'boolean') return inputType;
+  return 'text';
+}
