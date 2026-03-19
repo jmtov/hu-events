@@ -14,7 +14,7 @@ i18n
     lng: 'en',
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LOCALES,
-    ns: ['common', 'attendee'],
+    ns: ['common', 'attendee', 'admin'],
     defaultNS: 'common',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',

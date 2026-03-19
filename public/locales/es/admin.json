@@ -1,0 +1,50 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "saving": "Guardando..."
+  },
+  "eventTypes": {
+    "hr_retreat": "Retiro de RR.HH.",
+    "bdr_call": "Llamada BDR",
+    "hackathon": "Hackathon",
+    "workshop": "Workshop",
+    "other": "Otro"
+  },
+  "events": {
+    "create": {
+      "title": "Crear evento",
+      "subtitle": "Completa los datos para crear un nuevo evento.",
+      "requiredHint": "Los campos marcados con * son obligatorios.",
+      "submit": "Crear evento",
+      "sections": {
+        "basics": "Información básica",
+        "schedule": "Fechas y ubicación"
+      },
+      "fields": {
+        "title": {
+          "label": "Título",
+          "placeholder": "Ej: Retiro de RR.HH. Q1"
+        },
+        "description": {
+          "label": "Descripción",
+          "placeholder": "Describe el objetivo, la agenda y cualquier detalle relevante del evento...",
+          "hint": "Una buena descripción ayuda a la IA a sugerir el tipo de evento correcto."
+        },
+        "eventType": {
+          "label": "Tipo de evento",
+          "detecting": "Detectando tipo de evento..."
+        },
+        "dateStart": {
+          "label": "Fecha de inicio"
+        },
+        "dateEnd": {
+          "label": "Fecha de fin"
+        },
+        "location": {
+          "label": "Ubicación",
+          "placeholder": "Ej: Buenos Aires — Hotel Alvear"
+        }
+      }
+    }
+  }
+}
