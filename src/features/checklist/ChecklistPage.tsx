@@ -40,7 +40,7 @@ const ChecklistPage = () => {
     try {
       const result = await generateChecklist.mutateAsync({
         description: event.description,
-        eventType: event.eventType,
+        eventType: event.event_type,
       });
 
       for (const suggestion of result.items) {
@@ -48,7 +48,6 @@ const ChecklistPage = () => {
           name: suggestion.name,
           type: normaliseType(suggestion.type),
           required: suggestion.suggestedRequired,
-          alertIfIncomplete: false,
         });
       }
     } catch {

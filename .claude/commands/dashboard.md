@@ -11,20 +11,30 @@ Each feature lives at `src/features/<domain>/` with:
 
 - **Shared files at root**: `types.ts`, `services.ts`, `constants.ts`
 - **One folder per screen/sub-feature**: e.g. `List/`, `Detail/`, `Form/`
-- **Screen folders have**: `index.tsx` (entry), `components/`, optionally `hooks/`, `forms/`
+- **Screen folders have**: `index.tsx` (entry), `types.ts`, `constants.ts`, and sub-components as sibling files
+
+Each screen/component that has more than one file gets its own folder named after the component (PascalCase):
 
 ```
 src/features/events/
-├── types.ts
-├── services.ts
-├── constants.ts
-├── List/
-│   ├── index.tsx
-│   └── components/
-└── Detail/
+├── types.ts                    ← shared types across the domain
+├── services.ts                 ← shared API calls across the domain
+├── constants.ts                ← shared constants across the domain
+├── EventListPage/
+│   ├── index.tsx               ← main component, default export
+│   ├── types.ts                ← types local to this screen
+│   ├── constants.ts            ← constants and schema local to this screen
+│   ├── components/
+│   │   └── EventRow.tsx        ← sub-components used only by this screen
+│   └── README.md
+└── EventDetailPage/
     ├── index.tsx
+    ├── types.ts
+    ├── constants.ts
     ├── components/
-    └── forms/
+    │   ├── EventHeader.tsx
+    │   └── ChecklistPanel.tsx
+    └── README.md
 ```
 
 ## Where to put new code
@@ -32,8 +42,10 @@ src/features/events/
 | Adding | Location |
 |---|---|
 | New screen | `src/features/<domain>/ScreenName/index.tsx` |
-| New component for a screen | `ScreenName/components/ComponentName/index.tsx` |
-| New form | `ScreenName/forms/FormName/` (one folder per form) |
+| Local types for a screen | `ScreenName/types.ts` |
+| Local constants / schema for a screen | `ScreenName/constants.ts` |
+| Sub-component of a screen | `ScreenName/components/SubComponentName.tsx` |
+| New form | `ScreenName/FormName/` (own folder, same pattern) |
 | Types (feature-only) | That feature's `types.ts` |
 | Types (shared across features) | `src/types/<domain>.ts` |
 | API service (feature-only) | Feature root `services.ts` |

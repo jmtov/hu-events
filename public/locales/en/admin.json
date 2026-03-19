@@ -1,0 +1,50 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "saving": "Saving..."
+  },
+  "eventTypes": {
+    "hr_retreat": "HR Retreat",
+    "bdr_call": "BDR Call",
+    "hackathon": "Hackathon",
+    "workshop": "Workshop",
+    "other": "Other"
+  },
+  "events": {
+    "create": {
+      "title": "Create event",
+      "subtitle": "Fill in the details below to create a new event.",
+      "requiredHint": "Fields marked with * are required.",
+      "submit": "Create event",
+      "sections": {
+        "basics": "Basic information",
+        "schedule": "Schedule and location"
+      },
+      "fields": {
+        "title": {
+          "label": "Title",
+          "placeholder": "e.g. Q1 HR Retreat"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Describe the event objective, agenda, and any relevant details...",
+          "hint": "A good description helps the AI suggest the right event type."
+        },
+        "eventType": {
+          "label": "Event type",
+          "detecting": "Detecting event type..."
+        },
+        "dateStart": {
+          "label": "Start date"
+        },
+        "dateEnd": {
+          "label": "End date"
+        },
+        "location": {
+          "label": "Location",
+          "placeholder": "e.g. São Paulo — Hotel Unique"
+        }
+      }
+    }
+  }
+}

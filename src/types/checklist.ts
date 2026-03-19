@@ -1,4 +1,9 @@
-export type ChecklistItemType = 'checkbox' | 'document_upload' | 'info_input';
+export const CHECKLIST_ITEM_TYPES = [
+  'checkbox',
+  'document_upload',
+  'info_input',
+] as const;
+export type ChecklistItemType = (typeof CHECKLIST_ITEM_TYPES)[number];
 
 export type ChecklistItem = {
   id: string;
@@ -6,7 +11,6 @@ export type ChecklistItem = {
   name: string;
   type: ChecklistItemType;
   required: boolean;
-  alertIfIncomplete: boolean;
 };
 
 export type CreateChecklistItemPayload = Omit<ChecklistItem, 'id' | 'eventId'>;

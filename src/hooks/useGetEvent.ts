@@ -5,4 +5,5 @@ export const useGetEvent = (eventId: string) =>
   useQuery({
     queryKey: ['events', eventId],
     queryFn: () => eventService.getById(eventId),
+    enabled: !!eventId,
   });

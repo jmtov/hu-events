@@ -1,0 +1,382 @@
+import { IconPencil, IconSparkles, IconTrash } from '@tabler/icons-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import FormInput from '@/components/Input/form';
+import FormSelect from '@/components/Select/form';
+import FormTextarea from '@/components/Textarea/form';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { useCreateEvent } from '@/hooks/useCreateEvent';
+import { useDetectEventType } from '@/hooks/useDetectEventType';
+import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
+import { checklistService } from '@/services/checklist';
+import type { ChecklistItemValues } from '@/schemas/checklist';
+import type { ChecklistItemType } from '@/types/checklist';
+import { EVENT_TYPES } from '@/types/event';
+import { cn } from '@/lib/utils';
+import ChecklistItemForm from '@/features/checklist/ChecklistItemForm';
+import { eventCreateSchema } from './constants';
+import type { EventCreateValues } from './types';
+
+const TYPE_LABELS: Record<ChecklistItemType, string> = {
+  checkbox: 'Checkbox item',
+  document_upload: 'Document upload',
+  info_input: 'Text response',
+};
+
+const TYPE_COLORS: Record<ChecklistItemType, string> = {
+  checkbox:
+    'bg-blue-50 text-blue-700 ring-blue-700/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20',
+  document_upload:
+    'bg-orange-50 text-orange-700 ring-orange-700/20 dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20',
+  info_input:
+    'bg-purple-50 text-purple-700 ring-purple-700/20 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/20',
+};
+
+const normaliseType = (raw: string): ChecklistItemType => {
+  if (raw === 'document_upload' || raw === 'info_input') return raw;
+  return 'checkbox';
+};
+
+type DraftItem = ChecklistItemValues & { _key: string };
+
+type DraftItemRowProps = {
+  item: DraftItem;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+const DraftItemRow = ({ item, onEdit, onDelete }: DraftItemRowProps) => (
+  <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm ring-1 ring-foreground/10">
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      <span className="truncate font-medium text-card-foreground">
+        {item.name}
+      </span>
+      <span
+        className={cn(
+          'inline-flex shrink-0 items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+          TYPE_COLORS[item.type],
+        )}
+      >
+        {TYPE_LABELS[item.type]}
+      </span>
+    </div>
+    <div className="flex shrink-0 items-center gap-2">
+      {item.required && (
+        <span className="text-xs text-muted-foreground">Required</span>
+      )}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={onEdit}
+        aria-label="Edit item"
+      >
+        <IconPencil size={14} />
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={onDelete}
+        aria-label="Delete item"
+        className="text-destructive hover:text-destructive"
+      >
+        <IconTrash size={14} />
+      </Button>
+    </div>
+  </div>
+);
+
+const EventCreateForm = () => {
+  const { t } = useTranslation('admin');
+  const navigate = useNavigate();
+
+  const createEvent = useCreateEvent();
+  const detectEventType = useDetectEventType();
+  const generateChecklist = useGenerateChecklist();
+
+  const [draftItems, setDraftItems] = useState<DraftItem[]>([]);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  const form = useForm<EventCreateValues>({
+    resolver: zodResolver(eventCreateSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      event_type: 'other',
+      date_start: '',
+      date_end: '',
+      location: '',
+    },
+  });
+
+  // Called on description blur — non-blocking AI suggestion
+  const handleDetectEventType = () => {
+    const description = form.getValues('description');
+    if (!description.trim()) return;
+
+    detectEventType.mutate(description, {
+      onSuccess: (result) => {
+        // Only apply suggestion if admin hasn't manually changed the field
+        if (form.getValues('event_type') === 'other') {
+          const suggested = EVENT_TYPES.find((t) => t === result.event_type);
+          if (suggested)
+            form.setValue('event_type', suggested, { shouldValidate: true });
+        }
+      },
+    });
+  };
+
+  const handleGenerateAI = async () => {
+    const description = form.getValues('description');
+    if (!description.trim()) return;
+    setAiError(null);
+
+    try {
+      const result = await generateChecklist.mutateAsync({
+        description,
+        eventType: form.getValues('event_type'),
+      });
+
+      const newItems: DraftItem[] = result.items.map((s) => ({
+        _key: `${Date.now()}_${Math.random()}`,
+        name: s.name,
+        type: normaliseType(s.type),
+        required: s.suggestedRequired,
+      }));
+
+      setDraftItems((prev) => [...prev, ...newItems]);
+    } catch {
+      setAiError('Could not generate suggestions. Please try again.');
+    }
+  };
+
+  const handleAddItem = (values: ChecklistItemValues) => {
+    setDraftItems((prev) => [
+      ...prev,
+      { ...values, _key: `${Date.now()}_${Math.random()}` },
+    ]);
+    setIsAddingItem(false);
+  };
+
+  const handleUpdateItem = (key: string, values: ChecklistItemValues) => {
+    setDraftItems((prev) =>
+      prev.map((item) => (item._key === key ? { ...values, _key: key } : item)),
+    );
+    setEditingKey(null);
+  };
+
+  const handleDeleteItem = (key: string) => {
+    setDraftItems((prev) => prev.filter((item) => item._key !== key));
+  };
+
+  const handleSubmit = form.handleSubmit(async (values) => {
+    const event = await createEvent.mutateAsync({
+      title: values.title,
+      description: values.description,
+      event_type: values.event_type,
+      date_start: values.date_start,
+      date_end: values.date_end || undefined,
+      location: values.location || undefined,
+    });
+
+    // Save checklist items sequentially after event is created
+    for (const item of draftItems) {
+      await checklistService.addItem(event.id, {
+        name: item.name,
+        type: item.type,
+        required: item.required,
+      });
+    }
+
+    navigate({ to: '/admin/events/$eventId', params: { eventId: event.id } });
+  });
+
+  const eventTypeOptions = EVENT_TYPES.map((type) => ({
+    value: type,
+    label: t(`eventTypes.${type}`),
+  }));
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      <div className="mb-6 space-y-1">
+        <h1 className="text-2xl font-bold text-foreground">
+          {t('events.create.title')}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {t('events.create.subtitle')}
+        </p>
+      </div>
+
+      <FormProvider {...form}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basics */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t('events.create.sections.basics')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <FormInput
+                name="title"
+                label={t('events.create.fields.title.label')}
+                placeholder={t('events.create.fields.title.placeholder')}
+                required
+              />
+              <FormTextarea
+                name="description"
+                label={t('events.create.fields.description.label')}
+                placeholder={t('events.create.fields.description.placeholder')}
+                hint={t('events.create.fields.description.hint')}
+                onBlur={handleDetectEventType}
+                required
+              />
+              <FormSelect
+                name="event_type"
+                label={t('events.create.fields.eventType.label')}
+                options={eventTypeOptions}
+                hint={
+                  detectEventType.isPending
+                    ? t('events.create.fields.eventType.detecting')
+                    : undefined
+                }
+                required
+              />
+            </CardContent>
+          </Card>
+
+          {/* Schedule */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t('events.create.sections.schedule')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput
+                  name="date_start"
+                  label={t('events.create.fields.dateStart.label')}
+                  type="datetime-local"
+                  required
+                />
+                <FormInput
+                  name="date_end"
+                  label={t('events.create.fields.dateEnd.label')}
+                  type="datetime-local"
+                />
+              </div>
+              <FormInput
+                name="location"
+                label={t('events.create.fields.location.label')}
+                placeholder={t('events.create.fields.location.placeholder')}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Checklist */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-4">
+                <CardTitle className="text-base">Pre-event checklist</CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateAI}
+                  disabled={generateChecklist.isPending}
+                >
+                  <IconSparkles size={14} />
+                  {generateChecklist.isPending
+                    ? 'Generating...'
+                    : 'Generate with AI'}
+                </Button>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Define tasks and documents attendees must complete before the
+                event. You can add more after creating the event.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {aiError && (
+                <p className="text-sm text-destructive">{aiError}</p>
+              )}
+
+              {draftItems.length === 0 && !isAddingItem && (
+                <div className="rounded-xl border border-dashed border-border px-6 py-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No items yet. Add one below or generate suggestions with AI.
+                  </p>
+                </div>
+              )}
+
+              {draftItems.map((item) =>
+                editingKey === item._key ? (
+                  <ChecklistItemForm
+                    key={item._key}
+                    defaultValues={item}
+                    onSubmit={(values) => handleUpdateItem(item._key, values)}
+                    onCancel={() => setEditingKey(null)}
+                  />
+                ) : (
+                  <DraftItemRow
+                    key={item._key}
+                    item={item}
+                    onEdit={() => setEditingKey(item._key)}
+                    onDelete={() => handleDeleteItem(item._key)}
+                  />
+                ),
+              )}
+
+              {isAddingItem ? (
+                <ChecklistItemForm
+                  onSubmit={handleAddItem}
+                  onCancel={() => setIsAddingItem(false)}
+                />
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddingItem(true)}
+                >
+                  + Add item
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate({ to: '/' })}
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" disabled={createEvent.isPending}>
+              {createEvent.isPending
+                ? t('common.saving')
+                : t('events.create.submit')}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+    </div>
+  );
+};
+
+export default EventCreateForm;

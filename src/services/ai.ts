@@ -1,14 +1,14 @@
 import { api } from '@/lib/api';
-import type {
-  ChecklistResult,
-  ClassifiedEvent,
-  FormBuilderResult,
-} from '@/types/humand-events';
+import type { ChecklistResult } from '@/types/checklist';
+import type { EventType } from '@/types/event';
+import type { PreferenceFieldSuggestionResult } from '@/types/participant';
+
+export type DetectEventTypeResult = { event_type: EventType };
 
 export const aiService = {
-  detectEventType: (description: string): Promise<ClassifiedEvent> =>
+  detectEventType: (description: string): Promise<DetectEventTypeResult> =>
     api
-      .post<ClassifiedEvent>('/ai/detect-event-type', { description })
+      .post<DetectEventTypeResult>('/ai/detect-event-type', { description })
       .then((r) => r.data),
 
   generateChecklist: (params: {
@@ -22,8 +22,11 @@ export const aiService = {
   suggestPreferenceFields: (params: {
     description: string;
     eventType?: string;
-  }): Promise<FormBuilderResult> =>
+  }): Promise<PreferenceFieldSuggestionResult> =>
     api
-      .post<FormBuilderResult>('/ai/suggest-preference-fields', params)
+      .post<PreferenceFieldSuggestionResult>(
+        '/ai/suggest-preference-fields',
+        params,
+      )
       .then((r) => r.data),
 };

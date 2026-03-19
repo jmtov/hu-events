@@ -1,8 +1,4 @@
-import {
-  IconAlertTriangle,
-  IconPencil,
-  IconTrash,
-} from '@tabler/icons-react';
+import { IconPencil, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useDeleteChecklistItem } from '@/hooks/useDeleteChecklistItem';
@@ -49,7 +45,6 @@ const ChecklistItemRow = ({ item, eventId }: ChecklistItemRowProps) => {
           name: item.name,
           type: item.type,
           required: item.required,
-          alertIfIncomplete: item.alertIfIncomplete,
         }}
         onSubmit={handleUpdate}
         onCancel={() => setIsEditing(false)}
@@ -77,14 +72,6 @@ const ChecklistItemRow = ({ item, eventId }: ChecklistItemRowProps) => {
       <div className="flex shrink-0 items-center gap-2">
         {item.required && (
           <span className="text-xs text-muted-foreground">Required</span>
-        )}
-        {item.alertIfIncomplete && (
-          <span
-            title="Alert if incomplete"
-            className="text-amber-500 dark:text-amber-400"
-          >
-            <IconAlertTriangle size={14} />
-          </span>
         )}
         <Button
           variant="ghost"

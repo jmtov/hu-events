@@ -11,9 +11,9 @@ import {
 
 type ChecklistItemFormProps = {
   defaultValues?: Partial<ChecklistItemValues>;
-  onSubmit: (values: ChecklistItemValues) => Promise<void>;
+  onSubmit: (values: ChecklistItemValues) => Promise<void> | void;
   onCancel: () => void;
-  isPending: boolean;
+  isPending?: boolean;
 };
 
 const ITEM_TYPE_LABELS: Record<ChecklistItemValues['type'], string> = {
@@ -65,7 +65,7 @@ const ChecklistItemForm = ({
   defaultValues,
   onSubmit,
   onCancel,
-  isPending,
+  isPending = false,
 }: ChecklistItemFormProps) => {
   const form = useForm<ChecklistItemValues>({
     resolver: zodResolver(checklistItemSchema),
@@ -73,12 +73,9 @@ const ChecklistItemForm = ({
       name: '',
       type: 'checkbox',
       required: false,
-      alertIfIncomplete: false,
       ...defaultValues,
     },
   });
-
-  const isRequired = form.watch('required');
 
   return (
     <form
@@ -140,8 +137,8 @@ const ChecklistItemForm = ({
         />
       </div>
 
-      {/* Required + Alert toggles */}
-      <div className="space-y-3 rounded-lg border border-border bg-background p-3">
+      {/* Required toggle */}
+      <div className="rounded-lg border border-border bg-background p-3">
         <Controller
           name="required"
           control={form.control}
@@ -149,37 +146,12 @@ const ChecklistItemForm = ({
             <Toggle
               id="checklist-item-required"
               checked={field.value}
-              onChange={(value) => {
-                field.onChange(value);
-                if (value) form.setValue('alertIfIncomplete', true);
-              }}
+              onChange={field.onChange}
               label="Required"
               description="Attendees must complete this item before the event"
             />
           )}
         />
-        {isRequired ? (
-          <p className="text-xs text-muted-foreground border-t border-border pt-3">
-            Alert if incomplete is automatically enabled for required items.
-          </p>
-        ) : (
-          <>
-            <div className="border-t border-border" />
-            <Controller
-              name="alertIfIncomplete"
-              control={form.control}
-              render={({ field }) => (
-                <Toggle
-                  id="checklist-item-alert"
-                  checked={field.value}
-                  onChange={field.onChange}
-                  label="Alert if incomplete"
-                  description="Creates a notification trigger when this item is not done"
-                />
-              )}
-            />
-          </>
-        )}
       </div>
 
       {/* Actions */}
