@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { Event } from '../../src/types/event'
-import { events as seedEvents } from '../_fixtures/events'
+import { events as seedEvents } from '../_fixtures/events.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const storePath = path.resolve(__dirname, '../_fixtures/store/events.json')

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { CreateEventPayload, Event } from '../../src/types/event'
-import { readEvents, writeEvents } from '../_lib/mock-store'
+import { readEvents, writeEvents } from '../_lib/mock-store.js'
 
 function generateId(): string {
   return `evt-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
