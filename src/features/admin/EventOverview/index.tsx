@@ -6,6 +6,7 @@ import SavedBanner from './components/SavedBanner';
 import EventHeader from './components/EventHeader';
 import RsvpCard from './components/RsvpCard';
 import ChecklistProgressCard from './components/ChecklistProgressCard';
+import PreferenceFieldsCard from './components/PreferenceFieldsCard';
 
 interface EventOverviewProps {
   eventId: string;
@@ -53,6 +54,10 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
         <RsvpCard participants={participants} />
         <ChecklistProgressCard stats={checklistStats} />
       </div>
+
+      {event.modules.participantList && (
+        <PreferenceFieldsCard event={event} />
+      )}
     </div>
   );
 };

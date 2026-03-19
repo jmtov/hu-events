@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormInput from '@/components/Input/form';
 import FormTextarea from '@/components/Textarea/form';
@@ -18,6 +18,9 @@ import ModuleToggleRow from './components/ModuleToggleRow';
 import ChecklistModule from './components/ChecklistModule';
 import type { ChecklistItemValues } from './components/ChecklistModule/constants';
 import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
+import PreferenceFieldsModule from './components/PreferenceFieldsModule';
+import type { PreferenceFieldValues } from './components/PreferenceFieldsModule/constants';
+import type { DraftField } from './components/PreferenceFieldsModule/PreferenceFieldRow';
 import { DEFAULT_MODULES, eventConfigSchema } from './constants';
 import type { EventConfigValues } from './types';
 
@@ -35,6 +38,10 @@ const EventConfigForm = () => {
   const [aiError, setAiError] = useState<string | null>(null);
   const [modules, setModules] = useState<EventModules>({ ...DEFAULT_MODULES });
 
+  const [draftFields, setDraftFields] = useState<DraftField[]>([]);
+  const [isAddingField, setIsAddingField] = useState(false);
+  const [editingFieldKey, setEditingFieldKey] = useState<string | null>(null);
+
   const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
 
   const form = useForm<EventConfigValues>({
@@ -48,6 +55,11 @@ const EventConfigForm = () => {
       location: '',
     },
   });
+
+  // Stable top-level subscriptions — useWatch ensures re-renders whenever these
+  // fields change, regardless of where they are consumed in the JSX tree.
+  const watchedDescription = useWatch({ control: form.control, name: 'description' });
+  const watchedEventType = useWatch({ control: form.control, name: 'event_type' });
 
   // Called on description blur — non-blocking AI suggestion
   const handleDetectEventType = () => {
@@ -104,6 +116,25 @@ const EventConfigForm = () => {
 
   const handleDeleteItem = (key: string) => {
     setDraftItems((prev) => prev.filter((item) => item._key !== key));
+  };
+
+  const handleAddField = (values: PreferenceFieldValues) => {
+    setDraftFields((prev) => [
+      ...prev,
+      { ...values, _key: `${Date.now()}_${Math.random()}` },
+    ]);
+    setIsAddingField(false);
+  };
+
+  const handleUpdateField = (key: string, values: PreferenceFieldValues) => {
+    setDraftFields((prev) =>
+      prev.map((f) => (f._key === key ? { ...values, _key: key } : f)),
+    );
+    setEditingFieldKey(null);
+  };
+
+  const handleDeleteField = (key: string) => {
+    setDraftFields((prev) => prev.filter((f) => f._key !== key));
   };
 
   const handleSubmit = form.handleSubmit(async (values) => {
@@ -255,6 +286,20 @@ const EventConfigForm = () => {
                   onDeleteItem={handleDeleteItem}
                   onSetAddingItem={setIsAddingItem}
                   onSetEditingKey={setEditingKey}
+                />
+              )}
+              {key === 'participantList' && (
+                <PreferenceFieldsModule
+                  draftFields={draftFields}
+                  isAddingField={isAddingField}
+                  editingKey={editingFieldKey}
+                  description={watchedDescription}
+                  eventType={watchedEventType}
+                  onAddField={handleAddField}
+                  onUpdateField={handleUpdateField}
+                  onDeleteField={handleDeleteField}
+                  onSetAddingField={setIsAddingField}
+                  onSetEditingKey={setEditingFieldKey}
                 />
               )}
             </ModuleToggleRow>
