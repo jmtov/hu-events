@@ -36,3 +36,13 @@ export type ChecklistItem = {
 
 export type CreateChecklistItemPayload = Omit<ChecklistItem, 'id' | 'eventId'>;
 export type UpdateChecklistItemPayload = Partial<CreateChecklistItemPayload>;
+
+export type ChecklistSuggestion = {
+  name: string;
+  type: string;
+  suggestedRequired: boolean;
+};
+
+export type ChecklistResult = {
+  items: ChecklistSuggestion[];
+};
