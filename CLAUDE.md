@@ -23,9 +23,10 @@ Always cross-reference these before implementing any feature.
 | Routing | TanStack Router (file-based, under `src/routes/`) |
 | Data fetching | TanStack Query (hooks under `src/hooks/`) |
 | Forms | React Hook Form + Zod (`src/schemas/`) |
-| i18n | i18next + react-i18next (`src/assets/locales/`) |
+| i18n | i18next + react-i18next — JSON files in `public/locales/<lang>/` |
 | API client | axios via `src/lib/api.ts` → points to `/api` |
 | API layer | Vercel Serverless Functions under `api/` |
+| Database | Supabase (Postgres) — accessed only from serverless functions |
 | AI | Claude API — called only from serverless functions, never from the frontend |
 | Automations | n8n (cloud) — serverless functions proxy to n8n via webhooks, never called directly from the frontend |
 | Deploy | Vercel |
@@ -62,12 +63,23 @@ Four workflows are defined — see `docs/api_layer.md` for exact webhook payload
 | Deadline approaching | RSVP deadline 24h away, attendee unconfirmed | Unconfirmed attendees | Email |
 | Event ended | Event date has passed | All attendees | Email |
 
+### Database
+- The frontend never connects to Supabase directly — all DB access goes through `api/`
+- Serverless functions use `api/_lib/supabase.ts` to get the Supabase client
+- When `USE_MOCK_DATA=true`, serverless functions return data from `api/_fixtures/` instead of querying Supabase
+- `api/_fixtures/` is the **single source of truth** for test data — never edit `supabase/seed.sql` by hand
+- To regenerate `seed.sql` after changing a fixture: `npm run db:seed`
+- Schema migrations live in `supabase/migrations/`, one file per domain, named with a timestamp prefix
+- See `docs/api_layer.md` for the full database section including environment variables and local setup
+
 ### Forms
-- TanStack Form for all form state — no `useState` for form fields
+- React Hook Form for all form state — no `useState` for form fields
 - Zod schemas in `src/schemas/`, one file per domain
-- Connect via `@tanstack/zod-form-adapter`
+- Connect via `@hookform/resolvers/zod`
 - Never inline validation logic in components
 - Form components must be named `<Domain>Form` — e.g. `CreateEventForm`, `AttendeeRegistrationForm`
+- Use `<FormProvider>` at the form root so nested field components can access context via `useFormContext()`
+- Shared field components live in `src/components/<Input|Select|...>/form.tsx` — they use `Controller` + `useFormContext()` internally
 
 ### TypeScript
 - Prefer **`type`** over `interface`

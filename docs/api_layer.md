@@ -239,6 +239,89 @@ n8n must validate this header at the start of every workflow and reject requests
 
 ---
 
+## Database — Supabase
+
+All database access goes through the Vercel Serverless Functions. The frontend never connects to Supabase directly.
+
+### Connection
+
+```ts
+// api/_lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!,
+)
+```
+
+`SUPABASE_SERVICE_KEY` is the service role key (full access). Never expose it to the frontend.
+
+### Mock fallback
+
+When `USE_MOCK_DATA=true`, serverless functions return data from `api/_fixtures/` instead of querying Supabase. This lets the team develop without needing Supabase credentials.
+
+```ts
+// Pattern used in every serverless function
+import { events } from '../_fixtures'
+
+export default async function handler(req, res) {
+  if (process.env.USE_MOCK_DATA === 'true') {
+    return res.json(events)
+  }
+  const { data } = await supabase.from('events').select('*')
+  return res.json(data)
+}
+```
+
+Set in `.env.local`:
+```
+USE_MOCK_DATA=true          # local dev without Supabase
+USE_MOCK_DATA=false         # use real Supabase (requires SUPABASE_URL + SUPABASE_SERVICE_KEY)
+```
+
+### Fixtures — single source of truth for test data
+
+`api/_fixtures/` contains typed TypeScript data. These files are the **only** place test data is defined.
+
+- Serverless functions import them directly when `USE_MOCK_DATA=true`
+- `supabase/seed.sql` is generated from them — never edit seed.sql by hand
+
+To regenerate seed.sql after changing a fixture:
+```bash
+npm run db:seed
+```
+
+### Schema migrations
+
+SQL migrations live in `supabase/migrations/`, one file per domain, named with a timestamp prefix:
+
+```
+supabase/migrations/
+  20260318000001_create_events.sql
+  20260318000002_create_participants.sql
+  20260318000003_create_checklist.sql
+  20260318000004_create_budget.sql
+  20260318000005_create_notifications.sql
+  20260318000006_create_contacts_and_receipts.sql
+```
+
+Local development with Supabase CLI (requires Docker):
+```bash
+supabase start          # starts local Postgres + Studio
+supabase db reset       # drops DB, applies all migrations + seed.sql
+supabase stop
+```
+
+### Environment variables for Supabase
+
+| Variable | Description |
+|---|---|
+| `SUPABASE_URL` | Project URL from the Supabase dashboard |
+| `SUPABASE_SERVICE_KEY` | Service role key — full DB access, never expose to frontend |
+
+---
+
 ## Rules for Claude Code
 
 - **Never call external APIs from the frontend** — always proxy through `api/`
