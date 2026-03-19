@@ -163,6 +163,11 @@
           "comms": "Comunicações e equipamentos",
           "misc": "Despesas diversas"
         }
+      },
+      "contacts": {
+        "description": "Adicione as pessoas que os participantes podem contatar para dúvidas ou logística. Você pode adicionar mais após criar o evento.",
+        "empty": "Nenhum contato ainda. Adicione ao menos uma pessoa de contato.",
+        "addContact": "Adicionar contato"
       }
     },
     "config": {
@@ -174,6 +179,85 @@
       "dateStart": "Início:",
       "location": "Localização:",
       "createAnother": "Criar outro evento"
+    },
+    "contacts": {
+      "title": "Informações de contato",
+      "subtitle": "Defina com quem os participantes podem entrar em contato para dúvidas ou problemas.",
+      "loading": "Carregando contatos...",
+      "error": "Falha ao carregar os contatos.",
+      "backToEvent": "Voltar ao evento",
+      "addContact": "Adicionar contato",
+      "empty": {
+        "title": "Nenhum contato ainda",
+        "description": "Adicione pelo menos uma pessoa de contato para que os participantes saibam a quem recorrer."
+      },
+      "card": {
+        "editAriaLabel": "Editar contato",
+        "deleteAriaLabel": "Remover contato"
+      },
+      "form": {
+        "name": "Nome",
+        "namePlaceholder": "Ex: Maria Torres",
+        "role": "Cargo",
+        "rolePlaceholder": "Ex: Líder de RH",
+        "email": "E-mail",
+        "emailPlaceholder": "Ex: maria@empresa.com",
+        "phone": "Telefone / WhatsApp",
+        "phonePlaceholder": "Ex: +55 11 99999 0001",
+        "save": "Salvar contato"
+      }
+    },
+    "dashboard": {
+      "loading": "Carregando painel...",
+      "error": "Falha ao carregar o painel.",
+      "header": {
+        "label": "Painel do evento",
+        "backToDetail": "Voltar ao evento"
+      },
+      "checklist": {
+        "title": "Progresso do checklist",
+        "empty": "Nenhum item de checklist configurado para este evento.",
+        "required": "Obrigatório",
+        "completedOf": "{{completed}} de {{total}} participantes concluíram"
+      },
+      "participants": {
+        "title": "Participantes",
+        "empty": "Nenhum participante adicionado ainda.",
+        "unnamed": "Sem nome",
+        "columns": {
+          "name": "Nome",
+          "email": "E-mail",
+          "location": "Localização",
+          "rsvp": "RSVP"
+        },
+        "rsvp": {
+          "confirmed": "Confirmado",
+          "pending": "Pendente",
+          "declined": "Recusou"
+        }
+      }
+    },
+    "detail": {
+      "loading": "Carregando evento...",
+      "error": "Falha ao carregar o evento.",
+      "modules": {
+        "title": "Módulos ativos",
+        "active": "Ativo",
+        "inactive": "Inativo"
+      },
+      "actions": {
+        "contacts": "Informações de contato",
+        "copyInviteLink": "Copiar link de convite",
+        "copyInviteLinkCopied": "Link copiado!",
+        "delete": "Excluir evento",
+        "dashboard": "Ver painel"
+      },
+      "deleteDialog": {
+        "title": "Excluir evento",
+        "description": "Esta ação não pode ser desfeita. Todos os dados do evento serão excluídos permanentemente.",
+        "confirm": "Sim, excluir",
+        "cancel": "Cancelar"
+      }
     },
     "modules": {
       "participantList": {

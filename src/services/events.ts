@@ -1,6 +1,7 @@
 import { api } from '@/lib/api';
 import type { AdminEventSummary, CreateEventPayload, Event, EventDetail } from '@/types/event';
-import type { PreferenceField } from '@/types/participant';
+import type { Participant, PreferenceField } from '@/types/participant';
+import type { EventChecklistStat } from '@/types/checklist';
 
 export const eventService = {
   getAdminEvents: () =>
@@ -21,4 +22,14 @@ export const eventService = {
   // Used by the attendee registration form
   getPreferenceFields: (eventId: string) =>
     api.get<PreferenceField[]>(`/events/${eventId}/preference-fields`).then((r) => r.data),
+
+  getParticipants: (eventId: string) =>
+    api
+      .get<Participant[]>(`/events/${eventId}/participants`)
+      .then((r) => r.data),
+
+  getEventChecklist: (eventId: string) =>
+    api
+      .get<EventChecklistStat[]>(`/events/${eventId}/checklist`)
+      .then((r) => r.data),
 };

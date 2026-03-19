@@ -163,6 +163,11 @@
           "comms": "Communications & Equipment",
           "misc": "Miscellaneous"
         }
+      },
+      "contacts": {
+        "description": "Add the people attendees can contact for questions or logistics. You can add more after creating the event.",
+        "empty": "No contacts yet. Add at least one contact person.",
+        "addContact": "Add contact"
       }
     },
     "config": {
@@ -174,6 +179,85 @@
       "dateStart": "Start:",
       "location": "Location:",
       "createAnother": "Create another event"
+    },
+    "contacts": {
+      "title": "Contact info",
+      "subtitle": "Define who attendees can reach out to for questions or issues.",
+      "loading": "Loading contacts...",
+      "error": "Failed to load contacts.",
+      "backToEvent": "Back to event",
+      "addContact": "Add contact",
+      "empty": {
+        "title": "No contacts yet",
+        "description": "Add at least one contact person so attendees know who to reach."
+      },
+      "card": {
+        "editAriaLabel": "Edit contact",
+        "deleteAriaLabel": "Remove contact"
+      },
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "e.g. Maria Torres",
+        "role": "Role",
+        "rolePlaceholder": "e.g. HR Lead",
+        "email": "Email",
+        "emailPlaceholder": "e.g. maria@company.com",
+        "phone": "Phone / WhatsApp",
+        "phonePlaceholder": "e.g. +54 11 9999 0001",
+        "save": "Save contact"
+      }
+    },
+    "dashboard": {
+      "loading": "Loading dashboard...",
+      "error": "Failed to load dashboard.",
+      "header": {
+        "label": "Event dashboard",
+        "backToDetail": "Back to event"
+      },
+      "checklist": {
+        "title": "Checklist progress",
+        "empty": "No checklist items configured for this event.",
+        "required": "Required",
+        "completedOf": "{{completed}} of {{total}} participants completed"
+      },
+      "participants": {
+        "title": "Participants",
+        "empty": "No participants added yet.",
+        "unnamed": "Unnamed",
+        "columns": {
+          "name": "Name",
+          "email": "Email",
+          "location": "Location",
+          "rsvp": "RSVP"
+        },
+        "rsvp": {
+          "confirmed": "Confirmed",
+          "pending": "Pending",
+          "declined": "Declined"
+        }
+      }
+    },
+    "detail": {
+      "loading": "Loading event...",
+      "error": "Failed to load event.",
+      "modules": {
+        "title": "Active modules",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "contacts": "Contact info",
+        "copyInviteLink": "Copy invite link",
+        "copyInviteLinkCopied": "Link copied!",
+        "delete": "Delete event",
+        "dashboard": "View dashboard"
+      },
+      "deleteDialog": {
+        "title": "Delete event",
+        "description": "This action cannot be undone. All event data will be permanently deleted.",
+        "confirm": "Yes, delete",
+        "cancel": "Cancel"
+      }
     },
     "modules": {
       "participantList": {
