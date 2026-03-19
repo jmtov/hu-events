@@ -81,6 +81,12 @@
         "copy": "Copiar link de convite",
         "copied": "Link copiado!"
       },
+      "budget": {
+        "title": "Orçamento",
+        "totalMax": "Total máximo por pessoa",
+        "noCaps": "Nenhuma categoria configurada.",
+        "manage": "Gerenciar Orçamento"
+      },
       "loading": "Carregando evento...",
       "error": "Falha ao carregar o evento."
     },
@@ -137,6 +143,26 @@
         "remove": "Remover",
         "invalidEmail": "Por favor, insira um endereço de e-mail válido.",
         "duplicateEmail": "Este e-mail já foi adicionado."
+      },
+      "budget": {
+        "description": "Ative categorias e defina um teto de alocação por pessoa. Use a IA para obter estimativas com base nas datas e no destino do evento.",
+        "estimateWithAI": "Estimar com IA",
+        "estimating": "Estimando...",
+        "totalMax": "Total máximo por pessoa",
+        "totalMaxNone": "Nenhum teto definido",
+        "capPlaceholder": "Teto",
+        "addCustom": "Adicionar categoria personalizada",
+        "addCustomConfirm": "Adicionar",
+        "customLabelPlaceholder": "Nome da categoria",
+        "removeCategory": "Remover categoria",
+        "aiError": "Não foi possível obter estimativas. Tente novamente.",
+        "categories": {
+          "flights": "Passagens aéreas",
+          "accommodation": "Hospedagem",
+          "food": "Alimentação e bebidas",
+          "comms": "Comunicações e equipamentos",
+          "misc": "Despesas diversas"
+        }
       }
     },
     "config": {

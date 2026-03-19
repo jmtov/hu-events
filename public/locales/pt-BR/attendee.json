@@ -19,7 +19,8 @@
       "placeholder": "seu@empresa.com"
     },
     "submit": "Continuar",
-    "submitting": "Carregando..."
+    "submitting": "Carregando...",
+    "adminAccess": "Acesso admin"
   },
   "eventList": {
     "title": "Meus eventos",

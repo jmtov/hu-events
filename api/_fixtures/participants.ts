@@ -1,8 +1,8 @@
 export const participants = [
-  // ─── Q2 Sales Kickoff (event 001) ────────────────────────────────────────
+  // ─── Q3 Sales Kickoff (event 001) ────────────────────────────────────────
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000001',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'par-0001-0000-0000-000000000001',
+    event_id: 'evt-0001-0000-0000-000000000001',
     email: 'ana.garcia@company.com',
     full_name: 'Ana Garcia',
     google_uid: 'google-uid-001',
@@ -14,8 +14,8 @@ export const participants = [
     updated_at: '2026-03-06T09:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000002',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'par-0001-0000-0000-000000000002',
+    event_id: 'evt-0001-0000-0000-000000000001',
     email: 'carlos.mendez@company.com',
     full_name: 'Carlos Mendez',
     google_uid: null,
@@ -27,8 +27,8 @@ export const participants = [
     updated_at: '2026-03-06T11:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000003',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'par-0001-0000-0000-000000000003',
+    event_id: 'evt-0001-0000-0000-000000000001',
     email: 'laura.silva@company.com',
     full_name: 'Laura Silva',
     google_uid: 'google-uid-003',
@@ -40,8 +40,8 @@ export const participants = [
     updated_at: '2026-03-08T14:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000004',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'par-0001-0000-0000-000000000004',
+    event_id: 'evt-0001-0000-0000-000000000001',
     email: 'mario.rodriguez@company.com',
     full_name: 'Mario Rodriguez',
     google_uid: null,
@@ -53,8 +53,8 @@ export const participants = [
     updated_at: '2026-03-09T10:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000005',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'par-0001-0000-0000-000000000005',
+    event_id: 'evt-0001-0000-0000-000000000001',
     email: 'sofia.lima@company.com',
     full_name: 'Sofia Lima',
     google_uid: 'google-uid-005',
@@ -68,8 +68,8 @@ export const participants = [
 
   // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000011',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    id: 'par-0002-0000-0000-000000000001',
+    event_id: 'evt-0002-0000-0000-000000000002',
     email: 'pedro.alves@company.com',
     full_name: 'Pedro Alves',
     google_uid: 'google-uid-011',
@@ -81,8 +81,8 @@ export const participants = [
     updated_at: '2026-03-11T09:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000012',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    id: 'par-0002-0000-0000-000000000002',
+    event_id: 'evt-0002-0000-0000-000000000002',
     email: 'julia.santos@company.com',
     full_name: 'Julia Santos',
     google_uid: 'google-uid-012',
@@ -94,8 +94,8 @@ export const participants = [
     updated_at: '2026-03-11T10:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000013',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    id: 'par-0002-0000-0000-000000000003',
+    event_id: 'evt-0002-0000-0000-000000000002',
     email: 'tomas.herrera@company.com',
     full_name: 'Tomas Herrera',
     google_uid: null,
@@ -107,8 +107,8 @@ export const participants = [
     updated_at: '2026-03-11T08:00:00Z',
   },
   {
-    id: 'b2c3d4e5-0002-0000-0000-000000000014',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000002',
+    id: 'par-0002-0000-0000-000000000004',
+    event_id: 'evt-0002-0000-0000-000000000002',
     email: 'valentina.mora@company.com',
     full_name: 'Valentina Mora',
     google_uid: 'google-uid-014',
@@ -119,79 +119,13 @@ export const participants = [
     created_at: '2026-03-11T09:30:00Z',
     updated_at: '2026-03-11T09:30:00Z',
   },
-
-  // ─── Leadership Summit 2026 (event 003) ───────────────────────────────────
-  {
-    id: 'b2c3d4e5-0002-0000-0000-000000000021',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
-    email: 'isabella.torres@company.com',
-    full_name: 'Isabella Torres',
-    google_uid: 'google-uid-021',
-    location_city: 'Bogota',
-    location_region: 'Cundinamarca',
-    location_country: 'Colombia',
-    rsvp_status: 'confirmed',
-    created_at: '2026-03-16T09:00:00Z',
-    updated_at: '2026-03-17T10:00:00Z',
-  },
-  {
-    id: 'b2c3d4e5-0002-0000-0000-000000000022',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
-    email: 'rodrigo.pena@company.com',
-    full_name: 'Rodrigo Peña',
-    google_uid: null,
-    location_city: 'Medellin',
-    location_region: 'Antioquia',
-    location_country: 'Colombia',
-    rsvp_status: 'confirmed',
-    created_at: '2026-03-16T10:00:00Z',
-    updated_at: '2026-03-17T11:00:00Z',
-  },
-  {
-    id: 'b2c3d4e5-0002-0000-0000-000000000023',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
-    email: 'natalia.reyes@company.com',
-    full_name: 'Natalia Reyes',
-    google_uid: 'google-uid-023',
-    location_city: 'Santiago',
-    location_region: 'Metropolitana',
-    location_country: 'Chile',
-    rsvp_status: 'pending',
-    created_at: '2026-03-17T08:30:00Z',
-    updated_at: '2026-03-17T08:30:00Z',
-  },
-  {
-    id: 'b2c3d4e5-0002-0000-0000-000000000024',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
-    email: 'andres.castillo@company.com',
-    full_name: 'Andres Castillo',
-    google_uid: null,
-    location_city: 'Lima',
-    location_region: 'Lima',
-    location_country: 'Peru',
-    rsvp_status: 'declined',
-    created_at: '2026-03-17T09:00:00Z',
-    updated_at: '2026-03-18T12:00:00Z',
-  },
-  {
-    id: 'b2c3d4e5-0002-0000-0000-000000000025',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000003',
-    email: 'camila.vega@company.com',
-    full_name: 'Camila Vega',
-    google_uid: 'google-uid-025',
-    location_city: 'Buenos Aires',
-    location_region: 'Buenos Aires',
-    location_country: 'Argentina',
-    rsvp_status: 'confirmed',
-    created_at: '2026-03-17T11:00:00Z',
-    updated_at: '2026-03-18T09:00:00Z',
-  },
 ];
 
 export const preferenceFields = [
+  // ─── Q3 Sales Kickoff (event 001) ────────────────────────────────────────
   {
-    id: 'c3d4e5f6-0003-0000-0000-000000000001',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'prf-0001-0000-0000-000000000001',
+    event_id: 'evt-0001-0000-0000-000000000001',
     label: 'Dietary restrictions',
     field_type: 'text',
     options: null,
@@ -199,27 +133,61 @@ export const preferenceFields = [
     sort_order: 0,
   },
   {
-    id: 'c3d4e5f6-0003-0000-0000-000000000002',
-    event_id: 'a1b2c3d4-0001-0000-0000-000000000001',
+    id: 'prf-0001-0000-0000-000000000002',
+    event_id: 'evt-0001-0000-0000-000000000001',
     label: 'T-shirt size',
     field_type: 'select',
     options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     required: false,
     sort_order: 1,
   },
+
+  // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
+  {
+    id: 'prf-0002-0000-0000-000000000001',
+    event_id: 'evt-0002-0000-0000-000000000002',
+    label: 'T-shirt size',
+    field_type: 'select',
+    options: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    required: false,
+    sort_order: 0,
+  },
+  {
+    id: 'prf-0002-0000-0000-000000000002',
+    event_id: 'evt-0002-0000-0000-000000000002',
+    label: 'GitHub username',
+    field_type: 'text',
+    options: null,
+    required: true,
+    sort_order: 1,
+  },
 ];
 
 export const participantPreferences = [
+  // Ana Garcia (event 001)
   {
-    id: 'd4e5f6a7-0004-0000-0000-000000000001',
-    participant_id: 'b2c3d4e5-0002-0000-0000-000000000001',
-    field_id: 'c3d4e5f6-0003-0000-0000-000000000001',
+    id: 'prv-0001-0000-0000-000000000001',
+    participant_id: 'par-0001-0000-0000-000000000001',
+    field_id: 'prf-0001-0000-0000-000000000001',
     value: 'Vegetarian',
   },
   {
-    id: 'd4e5f6a7-0004-0000-0000-000000000002',
-    participant_id: 'b2c3d4e5-0002-0000-0000-000000000001',
-    field_id: 'c3d4e5f6-0003-0000-0000-000000000002',
+    id: 'prv-0001-0000-0000-000000000002',
+    participant_id: 'par-0001-0000-0000-000000000001',
+    field_id: 'prf-0001-0000-0000-000000000002',
     value: 'M',
+  },
+  // Pedro Alves (event 002)
+  {
+    id: 'prv-0002-0000-0000-000000000001',
+    participant_id: 'par-0002-0000-0000-000000000001',
+    field_id: 'prf-0002-0000-0000-000000000001',
+    value: 'L',
+  },
+  {
+    id: 'prv-0002-0000-0000-000000000002',
+    participant_id: 'par-0002-0000-0000-000000000001',
+    field_id: 'prf-0002-0000-0000-000000000002',
+    value: 'pedroalves-dev',
   },
 ];

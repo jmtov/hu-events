@@ -13,6 +13,8 @@ import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
 import type { ChecklistSuggestion } from '@/types/checklist';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
+import BudgetModule from './components/BudgetModule';
+import { DEFAULT_BUDGET_CATEGORIES } from './components/BudgetModule/constants';
 import ChecklistModule from './components/ChecklistModule';
 import type { ChecklistItemValues } from './components/ChecklistModule/constants';
 import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
@@ -26,6 +28,7 @@ import {
 import ParticipantModule from './components/ParticipantModule';
 import { DEFAULT_MODULES, eventConfigSchema } from './constants';
 import type { EventConfigValues } from './types';
+import type { BudgetCategory } from '@/types/budget';
 
 const EventConfigForm = () => {
   const { t } = useTranslation('admin');
@@ -43,6 +46,9 @@ const EventConfigForm = () => {
   const [draftEmails, setDraftEmails] = useState<string[]>([]);
   const [draftTriggers, setDraftTriggers] = useState<DraftTrigger[]>(
     DEFAULT_DRAFT_TRIGGERS.map((t) => ({ ...t })),
+  );
+  const [draftBudgetCategories, setDraftBudgetCategories] = useState<BudgetCategory[]>(
+    DEFAULT_BUDGET_CATEGORIES,
   );
 
   const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
@@ -329,7 +335,17 @@ const EventConfigForm = () => {
                   }
                 />
               )}
-
+              {key === 'budget' && (
+                <BudgetModule
+                  categories={draftBudgetCategories}
+                  onCategoriesChange={setDraftBudgetCategories}
+                  eventType={form.watch('event_type')}
+                  description={form.watch('description')}
+                  dateStart={form.watch('date_start')}
+                  dateEnd={form.watch('date_end')}
+                  location={form.watch('location')}
+                />
+              )}
               {key === 'notifications' && (
                 <NotificationsModule
                   draftTriggers={draftTriggers}

@@ -10,6 +10,7 @@ import RsvpCard from './components/RsvpCard';
 import ChecklistProgressCard from './components/ChecklistProgressCard';
 import ParticipantSummaryCard from './components/ParticipantSummaryCard';
 import NotificationsSummaryCard from './components/NotificationsSummaryCard';
+import BudgetOverviewCard from './components/BudgetOverviewCard';
 
 type EventOverviewProps = {
   eventId: string;
@@ -92,6 +93,9 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
         <RsvpCard participants={participants} />
         {event.modules.checklist && (
           <ChecklistProgressCard items={checklist} />
+        )}
+        {event.modules.budget && (
+          <BudgetOverviewCard eventId={eventId} />
         )}
       </div>
 
