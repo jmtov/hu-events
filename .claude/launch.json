@@ -7,6 +7,12 @@
       "runtimeArgs": ["run", "dev"],
       "port": 5173,
       "autoPort": true
+    },
+    {
+      "name": "humand-eventos-api",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "USE_MOCK_DATA=true npx vercel dev --token $(grep '^VERCEL_TOKEN=' .env.local | cut -d= -f2) --listen 3000"],
+      "port": 3000
     }
   ]
 }
