@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetParticipants } from '@/hooks/useGetParticipants';
@@ -6,6 +8,7 @@ import SavedBanner from './components/SavedBanner';
 import EventHeader from './components/EventHeader';
 import RsvpCard from './components/RsvpCard';
 import ChecklistProgressCard from './components/ChecklistProgressCard';
+import ParticipantSummaryCard from './components/ParticipantSummaryCard';
 
 interface EventOverviewProps {
   eventId: string;
@@ -45,14 +48,32 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 px-4 py-8">
+      <Link
+        to="/admin/events"
+        className="animate-appear-from-bottom inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        style={{ animationDelay: 'calc(0 * 50ms)' }}
+      >
+        <IconArrowLeft size={16} />
+        {t('events.list.title')}
+      </Link>
+
       <SavedBanner visible={showSavedBanner} />
 
-      <EventHeader event={event} />
+      <EventHeader event={event} style={{ animationDelay: 'calc(1 * 50ms)' }} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div
+        className="animate-appear-from-bottom grid grid-cols-1 gap-4 sm:grid-cols-2"
+        style={{ animationDelay: 'calc(2 * 50ms)' }}
+      >
         <RsvpCard participants={participants} />
         <ChecklistProgressCard stats={checklistStats} />
       </div>
+
+      <ParticipantSummaryCard
+        participants={participants}
+        eventId={eventId}
+        style={{ animationDelay: 'calc(3 * 50ms)' }}
+      />
     </div>
   );
 };
