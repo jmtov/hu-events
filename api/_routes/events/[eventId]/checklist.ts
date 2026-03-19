@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { checklistItems, participantChecklistItems, participants } from '../../_fixtures'
-import { readChecklistItems, writeChecklistItems } from '../../_lib/checklist-store.js'
+import { checklistItems, participantChecklistItems, participants } from '../../../_fixtures'
+import { readChecklistItems, writeChecklistItems } from '../../../_lib/checklist-store.js'
 
 /**
  * GET  /api/events/:eventId/checklist  — list checklist items with per-item completion stats

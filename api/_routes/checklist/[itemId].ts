@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
+import { readChecklistItems, writeChecklistItems } from '../../_lib/checklist-store.js'
 
 /**
  * PATCH  /api/checklist/:itemId  — update a checklist item

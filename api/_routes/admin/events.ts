@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import type { AdminEventSummary } from '../../src/types/event';
-import { participants } from '../_fixtures/participants.js';
-import { readEvents } from '../_lib/mock-store.js';
+import type { AdminEventSummary } from '../../../src/types/event';
+import { participants } from '../../_fixtures/participants.js';
+import { readEvents } from '../../_lib/mock-store.js';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).end();

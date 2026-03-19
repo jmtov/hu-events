@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { readParticipants, writeParticipants } from '../_lib/participant-store.js';
+import { readParticipants, writeParticipants } from '../../_lib/participant-store.js';
 
 const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true';
 

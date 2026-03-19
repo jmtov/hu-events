@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import type { Event, EventModules } from '../../../src/types/event'
-import { readEvents, writeEvents } from '../../_lib/mock-store.js'
+import type { Event, EventModules } from '../../../../src/types/event'
+import { readEvents, writeEvents } from '../../../_lib/mock-store.js'
 
 /**
  * PATCH /api/events/:eventId/modules — update which modules are enabled
