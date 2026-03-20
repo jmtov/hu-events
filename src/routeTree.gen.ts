@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as JoinEventIdRouteImport } from './routes/join/$eventId'
 import { Route as AttendeeLoginRouteImport } from './routes/attendee/login'
@@ -20,6 +22,16 @@ import { Route as AdminEventsEventIdRouteImport } from './routes/admin/events/$e
 import { Route as AdminEventsEventIdIndexRouteImport } from './routes/admin/events/$eventId/index'
 import { Route as AdminEventsEventIdEditRouteImport } from './routes/admin/events/$eventId/edit'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -41,9 +53,9 @@ const AttendeeEventsIndexRoute = AttendeeEventsIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
-  id: '/admin/events/',
-  path: '/admin/events/',
-  getParentRoute: () => rootRouteImport,
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AttendeeEventsEventIdRoute = AttendeeEventsEventIdRouteImport.update({
   id: '/attendee/events/$eventId',
@@ -51,14 +63,14 @@ const AttendeeEventsEventIdRoute = AttendeeEventsEventIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminEventsNewRoute = AdminEventsNewRouteImport.update({
-  id: '/admin/events/new',
-  path: '/admin/events/new',
-  getParentRoute: () => rootRouteImport,
+  id: '/events/new',
+  path: '/events/new',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
-  id: '/admin/events/$eventId',
-  path: '/admin/events/$eventId',
-  getParentRoute: () => rootRouteImport,
+  id: '/events/$eventId',
+  path: '/events/$eventId',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminEventsEventIdIndexRoute = AdminEventsEventIdIndexRouteImport.update({
   id: '/',
@@ -73,6 +85,8 @@ const AdminEventsEventIdEditRoute = AdminEventsEventIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/login': typeof LoginRoute
   '/attendee/login': typeof AttendeeLoginRoute
   '/join/$eventId': typeof JoinEventIdRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
@@ -85,6 +99,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/login': typeof LoginRoute
   '/attendee/login': typeof AttendeeLoginRoute
   '/join/$eventId': typeof JoinEventIdRoute
   '/admin/events/new': typeof AdminEventsNewRoute
@@ -97,6 +113,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/login': typeof LoginRoute
   '/attendee/login': typeof AttendeeLoginRoute
   '/join/$eventId': typeof JoinEventIdRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdRouteWithChildren
@@ -111,6 +129,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
+    | '/login'
     | '/attendee/login'
     | '/join/$eventId'
     | '/admin/events/$eventId'
@@ -123,6 +143,8 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
+    | '/login'
     | '/attendee/login'
     | '/join/$eventId'
     | '/admin/events/new'
@@ -134,6 +156,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
+    | '/login'
     | '/attendee/login'
     | '/join/$eventId'
     | '/admin/events/$eventId'
@@ -147,17 +171,30 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  LoginRoute: typeof LoginRoute
   AttendeeLoginRoute: typeof AttendeeLoginRoute
   JoinEventIdRoute: typeof JoinEventIdRoute
-  AdminEventsEventIdRoute: typeof AdminEventsEventIdRouteWithChildren
-  AdminEventsNewRoute: typeof AdminEventsNewRoute
   AttendeeEventsEventIdRoute: typeof AttendeeEventsEventIdRoute
-  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
   AttendeeEventsIndexRoute: typeof AttendeeEventsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -188,10 +225,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/events/': {
       id: '/admin/events/'
-      path: '/admin/events'
+      path: '/events'
       fullPath: '/admin/events/'
       preLoaderRoute: typeof AdminEventsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/attendee/events/$eventId': {
       id: '/attendee/events/$eventId'
@@ -202,17 +239,17 @@ declare module '@tanstack/react-router' {
     }
     '/admin/events/new': {
       id: '/admin/events/new'
-      path: '/admin/events/new'
+      path: '/events/new'
       fullPath: '/admin/events/new'
       preLoaderRoute: typeof AdminEventsNewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/events/$eventId': {
       id: '/admin/events/$eventId'
-      path: '/admin/events/$eventId'
+      path: '/events/$eventId'
       fullPath: '/admin/events/$eventId'
       preLoaderRoute: typeof AdminEventsEventIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/events/$eventId/': {
       id: '/admin/events/$eventId/'
@@ -244,14 +281,27 @@ const AdminEventsEventIdRouteChildren: AdminEventsEventIdRouteChildren = {
 const AdminEventsEventIdRouteWithChildren =
   AdminEventsEventIdRoute._addFileChildren(AdminEventsEventIdRouteChildren)
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AttendeeLoginRoute: AttendeeLoginRoute,
-  JoinEventIdRoute: JoinEventIdRoute,
+interface AdminRouteChildren {
+  AdminEventsEventIdRoute: typeof AdminEventsEventIdRouteWithChildren
+  AdminEventsNewRoute: typeof AdminEventsNewRoute
+  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
   AdminEventsEventIdRoute: AdminEventsEventIdRouteWithChildren,
   AdminEventsNewRoute: AdminEventsNewRoute,
-  AttendeeEventsEventIdRoute: AttendeeEventsEventIdRoute,
   AdminEventsIndexRoute: AdminEventsIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  LoginRoute: LoginRoute,
+  AttendeeLoginRoute: AttendeeLoginRoute,
+  JoinEventIdRoute: JoinEventIdRoute,
+  AttendeeEventsEventIdRoute: AttendeeEventsEventIdRoute,
   AttendeeEventsIndexRoute: AttendeeEventsIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,4 +1,14 @@
 {
+  "login": {
+    "brand": "Humand Events",
+    "title": "Acceso de administrador",
+    "subtitle": "Inicia sesión con tu cuenta de Google para gestionar eventos.",
+    "cardTitle": "Iniciar sesión con Google",
+    "cardDescription": "Usa tu cuenta corporativa de Google.",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signingIn": "Redirigiendo...",
+    "attendeeAccess": "Acceso de asistente"
+  },
   "common": {
     "cancel": "Cancelar",
     "saving": "Guardando..."

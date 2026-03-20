@@ -41,7 +41,7 @@ const AttendeeLogin = () => {
 
         <div className="animate-appear-from-bottom text-center" style={{ animationDelay: 'calc(1 * 50ms)' }}>
           <Link
-            to="/admin/events"
+            to="/login"
             className="text-xs text-muted-foreground underline-offset-4 hover:underline"
           >
             {t('login.adminAccess')}
