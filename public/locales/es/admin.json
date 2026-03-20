@@ -101,6 +101,12 @@
         "noCaps": "Sin categorías configuradas.",
         "manage": "Gestionar Presupuesto"
       },
+      "budgetStats": {
+        "title": "Desglose de presupuesto",
+        "perPerson": "Por persona",
+        "totalRegistered": "Total para {{count}} registrados",
+        "expectedTotal": "Total esperado ({{count}} personas)"
+      },
       "loading": "Cargando evento...",
       "error": "Error al cargar el evento.",
       "delete": "Eliminar evento",
@@ -146,6 +152,10 @@
         "location": {
           "label": "Ubicación",
           "placeholder": "Ej: Buenos Aires — Hotel Alvear"
+        },
+        "expectedAttendees": {
+          "label": "Asistentes esperados",
+          "placeholder": "Ej: 50"
         }
       },
       "checklist": {

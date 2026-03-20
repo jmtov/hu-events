@@ -70,6 +70,7 @@ const EventConfigForm = () => {
       date_start: '',
       date_end: '',
       location: '',
+      expected_attendees: '',
     },
   });
 
@@ -202,6 +203,7 @@ const EventConfigForm = () => {
       date_start: values.date_start,
       date_end: values.date_end || undefined,
       location: values.location || undefined,
+      expected_attendees: values.expected_attendees ? parseInt(values.expected_attendees, 10) : undefined,
       modules,
       participants: modules.participantList
         ? draftEmails.map((email) => ({ email }))
@@ -337,6 +339,12 @@ const EventConfigForm = () => {
                 name="location"
                 label={t('events.create.fields.location.label')}
                 placeholder={t('events.create.fields.location.placeholder')}
+              />
+              <FormInput
+                name="expected_attendees"
+                label={t('events.create.fields.expectedAttendees.label')}
+                placeholder={t('events.create.fields.expectedAttendees.placeholder')}
+                type="number"
               />
             </CardContent>
           </Card>

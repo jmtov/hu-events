@@ -9,6 +9,7 @@ import { useDeleteEvent } from '@/hooks/useDeleteEvent';
 import { useGetContacts } from '@/hooks/useGetContacts';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import BudgetOverviewCard from './components/BudgetOverviewCard';
+import BudgetStatsCard from './components/BudgetStatsCard';
 import ChecklistProgressCard from './components/ChecklistProgressCard';
 import EventHeader from './components/EventHeader';
 import NotificationsSummaryCard from './components/NotificationsSummaryCard';
@@ -113,6 +114,13 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
         )}
         {event.modules.budget && (
           <BudgetOverviewCard eventId={eventId} />
+        )}
+        {event.modules.budget && (
+          <BudgetStatsCard
+            eventId={eventId}
+            participantCount={participants.length}
+            expectedAttendees={event.expected_attendees}
+          />
         )}
       </div>
 

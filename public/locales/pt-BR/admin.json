@@ -101,6 +101,12 @@
         "noCaps": "Nenhuma categoria configurada.",
         "manage": "Gerenciar Orçamento"
       },
+      "budgetStats": {
+        "title": "Detalhamento do orçamento",
+        "perPerson": "Por pessoa",
+        "totalRegistered": "Total para {{count}} inscritos",
+        "expectedTotal": "Total esperado ({{count}} pessoas)"
+      },
       "loading": "Carregando evento...",
       "error": "Falha ao carregar o evento.",
       "delete": "Excluir evento",
@@ -146,6 +152,10 @@
         "location": {
           "label": "Localização",
           "placeholder": "Ex: São Paulo — Hotel Unique"
+        },
+        "expectedAttendees": {
+          "label": "Participantes esperados",
+          "placeholder": "Ex: 50"
         }
       },
       "checklist": {

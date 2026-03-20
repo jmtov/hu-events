@@ -3,7 +3,7 @@ import type { Budget } from '../../src/types/budget.js';
 export const budgets: Budget[] = [
   // ─── Q3 Sales Kickoff (event 001) ────────────────────────────────────────
   {
-    event_id: 'evt-0001-0000-0000-000000000001',
+    event_id: '00000001-0000-0001-0000-000000000001',
     currency: 'USD',
     categories: [
       {
@@ -52,7 +52,7 @@ export const budgets: Budget[] = [
 
   // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
   {
-    event_id: 'evt-0002-0000-0000-000000000002',
+    event_id: '00000001-0000-0001-0000-000000000002',
     currency: 'USD',
     categories: [
       {
