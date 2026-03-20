@@ -1,4 +1,3 @@
-import { IconSparkles } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import type { ChecklistItemValues } from './constants';
@@ -9,9 +8,6 @@ type ChecklistModuleProps = {
   draftItems: DraftItem[];
   isAddingItem: boolean;
   editingKey: string | null;
-  aiError: string | null;
-  isGenerating: boolean;
-  onGenerateAI: () => void;
   onAddItem: (values: ChecklistItemValues) => void;
   onUpdateItem: (key: string, values: ChecklistItemValues) => void;
   onDeleteItem: (key: string) => void;
@@ -23,9 +19,6 @@ const ChecklistModule = ({
   draftItems,
   isAddingItem,
   editingKey,
-  aiError,
-  isGenerating,
-  onGenerateAI,
   onAddItem,
   onUpdateItem,
   onDeleteItem,
@@ -36,27 +29,9 @@ const ChecklistModule = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground">
-          {t('events.create.checklist.description')}
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onGenerateAI}
-          disabled={isGenerating}
-        >
-          <IconSparkles size={14} />
-          {isGenerating
-            ? t('events.create.checklist.generating')
-            : t('events.create.checklist.generateWithAI')}
-        </Button>
-      </div>
-
-      {aiError && (
-        <p className="text-sm text-destructive">{aiError}</p>
-      )}
+      <p className="text-sm text-muted-foreground">
+        {t('events.create.checklist.description')}
+      </p>
 
       {draftItems.length === 0 && !isAddingItem && (
         <div className="rounded-xl border border-dashed border-border px-6 py-8 text-center">

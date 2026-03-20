@@ -1,19 +1,9 @@
 import { api } from '@/lib/api';
-import type { ChecklistResult } from '@/types/checklist';
-
-export type DetectEventTypeResult = { event_type: string };
+import type { SuggestEventPayload, EventSuggestion } from '@/types/event-suggestion';
 
 export const aiService = {
-  detectEventType: (description: string): Promise<DetectEventTypeResult> =>
+  suggestEvent: (payload: SuggestEventPayload): Promise<EventSuggestion> =>
     api
-      .post<DetectEventTypeResult>('/ai/detect-event-type', { description })
-      .then((r) => r.data),
-
-  generateChecklist: (params: {
-    description: string;
-    eventType?: string;
-  }): Promise<ChecklistResult> =>
-    api
-      .post<ChecklistResult>('/ai/generate-checklist', params)
+      .post<EventSuggestion>('/ai/suggest-event', payload)
       .then((r) => r.data),
 };

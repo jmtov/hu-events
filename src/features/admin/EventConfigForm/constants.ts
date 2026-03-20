@@ -2,10 +2,10 @@ import { z } from 'zod';
 import type { EventModules } from '@/types/event';
 
 export const DEFAULT_MODULES: EventModules = {
-  participantList: true,
-  checklist: true,
+  participantList: false,
+  checklist: false,
   budget: false,
-  notifications: true,
+  notifications: false,
   contacts: false,
 };
 

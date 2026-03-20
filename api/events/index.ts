@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { CreateEventPayload, Event } from '../../src/types/event.js'
-import { readEvents, writeEvents } from '../_lib/mock-store.js'
+import { readEvents, writeEvents, readBudgets, writeBudgets, readContacts, writeContacts } from '../_lib/mock-store.js'
 import { readParticipants, writeParticipants } from '../_lib/participant-store.js'
 import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
 import { readPreferenceFields, writePreferenceFields } from '../_lib/preference-field-store.js'
@@ -105,6 +105,22 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         recipient: t.recipient,
       }))
       writeTriggers([...readTriggers(), ...newTriggers])
+    }
+
+    if (body.modules?.budget && body.budget?.length) {
+      writeBudgets([...readBudgets(), { event_id: eventId, currency: 'USD', categories: body.budget, updated_at: now }])
+    }
+
+    if (body.modules?.contacts && body.contacts?.length) {
+      const newContacts = body.contacts.map((c) => ({
+        id: generateId('contact'),
+        event_id: eventId,
+        name: c.name,
+        role: c.role,
+        email: c.email,
+        phone: c.phone ?? null,
+      }))
+      writeContacts([...readContacts(), ...newContacts])
     }
 
     return res.status(201).json(event)

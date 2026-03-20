@@ -17,6 +17,8 @@ type FormTextareaProps = {
   /** Called when the field loses focus, after react-hook-form's own onBlur. */
   onBlur?: () => void;
   rows?: number;
+  /** Disables the textarea. */
+  disabled?: boolean;
 };
 
 /**
@@ -37,6 +39,7 @@ const FormTextarea = ({
   hint,
   onBlur: onBlurProp,
   rows = 4,
+  disabled,
 }: FormTextareaProps) => {
   const { control, formState } = useFormContext();
   const error = formState.errors[name]?.message as string | undefined;
@@ -57,6 +60,7 @@ const FormTextarea = ({
             rows={rows}
             value={field.value}
             onChange={field.onChange}
+            disabled={disabled}
             onBlur={() => {
               field.onBlur();
               onBlurProp?.();

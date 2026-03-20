@@ -6,7 +6,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { TriggerChannel, TriggerRecipient, TriggerTiming } from '@/types/trigger';
+import type {
+  TriggerChannel,
+  TriggerRecipient,
+  TriggerTiming,
+} from '@/types/trigger';
 import type { DraftTrigger } from './constants';
 
 type NotificationsModuleProps = {
@@ -25,7 +29,10 @@ const TIMING_LABELS: Record<TriggerTiming, string> = {
   hours_after: 'Hours after',
 };
 
-const NotificationsModule = ({ draftTriggers, onUpdateTrigger }: NotificationsModuleProps) => {
+const NotificationsModule = ({
+  draftTriggers,
+  onUpdateTrigger,
+}: NotificationsModuleProps) => {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
@@ -36,14 +43,16 @@ const NotificationsModule = ({ draftTriggers, onUpdateTrigger }: NotificationsMo
         {draftTriggers.map((trigger, index) => {
           const isChecklist = trigger.source === 'checklist';
           const showTimingValue =
-            isChecklist || trigger.timing === 'days_before' || trigger.timing === 'hours_after';
+            isChecklist ||
+            trigger.timing === 'days_before' ||
+            trigger.timing === 'hours_after';
 
           return (
             <div
               key={trigger.name}
               className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm"
             >
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5 basis-full">
                 <span className="truncate font-medium text-card-foreground">
                   {trigger.name}
                 </span>
@@ -54,14 +63,17 @@ const NotificationsModule = ({ draftTriggers, onUpdateTrigger }: NotificationsMo
 
               <div className="flex shrink-0 items-center gap-2">
                 {isChecklist ? (
-                  <span className="w-36 text-sm text-muted-foreground">Days before</span>
+                  <span className="w-36 text-sm text-muted-foreground">
+                    Days before
+                  </span>
                 ) : (
                   <Select
                     value={trigger.timing}
                     onValueChange={(v) =>
                       onUpdateTrigger(index, {
                         timing: v as TriggerTiming,
-                        timingValue: v === 'immediately' ? 0 : trigger.timingValue,
+                        timingValue:
+                          v === 'immediately' ? 0 : trigger.timingValue,
                       })
                     }
                   >
@@ -82,7 +94,9 @@ const NotificationsModule = ({ draftTriggers, onUpdateTrigger }: NotificationsMo
                     min={1}
                     value={trigger.timingValue}
                     onChange={(e) =>
-                      onUpdateTrigger(index, { timingValue: Number(e.target.value) })
+                      onUpdateTrigger(index, {
+                        timingValue: Number(e.target.value),
+                      })
                     }
                     className="w-16 text-center"
                     aria-label={TIMING_LABELS[trigger.timing]}
