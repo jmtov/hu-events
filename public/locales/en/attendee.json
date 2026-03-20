@@ -130,6 +130,10 @@
         "document_upload": "Document",
         "info_input": "Info"
       }
+    },
+    "contacts": {
+      "title": "Contact persons",
+      "empty": "No contacts available for this event."
     }
   }
 }

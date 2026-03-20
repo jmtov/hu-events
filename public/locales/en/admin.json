@@ -88,7 +88,14 @@
         "manage": "Manage Budget"
       },
       "loading": "Loading event...",
-      "error": "Failed to load event."
+      "error": "Failed to load event.",
+      "delete": "Delete event",
+      "deleteDialog": {
+        "title": "Delete event",
+        "description": "This action cannot be undone. All event data will be permanently deleted.",
+        "confirm": "Yes, delete",
+        "cancel": "Cancel"
+      }
     },
     "create": {
       "title": "Create event",
@@ -244,6 +251,10 @@
         "title": "Active modules",
         "active": "Active",
         "inactive": "Inactive"
+      },
+      "contacts": {
+        "title": "Contact persons",
+        "empty": "No contacts configured for this event."
       },
       "actions": {
         "contacts": "Contact info",

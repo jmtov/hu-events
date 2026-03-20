@@ -88,7 +88,14 @@
         "manage": "Gerenciar Orçamento"
       },
       "loading": "Carregando evento...",
-      "error": "Falha ao carregar o evento."
+      "error": "Falha ao carregar o evento.",
+      "delete": "Excluir evento",
+      "deleteDialog": {
+        "title": "Excluir evento",
+        "description": "Esta ação não pode ser desfeita. Todos os dados do evento serão excluídos permanentemente.",
+        "confirm": "Sim, excluir",
+        "cancel": "Cancelar"
+      }
     },
     "create": {
       "title": "Criar evento",
@@ -244,6 +251,10 @@
         "title": "Módulos ativos",
         "active": "Ativo",
         "inactive": "Inativo"
+      },
+      "contacts": {
+        "title": "Pessoas de contato",
+        "empty": "Nenhum contato configurado para este evento."
       },
       "actions": {
         "contacts": "Informações de contato",

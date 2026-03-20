@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import EventDetail from '@/features/admin/EventDetail';
+import EventOverview from '@/features/admin/EventOverview';
 
 const EventDetailPage = () => {
   const { eventId } = Route.useParams();
   const { created } = Route.useSearch();
 
-  return <EventDetail eventId={eventId} showSavedBanner={created ?? false} />;
+  return <EventOverview eventId={eventId} showSavedBanner={created ?? false} />;
 };
 
 export const Route = createFileRoute('/admin/events/$eventId/')({

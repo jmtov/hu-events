@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/card';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useGetParticipantData } from '@/hooks/useGetParticipantData';
+import { useGetContacts } from '@/hooks/useGetContacts';
+import ContactsCard from '@/components/ContactsCard';
 import EventHeader from '@/features/attendee/HumandRegistrationPage/components/EventHeader';
 import type { ParticipantChecklistEntry } from '@/services/attendance';
 
@@ -62,6 +64,7 @@ const AttendeeEventView = ({ eventId, email }: AttendeeEventViewProps) => {
   const { t } = useTranslation('attendee');
 
   const { data: event, isLoading: eventLoading } = useGetEvent(eventId);
+  const { data: contacts } = useGetContacts(eventId);
   const { data: participantData, isLoading: participantLoading } = useGetParticipantData(
     eventId,
     email,
@@ -171,6 +174,16 @@ const AttendeeEventView = ({ eventId, email }: AttendeeEventViewProps) => {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Contacts */}
+        {event.modules.contacts && (
+          <div
+            className="animate-appear-from-bottom"
+            style={{ animationDelay: 'calc(4 * 50ms)' }}
+          >
+            <ContactsCard contacts={contacts ?? []} ns="attendee" />
           </div>
         )}
       </div>

@@ -19,7 +19,6 @@ import { Route as AdminEventsNewRouteImport } from './routes/admin/events/new'
 import { Route as AdminEventsEventIdRouteImport } from './routes/admin/events/$eventId'
 import { Route as AdminEventsEventIdIndexRouteImport } from './routes/admin/events/$eventId/index'
 import { Route as AdminEventsEventIdEditRouteImport } from './routes/admin/events/$eventId/edit'
-import { Route as AdminEventsEventIdContactsRouteImport } from './routes/admin/events/$eventId/contacts'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -71,12 +70,6 @@ const AdminEventsEventIdEditRoute = AdminEventsEventIdEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => AdminEventsEventIdRoute,
 } as any)
-const AdminEventsEventIdContactsRoute =
-  AdminEventsEventIdContactsRouteImport.update({
-    id: '/contacts',
-    path: '/contacts',
-    getParentRoute: () => AdminEventsEventIdRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,7 +80,6 @@ export interface FileRoutesByFullPath {
   '/attendee/events/$eventId': typeof AttendeeEventsEventIdRoute
   '/admin/events/': typeof AdminEventsIndexRoute
   '/attendee/events/': typeof AttendeeEventsIndexRoute
-  '/admin/events/$eventId/contacts': typeof AdminEventsEventIdContactsRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
   '/admin/events/$eventId/': typeof AdminEventsEventIdIndexRoute
 }
@@ -99,7 +91,6 @@ export interface FileRoutesByTo {
   '/attendee/events/$eventId': typeof AttendeeEventsEventIdRoute
   '/admin/events': typeof AdminEventsIndexRoute
   '/attendee/events': typeof AttendeeEventsIndexRoute
-  '/admin/events/$eventId/contacts': typeof AdminEventsEventIdContactsRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdIndexRoute
 }
@@ -113,7 +104,6 @@ export interface FileRoutesById {
   '/attendee/events/$eventId': typeof AttendeeEventsEventIdRoute
   '/admin/events/': typeof AdminEventsIndexRoute
   '/attendee/events/': typeof AttendeeEventsIndexRoute
-  '/admin/events/$eventId/contacts': typeof AdminEventsEventIdContactsRoute
   '/admin/events/$eventId/edit': typeof AdminEventsEventIdEditRoute
   '/admin/events/$eventId/': typeof AdminEventsEventIdIndexRoute
 }
@@ -128,7 +118,6 @@ export interface FileRouteTypes {
     | '/attendee/events/$eventId'
     | '/admin/events/'
     | '/attendee/events/'
-    | '/admin/events/$eventId/contacts'
     | '/admin/events/$eventId/edit'
     | '/admin/events/$eventId/'
   fileRoutesByTo: FileRoutesByTo
@@ -140,7 +129,6 @@ export interface FileRouteTypes {
     | '/attendee/events/$eventId'
     | '/admin/events'
     | '/attendee/events'
-    | '/admin/events/$eventId/contacts'
     | '/admin/events/$eventId/edit'
     | '/admin/events/$eventId'
   id:
@@ -153,7 +141,6 @@ export interface FileRouteTypes {
     | '/attendee/events/$eventId'
     | '/admin/events/'
     | '/attendee/events/'
-    | '/admin/events/$eventId/contacts'
     | '/admin/events/$eventId/edit'
     | '/admin/events/$eventId/'
   fileRoutesById: FileRoutesById
@@ -241,24 +228,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsEventIdEditRouteImport
       parentRoute: typeof AdminEventsEventIdRoute
     }
-    '/admin/events/$eventId/contacts': {
-      id: '/admin/events/$eventId/contacts'
-      path: '/contacts'
-      fullPath: '/admin/events/$eventId/contacts'
-      preLoaderRoute: typeof AdminEventsEventIdContactsRouteImport
-      parentRoute: typeof AdminEventsEventIdRoute
-    }
   }
 }
 
 interface AdminEventsEventIdRouteChildren {
-  AdminEventsEventIdContactsRoute: typeof AdminEventsEventIdContactsRoute
   AdminEventsEventIdEditRoute: typeof AdminEventsEventIdEditRoute
   AdminEventsEventIdIndexRoute: typeof AdminEventsEventIdIndexRoute
 }
 
 const AdminEventsEventIdRouteChildren: AdminEventsEventIdRouteChildren = {
-  AdminEventsEventIdContactsRoute: AdminEventsEventIdContactsRoute,
   AdminEventsEventIdEditRoute: AdminEventsEventIdEditRoute,
   AdminEventsEventIdIndexRoute: AdminEventsEventIdIndexRoute,
 }

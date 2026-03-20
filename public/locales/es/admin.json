@@ -88,7 +88,14 @@
         "manage": "Gestionar Presupuesto"
       },
       "loading": "Cargando evento...",
-      "error": "Error al cargar el evento."
+      "error": "Error al cargar el evento.",
+      "delete": "Eliminar evento",
+      "deleteDialog": {
+        "title": "Eliminar evento",
+        "description": "Esta acción no se puede deshacer. Todos los datos del evento serán eliminados permanentemente.",
+        "confirm": "Sí, eliminar",
+        "cancel": "Cancelar"
+      }
     },
     "create": {
       "title": "Crear evento",
@@ -244,6 +251,10 @@
         "title": "Módulos activos",
         "active": "Activo",
         "inactive": "Inactivo"
+      },
+      "contacts": {
+        "title": "Personas de contacto",
+        "empty": "No hay contactos configurados para este evento."
       },
       "actions": {
         "contacts": "Información de contacto",

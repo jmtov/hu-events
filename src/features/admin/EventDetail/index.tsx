@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { useGetEvent } from '@/hooks/useGetEvent';
 import { useDeleteEvent } from '@/hooks/useDeleteEvent';
+import { useGetContacts } from '@/hooks/useGetContacts';
+import ContactsCard from '@/components/ContactsCard';
 import SavedBanner from '@/features/admin/EventOverview/components/SavedBanner';
 import EventBasicsCard from './components/EventBasicsCard';
 import ModulesCard from './components/ModulesCard';
@@ -22,6 +24,7 @@ const EventDetail = ({ eventId, showSavedBanner }: EventDetailProps) => {
 
   const eventQuery = useGetEvent(eventId);
   const deleteEvent = useDeleteEvent();
+  const contactsQuery = useGetContacts(eventId);
 
   const handleCopyInviteLink = () => {
     const inviteUrl = `${window.location.origin}/join/${eventId}`;
@@ -67,30 +70,16 @@ const EventDetail = ({ eventId, showSavedBanner }: EventDetailProps) => {
 
       <ModulesCard modules={event.modules} />
 
-      <div className="flex flex-wrap gap-3">
-        {event.modules.contacts && (
-          <Link
-            to="/admin/events/$eventId/contacts"
-            params={{ eventId }}
-            className={buttonVariants({ variant: 'outline' })}
-          >
-            {t('events.detail.actions.contacts')}
-          </Link>
-        )}
+      {event.modules.contacts && (
+        <ContactsCard contacts={contactsQuery.data ?? []} ns="admin" />
+      )}
 
+      <div className="flex flex-wrap gap-3">
         <Button variant="outline" onClick={handleCopyInviteLink}>
           {linkCopied
             ? t('events.detail.actions.copyInviteLinkCopied')
             : t('events.detail.actions.copyInviteLink')}
         </Button>
-
-        <Link
-          to="/admin/events/$eventId/dashboard"
-          params={{ eventId }}
-          className={buttonVariants()}
-        >
-          {t('events.detail.actions.dashboard')}
-        </Link>
 
         <Button
           variant="destructive"
