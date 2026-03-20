@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { supabase } from '../../_lib/supabase.js'
 import { readParticipants, writeParticipants } from '../../_lib/participant-store.js'
 import { readEvents } from '../../_lib/mock-store.js'
 import { readChecklistItems } from '../../_lib/checklist-store.js'
@@ -26,7 +27,6 @@ type AttendanceAction = ProfileAction | RsvpAction
 async function fireN8nWebhook(payload: Record<string, unknown>): Promise<void> {
   const webhookUrl = process.env.N8N_WEBHOOK_URL
   if (!webhookUrl) {
-    // TODO: configure N8N_WEBHOOK_URL — one URL per workflow or a single dispatcher
     console.log('[n8n] N8N_WEBHOOK_URL not set — webhook skipped. Payload:', JSON.stringify(payload))
     return
   }
@@ -44,7 +44,7 @@ async function fireN8nWebhook(payload: Record<string, unknown>): Promise<void> {
   }
 }
 
-async function checkAndFireThreshold(
+async function checkAndFireThresholdMock(
   eventId: string,
   confirmedBefore: number,
   confirmedAfter: number,
@@ -54,13 +54,9 @@ async function checkAndFireThreshold(
   if (!event || !event.expected_attendees) return
 
   const threshold = event.expected_attendees * 0.5
-
-  // Only fire when this RSVP crosses the threshold, not every time after
   if (confirmedBefore >= threshold || confirmedAfter < threshold) return
 
   const triggers = readTriggers()
-
-  // Workflow 1 — RSVP milestone → HR admin via Slack
   const milestoneTrigger = triggers.find(
     (t) => t.eventId === eventId && t.source === 'milestone' && t.name.toLowerCase().includes('rsvp'),
   )
@@ -74,14 +70,12 @@ async function checkAndFireThreshold(
     channel: milestoneTrigger?.channel ?? 'slack',
   })
 
-  // Workflow 2 — Checklist incomplete → per attendee with incomplete items
   const checklistItems = readChecklistItems()
   const alertItems = checklistItems.filter(
     (item) => item.event_id === eventId && item.alert_if_incomplete,
   )
   if (alertItems.length === 0) return
 
-  // Get timing config from checklist-sourced triggers for this event
   const checklistTriggers = triggers.filter(
     (t) => t.eventId === eventId && t.source === 'checklist' && t.timing === 'days_before',
   )
@@ -117,6 +111,36 @@ async function checkAndFireThreshold(
       channel,
     })
   }
+}
+
+async function checkAndFireThresholdSupabase(
+  eventId: string,
+  confirmedBefore: number,
+  confirmedAfter: number,
+): Promise<void> {
+  const { data: event } = await supabase.from('events').select('*').eq('id', eventId).single()
+  if (!event || !event.expected_attendees) return
+
+  const threshold = (event.expected_attendees as number) * 0.5
+  if (confirmedBefore >= threshold || confirmedAfter < threshold) return
+
+  const { data: milestoneTrigger } = await supabase
+    .from('triggers')
+    .select('*')
+    .eq('event_id', eventId)
+    .eq('source', 'milestone')
+    .ilike('milestone_type', '%rsvp%')
+    .maybeSingle()
+
+  await fireN8nWebhook({
+    type: 'rsvp_milestone',
+    eventId: event.id,
+    eventName: event.title,
+    currentRsvpCount: confirmedAfter,
+    expectedAttendees: event.expected_attendees,
+    thresholdPercent: 50,
+    channel: (milestoneTrigger as { channel?: string } | null)?.channel ?? 'slack',
+  })
 }
 
 /**
@@ -187,7 +211,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const prevStatus = participants[index].rsvp_status
 
-        // Count confirmed before this change (excluding this participant's new status)
         const confirmedBefore = participants.filter(
           (p) => p.event_id === eventId && p.rsvp_status === 'confirmed',
         ).length
@@ -204,7 +227,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             (p) => p.event_id === eventId && p.rsvp_status === 'confirmed',
           ).length
 
-          checkAndFireThreshold(eventId, confirmedBefore, confirmedAfter).catch((err) =>
+          checkAndFireThresholdMock(eventId, confirmedBefore, confirmedAfter).catch((err) =>
             console.error('[attendance] threshold check failed:', err),
           )
         }
@@ -215,10 +238,78 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ message: `Unknown action: ${body.action}` })
     }
 
-    // TODO: Supabase implementation
-    // action 'profile': upsert into participants by (event_id, email)
-    // action 'rsvp': update rsvp_status, then run threshold check via DB query
-    return res.status(501).json({ message: 'Not implemented without mock data' })
+    // ── Supabase path ──────────────────────────────────────────────────────────
+    if (body.action === 'profile') {
+      const { email, full_name, location_city, location_region, location_country } =
+        body as ProfileAction
+      if (!email) return res.status(400).json({ message: 'email is required' })
+
+      const { data: existing } = await supabase
+        .from('participants')
+        .select('*')
+        .eq('event_id', eventId)
+        .eq('email', email)
+        .maybeSingle()
+
+      if (existing) {
+        const { data, error } = await supabase
+          .from('participants')
+          .update({ full_name, location_city, location_region, location_country })
+          .eq('id', (existing as { id: string }).id)
+          .select()
+          .single()
+        if (error) return res.status(500).json({ message: error.message })
+        return res.status(200).json(data)
+      }
+
+      const { data, error } = await supabase
+        .from('participants')
+        .insert({ event_id: eventId, email, full_name, location_city, location_region, location_country, rsvp_status: 'pending' })
+        .select()
+        .single()
+      if (error) return res.status(500).json({ message: error.message })
+      return res.status(201).json(data)
+    }
+
+    if (body.action === 'rsvp') {
+      const { email, status } = body as RsvpAction
+      if (!email) return res.status(400).json({ message: 'email is required' })
+      if (!status) return res.status(400).json({ message: 'status is required' })
+
+      const { data: participant } = await supabase
+        .from('participants')
+        .select('*')
+        .eq('event_id', eventId)
+        .eq('email', email)
+        .maybeSingle()
+      if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+      const prevStatus = (participant as { rsvp_status: string }).rsvp_status
+
+      const { data: confirmedRows } = await supabase
+        .from('participants')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('rsvp_status', 'confirmed')
+      const confirmedBefore = confirmedRows?.length ?? 0
+
+      const { error } = await supabase
+        .from('participants')
+        .update({ rsvp_status: status })
+        .eq('id', (participant as { id: string }).id)
+      if (error) return res.status(500).json({ message: error.message })
+
+      if (status === 'confirmed' && prevStatus !== 'confirmed') {
+        const confirmedAfter = confirmedBefore + 1
+        checkAndFireThresholdSupabase(eventId, confirmedBefore, confirmedAfter).catch((err) =>
+          console.error('[attendance] threshold check failed:', err),
+        )
+      }
+
+      return res.status(200).json({ ok: true })
+    }
+
+    return res.status(400).json({ message: `Unknown action: ${body.action}` })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
     return res.status(500).json({ message })

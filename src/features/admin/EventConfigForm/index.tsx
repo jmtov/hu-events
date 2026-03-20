@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import FormInput from '@/components/Input/form';
+import FormSelect from '@/components/Select/form';
 import FormTextarea from '@/components/Textarea/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +31,8 @@ import {
   type DraftTrigger,
 } from './components/NotificationsModule/constants';
 import ParticipantModule from './components/ParticipantModule';
-import { DEFAULT_MODULES, eventConfigSchema } from './constants';
+import { DEFAULT_MODULES, EVENT_TYPE_OPTIONS, EVENT_TYPES, eventConfigSchema } from './constants';
+import type { EventType } from './constants';
 import type { EventConfigValues } from './types';
 
 const EventConfigForm = () => {
@@ -80,7 +82,11 @@ const EventConfigForm = () => {
 
     suggestEvent.mutate({ title, description }, {
       onSuccess: (result) => {
-        form.setValue('event_type', result.event_type, { shouldValidate: true });
+        const suggestedType = result.event_type as string
+        const mappedType: EventType = (EVENT_TYPES as readonly string[]).includes(suggestedType)
+          ? (suggestedType as EventType)
+          : 'other'
+        form.setValue('event_type', mappedType, { shouldValidate: true });
 
         if (result.date_start) {
           form.setValue('date_start', `${result.date_start}T00:00`, { shouldValidate: true });
@@ -317,21 +323,17 @@ const EventConfigForm = () => {
                 required
                 disabled={suggestEvent.isPending}
               />
-              <FormInput
+              <FormSelect
                 name="event_type"
                 label={t('events.create.fields.eventType.label')}
-                placeholder={
-                  suggestEvent.isPending
-                    ? t('events.create.fields.eventType.detecting')
-                    : t('events.create.fields.eventType.placeholder')
-                }
+                options={[...EVENT_TYPE_OPTIONS]}
+                placeholder={t('events.create.fields.eventType.placeholder')}
                 hint={
                   suggestEvent.isSuccess
                     ? t('events.create.fields.eventType.suggested')
                     : undefined
                 }
                 required
-                disabled={suggestEvent.isPending}
               />
               <div className="flex items-center justify-between gap-4 pt-1">
                 {suggestError && (

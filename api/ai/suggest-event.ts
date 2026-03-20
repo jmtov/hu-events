@@ -13,7 +13,7 @@ Today's date is ${today}.
 Return ONLY valid JSON — no markdown, no code fences, no explanation:
 
 {
-  "event_type": "<2-4 word label>",
+  "event_type": "<one of: hr_retreat | bdr_call | hackathon | workshop | other>",
   "date_start": "<YYYY-MM-DD or null>",
   "date_end": "<YYYY-MM-DD or null>",
   "location": "<city, country or null>",
@@ -33,9 +33,10 @@ Return ONLY valid JSON — no markdown, no code fences, no explanation:
 ## Rules by field
 
 ### event_type
-- 2-4 words, in the same language as the description (Portuguese, English, or Spanish)
-- Be specific: "Retiro de RH" not "Evento", "BDR Call Comercial" not "Reunião"
-- If the description is gibberish or not a real corporate event, return "Outro"
+- Must be exactly one of: "hr_retreat", "bdr_call", "hackathon", "workshop", "other"
+- Pick the closest match based on the event description
+- Use "other" only if none of the other options fit
+- If the description is gibberish or not a real corporate event, return "other"
 
 ### date_start / date_end
 - Populate only if a date, month, week, or time frame is mentioned or clearly implied in the text
@@ -130,7 +131,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const suggestion: EventSuggestion = {
-    event_type: typeof parsed.event_type === 'string' ? parsed.event_type : 'Outro',
+    event_type: typeof parsed.event_type === 'string' ? parsed.event_type : 'other',
     date_start: typeof parsed.date_start === 'string' ? parsed.date_start : null,
     date_end: typeof parsed.date_end === 'string' ? parsed.date_end : null,
     location: typeof parsed.location === 'string' ? parsed.location : null,
