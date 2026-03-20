@@ -1,10 +1,12 @@
-import { Link, useRouter } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetAttendeeEvents } from '@/hooks/useGetAttendeeEvents';
+import { api } from '@/lib/api';
 import type { AttendeeEventSummary } from '@/services/attendee';
+import { Link } from '@tanstack/react-router';
 
 type EventStatus = 'upcoming' | 'ongoing' | 'past';
 
@@ -38,8 +40,8 @@ const AttendeeEventList = ({ email }: AttendeeEventListProps) => {
   const router = useRouter();
   const { data: events, isPending, isError } = useGetAttendeeEvents(email);
 
-  const handleChangeEmail = () => {
-    sessionStorage.removeItem('humand_attendee_email');
+  const handleLogout = async () => {
+    await api.post('/auth/logout');
     router.navigate({ to: '/attendee/login' });
   };
 
@@ -60,7 +62,8 @@ const AttendeeEventList = ({ email }: AttendeeEventListProps) => {
   }
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10">
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col px-4 py-10">
+      <div className="flex-1">
       <div
         className="animate-appear-from-bottom mb-8 flex items-start justify-between gap-4"
         style={{ animationDelay: 'calc(0 * 50ms)' }}
@@ -69,9 +72,6 @@ const AttendeeEventList = ({ email }: AttendeeEventListProps) => {
           <h1 className="text-2xl font-bold text-foreground">{t('eventList.title')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{email}</p>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleChangeEmail} className="shrink-0 text-xs text-muted-foreground">
-          {t('eventList.changeEmail')}
-        </Button>
       </div>
 
       {events.length === 0 ? (
@@ -81,7 +81,7 @@ const AttendeeEventList = ({ email }: AttendeeEventListProps) => {
         >
           <p className="text-base font-medium text-foreground">{t('eventList.empty.title')}</p>
           <p className="mt-1 text-sm text-muted-foreground">{t('eventList.empty.description')}</p>
-          <Button variant="outline" className="mt-6" onClick={handleChangeEmail}>
+          <Button variant="outline" className="mt-6" onClick={handleLogout}>
             {t('eventList.empty.cta')}
           </Button>
         </div>
@@ -141,6 +141,18 @@ const AttendeeEventList = ({ email }: AttendeeEventListProps) => {
           })}
         </div>
       )}
+      </div>
+
+      <div className="mt-12 flex items-center justify-center border-t border-border pt-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="text-xs text-muted-foreground"
+        >
+          {t('eventList.logout')}
+        </Button>
+      </div>
     </div>
   );
 };

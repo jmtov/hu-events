@@ -1,4 +1,18 @@
 {
+  "auth": {
+    "logout": "Sair",
+    "viewAsAttendee": "Meus eventos como participante"
+  },
+  "login": {
+    "brand": "Humand Events",
+    "title": "Acesso administrativo",
+    "subtitle": "Entre com sua conta do Google para gerenciar eventos.",
+    "cardTitle": "Entrar com Google",
+    "cardDescription": "Use sua conta corporativa do Google.",
+    "signInWithGoogle": "Entrar com Google",
+    "signingIn": "Redirecionando...",
+    "attendeeAccess": "Acesso de participante"
+  },
   "common": {
     "cancel": "Cancelar",
     "saving": "Salvando..."

@@ -5,13 +5,14 @@ import { IconBrandGoogle } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-const AttendeeLogin = () => {
-  const { t } = useTranslation('attendee');
+const AdminLogin = () => {
+  const { t } = useTranslation('admin');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = () => {
     setIsLoading(true);
-    window.location.href = '/api/auth/google?redirectTo=/attendee/events';
+    // Full-page navigation to the serverless OAuth initiation endpoint
+    window.location.href = '/api/auth/google';
   };
 
   return (
@@ -54,10 +55,10 @@ const AttendeeLogin = () => {
           style={{ animationDelay: 'calc(2 * 50ms)' }}
         >
           <Link
-            to="/login"
+            to="/attendee/login"
             className="text-xs text-muted-foreground underline-offset-4 hover:underline"
           >
-            {t('login.adminAccess')}
+            {t('login.attendeeAccess')}
           </Link>
         </div>
       </div>
@@ -65,4 +66,4 @@ const AttendeeLogin = () => {
   );
 };
 
-export default AttendeeLogin;
+export default AdminLogin;

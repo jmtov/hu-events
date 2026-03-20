@@ -77,4 +77,5 @@ export type EventDetail = Event & {
   checklist: ChecklistEntry[];
   triggers: import('./trigger').Trigger[];
   budget: import('./budget').Budget | null;
+  preference_fields: import('./participant').PreferenceField[];
 };

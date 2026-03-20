@@ -13,13 +13,11 @@
   "login": {
     "brand": "Humand Events",
     "title": "Bienvenido",
-    "subtitle": "Ingresá tu e-mail corporativo para ver tus eventos.",
-    "email": {
-      "label": "E-mail corporativo",
-      "placeholder": "tu@empresa.com"
-    },
-    "submit": "Continuar",
-    "submitting": "Cargando...",
+    "subtitle": "Iniciá sesión con tu cuenta de Google para ver tus eventos.",
+    "cardTitle": "Iniciar sesión con Google",
+    "cardDescription": "Usá tu cuenta corporativa de Google.",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "signingIn": "Redirigiendo...",
     "adminAccess": "Acceso admin"
   },
   "eventList": {
@@ -28,7 +26,7 @@
     "loading": "Cargando tus eventos...",
     "error": "No se pudieron cargar tus eventos.",
     "checklist": "{{completed}}/{{total}} tareas",
-    "changeEmail": "¿No eres tú? Cambiar e-mail",
+    "logout": "Cerrar sesión",
     "rsvp": {
       "confirmed": "Confirmado",
       "pending": "Pendiente",
