@@ -21,7 +21,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const checklist = readChecklistItems().filter((item) => item.event_id === eventId)
     const triggers = readTriggers().filter((t) => t.eventId === eventId)
     const budget = readBudgets().find((b) => b.event_id === eventId) ?? null
-    return res.status(200).json({ ...event, participants, checklist, triggers, budget })
+    const preference_fields = readPreferenceFields().filter((f) => f.event_id === eventId)
+    return res.status(200).json({ ...event, participants, checklist, triggers, budget, preference_fields })
   }
 
   if (req.method === 'PUT') {

@@ -3,7 +3,8 @@ import { eventService } from '@/services/events';
 
 export const useGetPreferenceFields = (eventId: string) =>
   useQuery({
-    queryKey: ['events', eventId, 'preference-fields'],
-    queryFn: () => eventService.getPreferenceFields(eventId),
+    queryKey: ['events', eventId],
+    queryFn: () => eventService.getById(eventId),
+    select: (data) => data.preference_fields,
     enabled: !!eventId,
   });
