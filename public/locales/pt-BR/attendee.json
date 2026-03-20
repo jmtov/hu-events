@@ -168,6 +168,7 @@
       "title": "Pessoas de contato",
       "empty": "Nenhum contato disponível para este evento."
     },
+    "backToEvents": "Voltar aos eventos",
     "deleteButton": "Excluir inscrição",
     "deleting": "Excluindo...",
     "deleteDialog": {

@@ -18,7 +18,7 @@
     "cardDescription": "Use your corporate Google account.",
     "signInWithGoogle": "Sign in with Google",
     "signingIn": "Redirecting...",
-    "adminAccess": "Admin access"
+    "adminAccess": "Create an event?"
   },
   "eventList": {
     "title": "My events",
@@ -168,6 +168,7 @@
       "title": "Contact persons",
       "empty": "No contacts available for this event."
     },
+    "backToEvents": "Back to events",
     "deleteButton": "Delete registration",
     "deleting": "Deleting...",
     "deleteDialog": {
