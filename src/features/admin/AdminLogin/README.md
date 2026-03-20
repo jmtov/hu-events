@@ -1,28 +1,45 @@
 # AdminLogin
 
-Admin authentication screen using Supabase Google OAuth.
+Admin authentication screen using Google OAuth via serverless functions.
 
 ## Route
 `/login`
 
 ## Key files
-- `index.tsx` — login screen component
-- `src/lib/supabase.ts` — Supabase client (shared)
+- `index.tsx` — login screen, button navigates to `/api/auth/google`
 - `src/routes/login.tsx` — public route
-- `src/routes/admin.tsx` — layout route with `beforeLoad` auth guard for all `/admin/*` routes
+- `src/routes/admin.tsx` — layout route with `beforeLoad` guard: calls `GET /api/auth/me`, redirects to `/login` on 401
+
+## Auth flow
+```
+/login → click → /api/auth/google → Google consent → /api/auth/callback
+→ httpOnly session cookie → redirect to /admin/events
+```
 
 ## Endpoints
-No direct API calls. Auth is handled entirely by the Supabase JS SDK.
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/api/auth/google` | Generates OAuth URL, redirects to Google |
+| `GET` | `/api/auth/callback` | Exchanges code, sets session cookie, redirects |
+| `GET` | `/api/auth/me` | Verifies session cookie, returns user |
+| `POST` | `/api/auth/logout` | Clears session cookie |
 
-OAuth flow: `supabase.auth.signInWithOAuth({ provider: 'google' })` → Google → redirect to `/admin/events` → Supabase processes hash → session stored in localStorage.
+Session is a HMAC-SHA256 signed token stored in an `httpOnly` cookie (30-day TTL).
+No credentials are ever exposed to the browser bundle.
 
 ## Status
 - [x] Google OAuth sign-in button
-- [x] Auth guard on `/admin/*` (redirects to `/login` if no session)
-- [x] Supabase session token forwarded in API requests via `src/lib/api.ts`
+- [x] Auth guard on `/admin/*` via `GET /api/auth/me`
+- [x] httpOnly session cookie (HMAC-signed, 30 days)
+- [x] CSRF state validation on OAuth callback
+- [x] Logout endpoint
 - [x] i18n: en, es, pt-BR
 
 ## Notes
-- Requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`
-- In Supabase dashboard, add `http://localhost:5173` (dev) and the production URL as allowed redirect URLs under Auth → URL Configuration
-- Google provider must be enabled in Supabase Auth → Providers
+Required env vars (server-side only — never in `VITE_*`):
+- `GOOGLE_CLIENT_ID` — Google Cloud Console → APIs & Services → Credentials
+- `GOOGLE_CLIENT_SECRET` — same as above
+- `SESSION_SECRET` — any long random string (`openssl rand -base64 32`)
+- `APP_URL` — base URL for OAuth callback (`http://localhost:3000` dev, production URL in prod)
+
+In Google Cloud Console, add `{APP_URL}/api/auth/callback` as an authorized redirect URI.

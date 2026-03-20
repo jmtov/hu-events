@@ -1,4 +1,8 @@
 {
+  "auth": {
+    "logout": "Log out",
+    "viewAsAttendee": "My events as attendee"
+  },
   "login": {
     "brand": "Humand Events",
     "title": "Admin access",

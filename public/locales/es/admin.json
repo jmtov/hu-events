@@ -1,4 +1,8 @@
 {
+  "auth": {
+    "logout": "Cerrar sesión",
+    "viewAsAttendee": "Mis eventos como invitado"
+  },
   "login": {
     "brand": "Humand Events",
     "title": "Acceso de administrador",

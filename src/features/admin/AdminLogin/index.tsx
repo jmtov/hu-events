@@ -4,20 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { IconBrandGoogle } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/lib/supabase';
 
 const AdminLogin = () => {
   const { t } = useTranslation('admin');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setIsLoading(true);
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/admin/events`,
-      },
-    });
+    // Full-page navigation to the serverless OAuth initiation endpoint
+    window.location.href = '/api/auth/google';
   };
 
   return (

@@ -1,9 +1,10 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetAdminEvents } from '@/hooks/useGetAdminEvents';
+import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import type { AdminEventSummary } from '@/types/event';
 
@@ -27,7 +28,13 @@ const STATUS_VARIANT: Record<EventStatus, 'default' | 'secondary' | 'outline'> =
 
 const AdminEventList = () => {
   const { t } = useTranslation('admin');
+  const router = useRouter();
   const { data: events, isPending, isError } = useGetAdminEvents();
+
+  const handleLogout = async () => {
+    await api.post('/auth/logout');
+    router.navigate({ to: '/login' });
+  };
 
   if (isPending) {
     return (
@@ -48,7 +55,8 @@ const AdminEventList = () => {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-4 py-10">
+      <div className="flex-1">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
@@ -128,6 +136,24 @@ const AdminEventList = () => {
           })}
         </div>
       )}
+      </div>
+
+      <div className="mt-12 flex items-center justify-center gap-6 border-t border-border pt-6">
+        <Link
+          to="/attendee/events"
+          className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+        >
+          {t('auth.viewAsAttendee')}
+        </Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="text-xs text-muted-foreground"
+        >
+          {t('auth.logout')}
+        </Button>
+      </div>
     </div>
   );
 };

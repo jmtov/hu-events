@@ -1,4 +1,8 @@
 {
+  "auth": {
+    "logout": "Sair",
+    "viewAsAttendee": "Meus eventos como participante"
+  },
   "login": {
     "brand": "Humand Events",
     "title": "Acesso administrativo",
