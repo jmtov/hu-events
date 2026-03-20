@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { CreateEventPayload, Event } from '../../src/types/event.js'
 import type { UpdateBudgetPayload } from '../../src/types/budget.js'
-import { readEvents, writeEvents, readBudgets, writeBudgets } from '../_lib/mock-store.js'
+import { readEvents, writeEvents, readBudgets, writeBudgets, readContacts, writeContacts } from '../_lib/mock-store.js'
 import { readParticipants, writeParticipants } from '../_lib/participant-store.js'
 import { readChecklistItems, writeChecklistItems } from '../_lib/checklist-store.js'
 import { readPreferenceFields, writePreferenceFields } from '../_lib/preference-field-store.js'
@@ -22,7 +22,8 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     const triggers = readTriggers().filter((t) => t.eventId === eventId)
     const budget = readBudgets().find((b) => b.event_id === eventId) ?? null
     const preference_fields = readPreferenceFields().filter((f) => f.event_id === eventId)
-    return res.status(200).json({ ...event, participants, checklist, triggers, budget, preference_fields })
+    const contacts = readContacts().filter((c) => c.event_id === eventId)
+    return res.status(200).json({ ...event, participants, checklist, triggers, budget, preference_fields, contacts })
   }
 
   if (req.method === 'PUT') {

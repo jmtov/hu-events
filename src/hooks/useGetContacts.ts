@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { contactService } from '@/services/contacts';
+import { useGetEvent } from './useGetEvent';
 
-export const useGetContacts = (eventId: string) =>
-  useQuery({
-    queryKey: ['contacts', eventId],
-    queryFn: () => contactService.getByEvent(eventId),
-    enabled: !!eventId,
-  });
+export const useGetContacts = (eventId: string) => {
+  const query = useGetEvent(eventId);
+  return {
+    ...query,
+    data: query.data?.contacts,
+  };
+};

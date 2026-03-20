@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { IconSparkles } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -8,12 +9,11 @@ import FormTextarea from '@/components/Textarea/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
-import { useDetectEventType } from '@/hooks/useDetectEventType';
-import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
-import { contactService } from '@/services/contacts';
-import type { ChecklistSuggestion } from '@/types/checklist';
+import { useSuggestEvent } from '@/hooks/useSuggestEvent';
+import type { BudgetCategory, BudgetCategoryKey } from '@/types/budget';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
+import AILoadingBar from './components/AILoadingBar';
 import BudgetModule from './components/BudgetModule';
 import { DEFAULT_BUDGET_CATEGORIES } from './components/BudgetModule/constants';
 import ChecklistModule from './components/ChecklistModule';
@@ -32,20 +32,18 @@ import {
 import ParticipantModule from './components/ParticipantModule';
 import { DEFAULT_MODULES, eventConfigSchema } from './constants';
 import type { EventConfigValues } from './types';
-import type { BudgetCategory } from '@/types/budget';
 
 const EventConfigForm = () => {
   const { t } = useTranslation('admin');
   const navigate = useNavigate();
 
   const createEvent = useCreateEvent();
-  const detectEventType = useDetectEventType();
-  const generateChecklist = useGenerateChecklist();
+  const suggestEvent = useSuggestEvent();
 
   const [draftItems, setDraftItems] = useState<DraftItem[]>([]);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [aiError, setAiError] = useState<string | null>(null);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
   const [modules, setModules] = useState<EventModules>({ ...DEFAULT_MODULES });
   const [draftEmails, setDraftEmails] = useState<string[]>([]);
   const [draftTriggers, setDraftTriggers] = useState<DraftTrigger[]>(
@@ -74,46 +72,82 @@ const EventConfigForm = () => {
     },
   });
 
-  // Called on description blur — non-blocking AI suggestion
-  const handleDetectEventType = () => {
+  const handleSuggestWithAI = () => {
+    const title = form.getValues('title');
     const description = form.getValues('description');
-    if (!description.trim()) return;
+    if (!title.trim() || !description.trim()) return;
+    setSuggestError(null);
 
-    detectEventType.mutate(description, {
+    suggestEvent.mutate({ title, description }, {
       onSuccess: (result) => {
-        if (result.event_type) {
-          form.setValue('event_type', result.event_type, {
-            shouldValidate: true,
-          });
+        form.setValue('event_type', result.event_type, { shouldValidate: true });
+
+        if (result.date_start) {
+          form.setValue('date_start', `${result.date_start}T00:00`, { shouldValidate: true });
         }
+        if (result.date_end) {
+          form.setValue('date_end', `${result.date_end}T00:00`, { shouldValidate: true });
+        }
+        if (result.location) {
+          form.setValue('location', result.location, { shouldValidate: true });
+        }
+        if (result.expected_attendees !== null) {
+          form.setValue('expected_attendees', String(result.expected_attendees), { shouldValidate: true });
+        }
+
+        const hasChecklist = result.checklist.length > 0;
+        let hasRequiredItems = false;
+
+        if (hasChecklist) {
+          const newItems: DraftItem[] = result.checklist.map((s) => ({
+            _key: `${Date.now()}_${Math.random()}`,
+            name: s.name,
+            type: normaliseChecklistType(s.type),
+            required: s.suggestedRequired,
+          }));
+          setDraftItems(newItems);
+
+          const requiredTriggers = newItems
+            .filter((item) => item.required)
+            .map((item) => ({
+              name: item.name,
+              source: 'checklist' as const,
+              ...DEFAULT_CHECKLIST_TRIGGER,
+            }));
+          hasRequiredItems = requiredTriggers.length > 0;
+          if (hasRequiredItems) {
+            setDraftTriggers((prev) => [
+              ...requiredTriggers,
+              ...prev.filter((t) => t.source !== 'checklist'),
+            ]);
+          }
+        }
+
+        const estimates = result.budget_estimates;
+        const hasEstimates = Object.values(estimates).some((v) => v > 0);
+        if (hasEstimates) {
+          setDraftBudgetCategories((prev) =>
+            prev.map((cat) => {
+              const estimate = estimates[cat.key as BudgetCategoryKey];
+              if (estimate !== undefined && estimate > 0) {
+                return { ...cat, ai_estimate: estimate, cap: estimate, enabled: true };
+              }
+              return cat;
+            }),
+          );
+        }
+
+        setModules((prev) => ({
+          ...prev,
+          checklist: hasChecklist,
+          budget: hasEstimates,
+          notifications: hasRequiredItems,
+        }));
+      },
+      onError: () => {
+        setSuggestError(t('events.create.aiError'));
       },
     });
-  };
-
-  const handleGenerateAI = async () => {
-    const description = form.getValues('description');
-    if (!description.trim()) return;
-    setAiError(null);
-
-    try {
-      const result = await generateChecklist.mutateAsync({
-        description,
-        eventType: form.getValues('event_type'),
-      });
-
-      const newItems: DraftItem[] = result.items.map(
-        (s: ChecklistSuggestion) => ({
-          _key: `${Date.now()}_${Math.random()}`,
-          name: s.name,
-          type: normaliseChecklistType(s.type),
-          required: s.suggestedRequired,
-        }),
-      );
-
-      setDraftItems((prev) => [...prev, ...newItems]);
-    } catch {
-      setAiError(t('events.create.checklist.aiError'));
-    }
   };
 
   const handleAddItem = (values: ChecklistItemValues) => {
@@ -226,23 +260,16 @@ const EventConfigForm = () => {
             recipient: t.recipient,
           }))
         : undefined,
+      budget: modules.budget ? draftBudgetCategories : undefined,
+      contacts: modules.contacts
+        ? draftContacts.map((c) => ({
+            name: c.name,
+            role: c.role,
+            email: c.email,
+            phone: c.phone || undefined,
+          }))
+        : undefined,
     });
-
-    // Save draft contacts — non-blocking
-    if (modules.contacts) {
-      for (const contact of draftContacts) {
-        try {
-          await contactService.create(event.id, {
-            name: contact.name,
-            role: contact.role,
-            email: contact.email,
-            phone: contact.phone || undefined,
-          });
-        } catch {
-          // Contact will be editable on the contacts page after redirect
-        }
-      }
-    }
 
     navigate({
       to: '/admin/events/$eventId',
@@ -280,34 +307,51 @@ const EventConfigForm = () => {
                 label={t('events.create.fields.title.label')}
                 placeholder={t('events.create.fields.title.placeholder')}
                 required
+                disabled={suggestEvent.isPending}
               />
               <FormTextarea
                 name="description"
                 label={t('events.create.fields.description.label')}
                 placeholder={t('events.create.fields.description.placeholder')}
-                hint={
-                  detectEventType.isPending
-                    ? t('events.create.fields.description.analyzing')
-                    : t('events.create.fields.description.hint')
-                }
-                onBlur={handleDetectEventType}
+                hint={t('events.create.fields.description.hint')}
                 required
+                disabled={suggestEvent.isPending}
               />
               <FormInput
                 name="event_type"
                 label={t('events.create.fields.eventType.label')}
                 placeholder={
-                  detectEventType.isPending
+                  suggestEvent.isPending
                     ? t('events.create.fields.eventType.detecting')
                     : t('events.create.fields.eventType.placeholder')
                 }
                 hint={
-                  detectEventType.isSuccess
+                  suggestEvent.isSuccess
                     ? t('events.create.fields.eventType.suggested')
                     : undefined
                 }
                 required
+                disabled={suggestEvent.isPending}
               />
+              <div className="flex items-center justify-between gap-4 pt-1">
+                {suggestError && (
+                  <p className="text-sm text-destructive">{suggestError}</p>
+                )}
+                <div className="ml-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSuggestWithAI}
+                    disabled={suggestEvent.isPending}
+                  >
+                    <IconSparkles size={14} />
+                    {suggestEvent.isPending
+                      ? t('events.create.suggesting')
+                      : t('events.create.suggestWithAI')}
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -328,23 +372,27 @@ const EventConfigForm = () => {
                   label={t('events.create.fields.dateStart.label')}
                   type="datetime-local"
                   required
+                  disabled={suggestEvent.isPending}
                 />
                 <FormInput
                   name="date_end"
                   label={t('events.create.fields.dateEnd.label')}
                   type="datetime-local"
+                  disabled={suggestEvent.isPending}
                 />
               </div>
               <FormInput
                 name="location"
                 label={t('events.create.fields.location.label')}
                 placeholder={t('events.create.fields.location.placeholder')}
+                disabled={suggestEvent.isPending}
               />
               <FormInput
                 name="expected_attendees"
                 label={t('events.create.fields.expectedAttendees.label')}
                 placeholder={t('events.create.fields.expectedAttendees.placeholder')}
                 type="number"
+                disabled={suggestEvent.isPending}
               />
             </CardContent>
           </Card>
@@ -367,9 +415,6 @@ const EventConfigForm = () => {
                   draftItems={draftItems}
                   isAddingItem={isAddingItem}
                   editingKey={editingKey}
-                  aiError={aiError}
-                  isGenerating={generateChecklist.isPending}
-                  onGenerateAI={handleGenerateAI}
                   onAddItem={handleAddItem}
                   onUpdateItem={handleUpdateItem}
                   onDeleteItem={handleDeleteItem}
@@ -390,11 +435,6 @@ const EventConfigForm = () => {
                 <BudgetModule
                   categories={draftBudgetCategories}
                   onCategoriesChange={setDraftBudgetCategories}
-                  eventType={form.watch('event_type')}
-                  description={form.watch('description')}
-                  dateStart={form.watch('date_start')}
-                  dateEnd={form.watch('date_end')}
-                  location={form.watch('location')}
                 />
               )}
               {key === 'notifications' && (
@@ -436,6 +476,8 @@ const EventConfigForm = () => {
           </div>
         </form>
       </FormProvider>
+
+      <AILoadingBar visible={suggestEvent.isPending} />
     </div>
   );
 };

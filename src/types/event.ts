@@ -58,6 +58,8 @@ export type CreateEventPayload = {
   checklist?: ChecklistItemPayload[];
   preferenceFields?: PreferenceFieldPayload[];
   triggers?: TriggerPayload[];
+  budget?: import('./budget').BudgetCategory[];
+  contacts?: import('./contact').CreateContactPayload[];
 };
 
 export type AdminEventSummary = Event & { rsvp_count: number };
@@ -78,4 +80,5 @@ export type EventDetail = Event & {
   triggers: import('./trigger').Trigger[];
   budget: import('./budget').Budget | null;
   preference_fields: import('./participant').PreferenceField[];
+  contacts: import('./contact').Contact[];
 };

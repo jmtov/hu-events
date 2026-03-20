@@ -14,6 +14,8 @@ type FormInputProps = {
   required?: boolean;
   /** Hint text displayed below the input when there is no error. */
   hint?: string;
+  /** Disables the input. */
+  disabled?: boolean;
 };
 
 /**
@@ -32,6 +34,7 @@ const FormInput = ({
   placeholder,
   required,
   hint,
+  disabled,
 }: FormInputProps) => {
   const { control } = useFormContext();
 
@@ -51,6 +54,7 @@ const FormInput = ({
           onChange={field.onChange}
           error={fieldState.error?.message}
           hint={hint}
+          disabled={disabled}
         />
       )}
     />

@@ -23,6 +23,8 @@ type InputProps = {
   required?: boolean;
   /** HTML id for the input element. */
   id?: string;
+  /** Disables the input. */
+  disabled?: boolean;
 };
 
 const Input = ({
@@ -36,6 +38,7 @@ const Input = ({
   hint,
   required,
   id,
+  disabled,
 }: InputProps) => (
   <div className="space-y-1.5">
     {label && (
@@ -51,6 +54,7 @@ const Input = ({
       value={value}
       onBlur={onBlur}
       onChange={(e) => onChange?.(e.target.value)}
+      disabled={disabled}
     />
     {error ? (
       <p className="text-xs text-destructive">{error}</p>

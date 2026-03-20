@@ -122,6 +122,9 @@
       "subtitle": "Completa los datos para crear un nuevo evento.",
       "requiredHint": "Los campos marcados con * son obligatorios.",
       "submit": "Crear evento",
+      "suggestWithAI": "Sugerir con IA",
+      "suggesting": "Analizando...",
+      "aiError": "No se pudieron generar sugerencias. Inténtalo de nuevo.",
       "sections": {
         "basics": "Información básica",
         "schedule": "Fechas y ubicación"

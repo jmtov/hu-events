@@ -11,6 +11,7 @@ export type EventSuggestion = {
   date_start: string | null;
   date_end: string | null;
   location: string | null;
+  expected_attendees: number | null;
   checklist: ChecklistSuggestion[];
   budget_estimates: Partial<Record<BudgetCategoryKey, number>>;
 };

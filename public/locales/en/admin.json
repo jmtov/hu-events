@@ -122,6 +122,9 @@
       "subtitle": "Fill in the details below to create a new event.",
       "requiredHint": "Fields marked with * are required.",
       "submit": "Create event",
+      "suggestWithAI": "Suggest with AI",
+      "suggesting": "Analyzing...",
+      "aiError": "Could not generate suggestions. Please try again.",
       "sections": {
         "basics": "Basic information",
         "schedule": "Schedule and location"

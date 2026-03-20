@@ -2,8 +2,10 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type { Budget } from '../../src/types/budget'
+import type { Contact } from '../../src/types/contact'
 import type { Event } from '../../src/types/event'
 import { budgets as seedBudgets } from '../_fixtures/budget.js'
+import { contacts as seedContacts } from '../_fixtures/contacts.js'
 import { events as seedEvents } from '../_fixtures/events.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -45,4 +47,23 @@ export function writeBudgets(budgets: Budget[]): void {
   const dir = path.dirname(budgetsStorePath)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
   fs.writeFileSync(budgetsStorePath, JSON.stringify(budgets, null, 2), 'utf-8')
+}
+
+// ─── Contacts ─────────────────────────────────────────────────────────────────
+
+const contactsStorePath = path.resolve(__dirname, '../_fixtures/store/contacts.json')
+
+export function readContacts(): Contact[] {
+  try {
+    const raw = fs.readFileSync(contactsStorePath, 'utf-8')
+    return JSON.parse(raw) as Contact[]
+  } catch {
+    return seedContacts as Contact[]
+  }
+}
+
+export function writeContacts(contacts: Contact[]): void {
+  const dir = path.dirname(contactsStorePath)
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  fs.writeFileSync(contactsStorePath, JSON.stringify(contacts, null, 2), 'utf-8')
 }
