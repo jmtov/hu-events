@@ -10,6 +10,7 @@
 
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { budgets } from '../api/_fixtures/budget';
 import {
   checklistItems,
   contacts,
@@ -45,6 +46,83 @@ const insert = (table: string, rows: Record<string, unknown>[]): string => {
 };
 
 // ---------------------------------------------------------------------------
+// Triggers: map from frontend format to DB schema
+// ---------------------------------------------------------------------------
+
+type RawTrigger = {
+  id: string;
+  eventId: string;
+  name: string;
+  source: string;
+  timing: string;
+  timingValue: number;
+  channel: string;
+  recipient: string;
+};
+
+function resolveChecklistItemId(trigger: RawTrigger): string | null {
+  if (trigger.source !== 'checklist') return null;
+  const item = checklistItems.find(
+    (ci) => ci.event_id === trigger.eventId && ci.label === trigger.name,
+  );
+  return item?.id ?? null;
+}
+
+function resolveMilestoneType(trigger: RawTrigger): string | null {
+  if (trigger.source !== 'milestone') return null;
+  if (trigger.name.includes('50%')) return 'rsvp_50';
+  if (trigger.name.toLowerCase().includes('ended')) return 'event_ended';
+  return null;
+}
+
+const triggersForDb = (triggers as RawTrigger[]).map((t) => ({
+  id: t.id,
+  event_id: t.eventId,
+  source: t.source === 'checklist' ? 'checklist_item' : t.source,
+  checklist_item_id: resolveChecklistItemId(t),
+  milestone_type: resolveMilestoneType(t),
+  timing_type: t.timing,
+  timing_value: t.timing === 'immediately' ? null : t.timingValue,
+  channel: t.channel,
+  recipient: t.recipient,
+  active: true,
+}));
+
+// ---------------------------------------------------------------------------
+// Trigger log: strip frontend-only fields, keep only DB columns
+// ---------------------------------------------------------------------------
+
+type RawTriggerLog = {
+  id: string;
+  trigger_id: string;
+  fired_at: string;
+  status: string;
+  error: string | null;
+  [key: string]: unknown;
+};
+
+const triggerLogForDb = (triggerLog as RawTriggerLog[]).map((log) => ({
+  id: log.id,
+  trigger_id: log.trigger_id,
+  fired_at: log.fired_at,
+  recipient_participant_id: null,
+  status: log.status,
+  error: log.error,
+}));
+
+// ---------------------------------------------------------------------------
+// Budget config: map from Budget type to budget_config table schema
+// ---------------------------------------------------------------------------
+
+const budgetConfigForDb = budgets.map((b, i) => ({
+  id: `00000008-0000-000${i + 1}-0000-000000000001`,
+  event_id: b.event_id,
+  currency: b.currency,
+  categories: b.categories,
+  updated_at: b.updated_at,
+}));
+
+// ---------------------------------------------------------------------------
 // Build SQL
 // ---------------------------------------------------------------------------
 
@@ -71,8 +149,18 @@ const sections: string[] = [
     participantChecklistItems as unknown as Record<string, unknown>[],
   ),
   insert('contacts', contacts as unknown as Record<string, unknown>[]),
-  insert('triggers', triggers as unknown as Record<string, unknown>[]),
-  insert('trigger_log', triggerLog as unknown as Record<string, unknown>[]),
+  insert(
+    'budget_config',
+    budgetConfigForDb as unknown as Record<string, unknown>[],
+  ),
+  insert(
+    'triggers',
+    triggersForDb as unknown as Record<string, unknown>[],
+  ),
+  insert(
+    'trigger_log',
+    triggerLogForDb as unknown as Record<string, unknown>[],
+  ),
 ];
 
 const sql = sections.filter(Boolean).join('\n');

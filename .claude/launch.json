@@ -5,7 +5,8 @@
       "name": "Full stack (Vercel dev + API)",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "start"],
-      "port": 3000
+      "port": 3000,
+      "autoPort": false
     },
     {
       "name": "Frontend only (Vite)",
