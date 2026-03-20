@@ -4,7 +4,7 @@ import { readParticipants, writeParticipants } from '../../_lib/participant-stor
 import { readEvents } from '../../_lib/mock-store.js'
 import { readChecklistItems } from '../../_lib/checklist-store.js'
 import { readTriggers } from '../../_lib/trigger-store.js'
-import { participantChecklistItems } from '../../_fixtures/index.js'
+import { readParticipantChecklistItems, writeParticipantChecklistItems } from '../../_lib/participant-checklist-store.js'
 
 type ProfileAction = {
   action: 'profile'
@@ -22,7 +22,22 @@ type RsvpAction = {
   status: 'confirmed' | 'declined'
 }
 
-type AttendanceAction = ProfileAction | RsvpAction
+type ChecklistItemAction = {
+  action: 'checklist_item'
+  email: string
+  checklist_item_id: string
+  completed: boolean
+  value?: string
+}
+
+type UploadAction = {
+  action: 'upload'
+  email: string
+  checklist_item_id: string
+  file_path: string
+}
+
+type AttendanceAction = ProfileAction | RsvpAction | ChecklistItemAction | UploadAction
 
 async function fireN8nWebhook(payload: Record<string, unknown>): Promise<void> {
   const webhookUrl = process.env.N8N_WEBHOOK_URL
@@ -145,13 +160,47 @@ async function checkAndFireThresholdSupabase(
 
 /**
  * PATCH /api/events/:eventId/attendance
- *
- * Action-based endpoint for attendee self-registration via join link.
- *
- * action: 'profile' — create or update participant record
- * action: 'rsvp'    — confirm RSVP; fires n8n workflows if RSVP threshold is crossed
+ * DELETE /api/events/:eventId/attendance?email=...
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method === 'DELETE') {
+    const { eventId, email } = req.query as { eventId: string; email?: string }
+    if (!email) return res.status(400).json({ message: 'email is required' })
+
+    try {
+      if (process.env.USE_MOCK_DATA === 'true') {
+        const participants = readParticipants()
+        const participant = participants.find((p) => p.event_id === eventId && p.email === email)
+        if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+        writeParticipants(participants.filter((p) => p.id !== participant.id))
+
+        const checklistItems = readParticipantChecklistItems()
+        writeParticipantChecklistItems(checklistItems.filter((c) => c.participant_id !== participant.id))
+
+        return res.status(200).json({ ok: true })
+      }
+
+      const { data: participant } = await supabase
+        .from('participants')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('email', email)
+        .maybeSingle()
+      if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+      const participantId = (participant as { id: string }).id
+
+      await supabase.from('participant_checklist_items').delete().eq('participant_id', participantId)
+      await supabase.from('participants').delete().eq('id', participantId)
+
+      return res.status(200).json({ ok: true })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Internal server error'
+      return res.status(500).json({ message })
+    }
+  }
+
   if (req.method !== 'PATCH') return res.status(405).end()
 
   const { eventId } = req.query as { eventId: string }
@@ -235,6 +284,99 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({ ok: true })
       }
 
+      if (body.action === 'checklist_item') {
+        const { email, checklist_item_id, completed, value } = body as ChecklistItemAction
+        if (!email) return res.status(400).json({ message: 'email is required' })
+        if (!checklist_item_id) return res.status(400).json({ message: 'checklist_item_id is required' })
+
+        const participant = participants.find((p) => p.event_id === eventId && p.email === email)
+        if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+        const items = readParticipantChecklistItems()
+        const now = new Date().toISOString()
+        const existing = items.findIndex(
+          (c) => c.participant_id === participant.id && c.checklist_item_id === checklist_item_id,
+        )
+
+        if (existing !== -1) {
+          items[existing] = {
+            ...items[existing],
+            completed,
+            completed_at: completed ? now : null,
+            value: value ?? items[existing].value,
+          }
+        } else {
+          items.push({
+            id: `pci-${Date.now()}`,
+            participant_id: participant.id,
+            checklist_item_id,
+            completed,
+            completed_at: completed ? now : null,
+            document_url: null,
+            value: value ?? null,
+          })
+        }
+        writeParticipantChecklistItems(items)
+
+        // Auto-confirm: if all required checklist items for this participant are now completed
+        const checklistItems = readChecklistItems().filter((ci) => ci.event_id === eventId && ci.required)
+        const completionMap = new Map(
+          items.filter((c) => c.participant_id === participant.id).map((c) => [c.checklist_item_id, c]),
+        )
+        const allRequiredDone = checklistItems.every((ci) => completionMap.get(ci.id)?.completed === true)
+
+        if (allRequiredDone && participant.rsvp_status !== 'confirmed') {
+          const allParticipants = readParticipants()
+          const idx = allParticipants.findIndex((p) => p.id === participant.id)
+          if (idx !== -1) {
+            const confirmedBefore = allParticipants.filter(
+              (p) => p.event_id === eventId && p.rsvp_status === 'confirmed',
+            ).length
+            allParticipants[idx] = { ...allParticipants[idx], rsvp_status: 'confirmed', updated_at: now }
+            writeParticipants(allParticipants)
+            const confirmedAfter = confirmedBefore + 1
+            checkAndFireThresholdMock(eventId, confirmedBefore, confirmedAfter).catch((err) =>
+              console.error('[attendance] threshold check failed:', err),
+            )
+          }
+        }
+
+        return res.status(200).json({ ok: true, auto_confirmed: allRequiredDone })
+      }
+
+      if (body.action === 'upload') {
+        const { email, checklist_item_id, file_path } = body as UploadAction
+        if (!email) return res.status(400).json({ message: 'email is required' })
+        if (!checklist_item_id) return res.status(400).json({ message: 'checklist_item_id is required' })
+        if (!file_path) return res.status(400).json({ message: 'file_path is required' })
+
+        const participant = participants.find((p) => p.event_id === eventId && p.email === email)
+        if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+        const items = readParticipantChecklistItems()
+        const now = new Date().toISOString()
+        const document_url = `mock://receipts/${file_path}`
+        const existing = items.findIndex(
+          (c) => c.participant_id === participant.id && c.checklist_item_id === checklist_item_id,
+        )
+
+        if (existing !== -1) {
+          items[existing] = { ...items[existing], completed: true, completed_at: now, document_url }
+        } else {
+          items.push({
+            id: `pci-${Date.now()}`,
+            participant_id: participant.id,
+            checklist_item_id,
+            completed: true,
+            completed_at: now,
+            document_url,
+            value: null,
+          })
+        }
+        writeParticipantChecklistItems(items)
+        return res.status(200).json({ ok: true })
+      }
+
       return res.status(400).json({ message: `Unknown action: ${body.action}` })
     }
 
@@ -304,6 +446,120 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         checkAndFireThresholdSupabase(eventId, confirmedBefore, confirmedAfter).catch((err) =>
           console.error('[attendance] threshold check failed:', err),
         )
+      }
+
+      return res.status(200).json({ ok: true })
+    }
+
+    if (body.action === 'checklist_item') {
+      const { email, checklist_item_id, completed, value } = body as ChecklistItemAction
+      if (!email) return res.status(400).json({ message: 'email is required' })
+      if (!checklist_item_id) return res.status(400).json({ message: 'checklist_item_id is required' })
+
+      const { data: participant } = await supabase
+        .from('participants')
+        .select('id, rsvp_status')
+        .eq('event_id', eventId)
+        .eq('email', email)
+        .maybeSingle()
+      if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+      const p = participant as { id: string; rsvp_status: string }
+      const now = new Date().toISOString()
+
+      const { data: existing } = await supabase
+        .from('participant_checklist_items')
+        .select('id')
+        .eq('participant_id', p.id)
+        .eq('checklist_item_id', checklist_item_id)
+        .maybeSingle()
+
+      if (existing) {
+        await supabase
+          .from('participant_checklist_items')
+          .update({ completed, completed_at: completed ? now : null, value: value ?? null })
+          .eq('id', (existing as { id: string }).id)
+      } else {
+        await supabase.from('participant_checklist_items').insert({
+          participant_id: p.id,
+          checklist_item_id,
+          completed,
+          completed_at: completed ? now : null,
+          document_url: null,
+          value: value ?? null,
+        })
+      }
+
+      // Auto-confirm: check if all required checklist items are now completed
+      const [{ data: requiredItems }, { data: completions }] = await Promise.all([
+        supabase.from('checklist_items').select('id').eq('event_id', eventId).eq('required', true),
+        supabase.from('participant_checklist_items').select('checklist_item_id, completed').eq('participant_id', p.id),
+      ])
+
+      const completionMap = new Map(
+        (completions ?? []).map((c: Record<string, unknown>) => [c.checklist_item_id as string, c.completed as boolean]),
+      )
+      const allRequiredDone =
+        (requiredItems ?? []).every((ci: Record<string, unknown>) => completionMap.get(ci.id as string) === true)
+
+      if (allRequiredDone && p.rsvp_status !== 'confirmed') {
+        const { data: confirmedRows } = await supabase
+          .from('participants')
+          .select('id')
+          .eq('event_id', eventId)
+          .eq('rsvp_status', 'confirmed')
+        const confirmedBefore = confirmedRows?.length ?? 0
+
+        await supabase.from('participants').update({ rsvp_status: 'confirmed' }).eq('id', p.id)
+
+        checkAndFireThresholdSupabase(eventId, confirmedBefore, confirmedBefore + 1).catch((err) =>
+          console.error('[attendance] threshold check failed:', err),
+        )
+      }
+
+      return res.status(200).json({ ok: true, auto_confirmed: allRequiredDone })
+    }
+
+    if (body.action === 'upload') {
+      const { email, checklist_item_id, file_path } = body as UploadAction
+      if (!email) return res.status(400).json({ message: 'email is required' })
+      if (!checklist_item_id) return res.status(400).json({ message: 'checklist_item_id is required' })
+      if (!file_path) return res.status(400).json({ message: 'file_path is required' })
+
+      const { data: participant } = await supabase
+        .from('participants')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('email', email)
+        .maybeSingle()
+      if (!participant) return res.status(404).json({ message: 'Participant not found' })
+
+      const participantId = (participant as { id: string }).id
+      const supabaseUrl = process.env.SUPABASE_URL ?? ''
+      const document_url = `${supabaseUrl}/storage/v1/object/public/receipts/${file_path}`
+      const now = new Date().toISOString()
+
+      const { data: existing } = await supabase
+        .from('participant_checklist_items')
+        .select('id')
+        .eq('participant_id', participantId)
+        .eq('checklist_item_id', checklist_item_id)
+        .maybeSingle()
+
+      if (existing) {
+        await supabase
+          .from('participant_checklist_items')
+          .update({ completed: true, completed_at: now, document_url })
+          .eq('id', (existing as { id: string }).id)
+      } else {
+        await supabase.from('participant_checklist_items').insert({
+          participant_id: participantId,
+          checklist_item_id,
+          completed: true,
+          completed_at: now,
+          document_url,
+          value: null,
+        })
       }
 
       return res.status(200).json({ ok: true })

@@ -8,12 +8,15 @@ type JoinPayload = {
   location_region: string
   location_country: string
   role?: string
+  rsvpStatus: 'confirmed' | 'pending'
 }
 
 export const useAttendanceAction = (eventId: string) =>
   useMutation({
     mutationFn: async (payload: JoinPayload) => {
       await attendanceService.profile(eventId, payload)
-      await attendanceService.rsvp(eventId, payload.email, 'confirmed')
+      if (payload.rsvpStatus !== 'pending') {
+        await attendanceService.rsvp(eventId, payload.email, payload.rsvpStatus)
+      }
     },
   })

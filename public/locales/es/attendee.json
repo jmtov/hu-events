@@ -50,6 +50,22 @@
     "submit": "Confirmar asistencia (RSVP)",
     "submitting": "Confirmando...",
     "submitError": "Ocurrió un error. Por favor, inténtalo de nuevo.",
+    "googleSignIn": {
+      "title": "Para inscribirte, inicia sesión con tu cuenta de Google",
+      "description": "Tu nombre y correo se completarán automáticamente.",
+      "button": "Continuar con Google",
+      "redirecting": "Redirigiendo..."
+    },
+    "preAuth": {
+      "willNeedLabel": "Necesitarás completar:",
+      "items": {
+        "name": "Tu nombre y correo (desde Google)",
+        "role": "Rol / equipo",
+        "location": "Ciudad, estado y país"
+      }
+    },
+    "rsvpNotice": "Al confirmar asistencia, tu RSVP quedará registrado como confirmado.",
+    "pendingNotice": "Este evento requiere que completes ítems del checklist. Tu registro quedará pendiente hasta que los completes.",
     "sections": {
       "info": "Tu información",
       "location": "Ubicación",
@@ -92,6 +108,12 @@
         "info_input": "Información"
       }
     },
+    "checklistAction": {
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "placeholder": "Tu respuesta...",
+      "uploadPending": "Carga de archivo pendiente"
+    },
     "success": {
       "title": "RSVP confirmado!",
       "message": "Gracias, {{name}}! Tu asistencia fue registrada con éxito.",
@@ -107,6 +129,10 @@
       "title": "¡Registro confirmado!",
       "subtitle": "Tu asistencia fue registrada. Revisá tus datos a continuación."
     },
+    "pendingBanner": {
+      "title": "Registro pendiente",
+      "subtitle": "Completá los ítems requeridos del checklist para confirmar tu asistencia."
+    },
     "profile": {
       "title": "Tu información",
       "name": "Nombre",
@@ -114,7 +140,11 @@
       "city": "Ciudad",
       "region": "Región",
       "country": "País",
-      "role": "Rol"
+      "role": "Rol",
+      "edit": "Editar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "cancel": "Cancelar"
     },
     "checklist": {
       "title": "Tu checklist",
@@ -123,6 +153,11 @@
       "pending": "Pendiente",
       "done": "Listo",
       "required": "Obligatorio",
+      "save": "Guardar checklist",
+      "saving": "Guardando...",
+      "upload": "Adjuntar archivo",
+      "reupload": "Reemplazar archivo",
+      "uploading": "Subiendo...",
       "type": {
         "checkbox": "Tarea",
         "document_upload": "Documento",
@@ -132,6 +167,14 @@
     "contacts": {
       "title": "Personas de contacto",
       "empty": "No hay contactos disponibles para este evento."
+    },
+    "deleteButton": "Eliminar inscripción",
+    "deleting": "Eliminando...",
+    "deleteDialog": {
+      "title": "Eliminar inscripción",
+      "description": "Esto eliminará permanentemente tu inscripción en este evento. Esta acción no se puede deshacer.",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
     }
   }
 }

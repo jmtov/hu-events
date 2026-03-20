@@ -50,6 +50,22 @@
     "submit": "Confirmar presença (RSVP)",
     "submitting": "Confirmando...",
     "submitError": "Ocorreu um erro. Por favor, tente novamente.",
+    "googleSignIn": {
+      "title": "Para se inscrever, entre com sua conta do Google",
+      "description": "Seu nome e e-mail serão preenchidos automaticamente.",
+      "button": "Continuar com Google",
+      "redirecting": "Redirecionando..."
+    },
+    "preAuth": {
+      "willNeedLabel": "Você precisará informar:",
+      "items": {
+        "name": "Seu nome e e-mail (do Google)",
+        "role": "Cargo / equipe",
+        "location": "Cidade, estado e país"
+      }
+    },
+    "rsvpNotice": "Ao confirmar, seu RSVP será registrado como confirmado.",
+    "pendingNotice": "Este evento requer que você complete itens do checklist. Seu registro ficará pendente até que você os conclua.",
     "sections": {
       "info": "Suas informações",
       "location": "Localização",
@@ -92,6 +108,12 @@
         "info_input": "Informação"
       }
     },
+    "checklistAction": {
+      "save": "Salvar",
+      "saving": "Salvando...",
+      "placeholder": "Sua resposta...",
+      "uploadPending": "Upload de arquivo pendente"
+    },
     "success": {
       "title": "RSVP confirmado!",
       "message": "Obrigado, {{name}}! Sua presença foi registrada com sucesso.",
@@ -107,6 +129,10 @@
       "title": "Registro confirmado!",
       "subtitle": "Sua presença foi registrada. Veja seus dados abaixo."
     },
+    "pendingBanner": {
+      "title": "Registro pendente",
+      "subtitle": "Conclua os itens obrigatórios do checklist para confirmar sua presença."
+    },
     "profile": {
       "title": "Suas informações",
       "name": "Nome",
@@ -114,7 +140,11 @@
       "city": "Cidade",
       "region": "Região",
       "country": "País",
-      "role": "Cargo"
+      "role": "Cargo",
+      "edit": "Editar",
+      "save": "Salvar",
+      "saving": "Salvando...",
+      "cancel": "Cancelar"
     },
     "checklist": {
       "title": "Seu checklist",
@@ -123,6 +153,11 @@
       "pending": "Pendente",
       "done": "Concluído",
       "required": "Obrigatório",
+      "save": "Salvar checklist",
+      "saving": "Salvando...",
+      "upload": "Anexar arquivo",
+      "reupload": "Substituir arquivo",
+      "uploading": "Enviando...",
       "type": {
         "checkbox": "Tarefa",
         "document_upload": "Documento",
@@ -132,6 +167,14 @@
     "contacts": {
       "title": "Pessoas de contato",
       "empty": "Nenhum contato disponível para este evento."
+    },
+    "deleteButton": "Excluir inscrição",
+    "deleting": "Excluindo...",
+    "deleteDialog": {
+      "title": "Excluir inscrição",
+      "description": "Isso removerá permanentemente sua inscrição neste evento. Esta ação não pode ser desfeita.",
+      "confirm": "Excluir",
+      "cancel": "Cancelar"
     }
   }
 }

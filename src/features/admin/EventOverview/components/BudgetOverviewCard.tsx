@@ -31,7 +31,7 @@ const BudgetOverviewCard = ({ eventId }: BudgetOverviewCardProps) => {
             <>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-bold text-foreground">
-                  ${totalMax}
+                  ${totalMax.toLocaleString()}
                 </span>
                 <span className="text-sm text-muted-foreground">USD</span>
               </div>
@@ -49,7 +49,10 @@ const BudgetOverviewCard = ({ eventId }: BudgetOverviewCardProps) => {
         {topCategories.length > 0 && (
           <div className="space-y-2">
             {topCategories.map((category) => (
-              <div key={category.key} className="flex items-center justify-between">
+              <div
+                key={category.key}
+                className="flex items-center justify-between"
+              >
                 <span className="text-xs text-muted-foreground">
                   {t(`events.create.budget.categories.${category.key}`, {
                     defaultValue: category.label,
@@ -62,7 +65,6 @@ const BudgetOverviewCard = ({ eventId }: BudgetOverviewCardProps) => {
             ))}
           </div>
         )}
-
       </CardContent>
     </Card>
   );

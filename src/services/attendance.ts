@@ -47,8 +47,34 @@ export const attendanceService = {
       .patch(`/events/${eventId}/attendance`, { action: 'rsvp', email, status })
       .then((r) => r.data),
 
+  checklistItem: (
+    eventId: string,
+    payload: { email: string; checklist_item_id: string; completed: boolean; value?: string },
+  ) =>
+    api
+      .patch(`/events/${eventId}/attendance`, { action: 'checklist_item', ...payload })
+      .then((r) => r.data),
+
   getParticipantData: (eventId: string, email: string) =>
     api
       .get<ParticipantData>(`/events/${eventId}/participant`, { params: { email } })
+      .then((r) => r.data),
+
+  deleteParticipant: (eventId: string, email: string) =>
+    api
+      .delete(`/events/${eventId}/attendance`, { params: { email } })
+      .then((r) => r.data),
+
+  getSignedUploadUrl: (payload: { path: string; contentType: string }) =>
+    api
+      .post<{ signedUrl: string | null; path: string }>('/upload/sign', payload)
+      .then((r) => r.data),
+
+  uploadDocument: (
+    eventId: string,
+    payload: { email: string; checklist_item_id: string; file_path: string },
+  ) =>
+    api
+      .patch(`/events/${eventId}/attendance`, { action: 'upload', ...payload })
       .then((r) => r.data),
 }

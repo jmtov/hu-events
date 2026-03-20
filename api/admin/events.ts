@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import type { AdminEventSummary } from '../../src/types/event.js'
-import { supabase } from '../_lib/supabase.js'
-import { readParticipants } from '../_lib/participant-store.js'
 import { readEvents } from '../_lib/mock-store.js'
+import { readParticipants } from '../_lib/participant-store.js'
+import { supabase } from '../_lib/supabase.js'
 
 const USE_MOCK = process.env.USE_MOCK_DATA === 'true'
 

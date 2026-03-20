@@ -50,6 +50,22 @@
     "submit": "Confirm Attendance (RSVP)",
     "submitting": "Confirming...",
     "submitError": "Something went wrong. Please try again.",
+    "googleSignIn": {
+      "title": "Sign in with your Google account to register",
+      "description": "Your name and email will be filled in automatically.",
+      "button": "Continue with Google",
+      "redirecting": "Redirecting..."
+    },
+    "preAuth": {
+      "willNeedLabel": "You will need to provide:",
+      "items": {
+        "name": "Your name and email (from Google)",
+        "role": "Role / team",
+        "location": "City, region and country"
+      }
+    },
+    "rsvpNotice": "By confirming, your RSVP will be registered as confirmed.",
+    "pendingNotice": "This event requires you to complete checklist items. Your registration will remain pending until you do.",
     "sections": {
       "info": "Your information",
       "location": "Location",
@@ -92,6 +108,12 @@
         "info_input": "Info"
       }
     },
+    "checklistAction": {
+      "save": "Save",
+      "saving": "Saving...",
+      "placeholder": "Your answer...",
+      "uploadPending": "File upload pending"
+    },
     "success": {
       "title": "RSVP confirmed!",
       "message": "Thank you, {{name}}! Your attendance has been successfully registered.",
@@ -107,6 +129,10 @@
       "title": "Registration confirmed!",
       "subtitle": "Your attendance has been registered. See your details below."
     },
+    "pendingBanner": {
+      "title": "Registration pending",
+      "subtitle": "Complete the required checklist items to confirm your attendance."
+    },
     "profile": {
       "title": "Your information",
       "name": "Name",
@@ -114,7 +140,11 @@
       "city": "City",
       "region": "Region",
       "country": "Country",
-      "role": "Role"
+      "role": "Role",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
     },
     "checklist": {
       "title": "Your checklist",
@@ -123,6 +153,11 @@
       "pending": "Pending",
       "done": "Done",
       "required": "Required",
+      "save": "Save checklist",
+      "saving": "Saving...",
+      "upload": "Attach file",
+      "reupload": "Replace file",
+      "uploading": "Uploading...",
       "type": {
         "checkbox": "Task",
         "document_upload": "Document",
@@ -132,6 +167,14 @@
     "contacts": {
       "title": "Contact persons",
       "empty": "No contacts available for this event."
+    },
+    "deleteButton": "Delete registration",
+    "deleting": "Deleting...",
+    "deleteDialog": {
+      "title": "Delete registration",
+      "description": "This will permanently remove your registration from this event. This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
     }
   }
 }

@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { supabase } from '../../_lib/supabase.js'
 import { readParticipants } from '../../_lib/participant-store.js'
 import { readChecklistItems } from '../../_lib/checklist-store.js'
-import { participantChecklistItems } from '../../_fixtures/index.js'
+import { readParticipantChecklistItems } from '../../_lib/participant-checklist-store.js'
 
 /**
  * GET /api/events/:eventId/participant?email=...
@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const checklistItems = readChecklistItems().filter((item) => item.event_id === eventId)
 
       const completionMap = new Map(
-        participantChecklistItems
+        readParticipantChecklistItems()
           .filter((c) => c.participant_id === participant.id)
           .map((c) => [c.checklist_item_id, c]),
       )

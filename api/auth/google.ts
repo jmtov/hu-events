@@ -3,6 +3,13 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const ALLOWED_REDIRECT_TARGETS = new Set(['/admin/events', '/attendee/events']);
 
+function isAllowedRedirect(redirectTo: string): boolean {
+  if (ALLOWED_REDIRECT_TARGETS.has(redirectTo)) return true;
+  if (/^\/join\/[\w-]+$/.test(redirectTo)) return true;
+  if (/^\/attendee\/events\/[\w-]+$/.test(redirectTo)) return true;
+  return false;
+}
+
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return res.status(405).end();
 
@@ -15,7 +22,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
   const rawRedirectTo = req.query.redirectTo as string | undefined;
   const redirectTo =
-    rawRedirectTo && ALLOWED_REDIRECT_TARGETS.has(rawRedirectTo)
+    rawRedirectTo && isAllowedRedirect(rawRedirectTo)
       ? rawRedirectTo
       : '/admin/events';
 
