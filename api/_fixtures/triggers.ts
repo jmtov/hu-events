@@ -1,8 +1,8 @@
 export const triggers = [
   // ─── Q3 Sales Kickoff (event 001) ────────────────────────────────────────
   {
-    id: 'trg-0001-0000-0000-000000000001',
-    eventId: 'evt-0001-0000-0000-000000000001',
+    id: '00000009-0000-0001-0000-000000000001',
+    eventId: '00000001-0000-0001-0000-000000000001',
     name: 'Confirm RSVP',
     source: 'checklist',
     timing: 'days_before',
@@ -11,8 +11,8 @@ export const triggers = [
     recipient: 'attendee',
   },
   {
-    id: 'trg-0001-0000-0000-000000000002',
-    eventId: 'evt-0001-0000-0000-000000000001',
+    id: '00000009-0000-0001-0000-000000000002',
+    eventId: '00000001-0000-0001-0000-000000000001',
     name: 'Upload national ID or passport',
     source: 'checklist',
     timing: 'days_before',
@@ -21,8 +21,8 @@ export const triggers = [
     recipient: 'attendee',
   },
   {
-    id: 'trg-0001-0000-0000-000000000003',
-    eventId: 'evt-0001-0000-0000-000000000001',
+    id: '00000009-0000-0001-0000-000000000003',
+    eventId: '00000001-0000-0001-0000-000000000001',
     name: 'RSVP hits 50%',
     source: 'milestone',
     timing: 'immediately',
@@ -31,8 +31,8 @@ export const triggers = [
     recipient: 'hr_admin',
   },
   {
-    id: 'trg-0001-0000-0000-000000000004',
-    eventId: 'evt-0001-0000-0000-000000000001',
+    id: '00000009-0000-0001-0000-000000000004',
+    eventId: '00000001-0000-0001-0000-000000000001',
     name: 'Event ended',
     source: 'milestone',
     timing: 'immediately',
@@ -43,8 +43,8 @@ export const triggers = [
 
   // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
   {
-    id: 'trg-0002-0000-0000-000000000001',
-    eventId: 'evt-0002-0000-0000-000000000002',
+    id: '00000009-0000-0002-0000-000000000001',
+    eventId: '00000001-0000-0001-0000-000000000002',
     name: 'Sign code of conduct',
     source: 'checklist',
     timing: 'days_before',
@@ -53,8 +53,8 @@ export const triggers = [
     recipient: 'attendee',
   },
   {
-    id: 'trg-0002-0000-0000-000000000002',
-    eventId: 'evt-0002-0000-0000-000000000002',
+    id: '00000009-0000-0002-0000-000000000002',
+    eventId: '00000001-0000-0001-0000-000000000002',
     name: 'Submit GitHub username',
     source: 'checklist',
     timing: 'days_before',
@@ -63,8 +63,8 @@ export const triggers = [
     recipient: 'attendee',
   },
   {
-    id: 'trg-0002-0000-0000-000000000003',
-    eventId: 'evt-0002-0000-0000-000000000002',
+    id: '00000009-0000-0002-0000-000000000003',
+    eventId: '00000001-0000-0001-0000-000000000002',
     name: 'RSVP hits 50%',
     source: 'milestone',
     timing: 'immediately',
@@ -73,8 +73,8 @@ export const triggers = [
     recipient: 'hr_admin',
   },
   {
-    id: 'trg-0002-0000-0000-000000000004',
-    eventId: 'evt-0002-0000-0000-000000000002',
+    id: '00000009-0000-0002-0000-000000000004',
+    eventId: '00000001-0000-0001-0000-000000000002',
     name: 'Event ended',
     source: 'milestone',
     timing: 'immediately',

@@ -101,6 +101,12 @@
         "noCaps": "No categories configured.",
         "manage": "Manage Budget"
       },
+      "budgetStats": {
+        "title": "Budget breakdown",
+        "perPerson": "Per person",
+        "totalRegistered": "Total for {{count}} registered",
+        "expectedTotal": "Expected total ({{count}} people)"
+      },
       "loading": "Loading event...",
       "error": "Failed to load event.",
       "delete": "Delete event",
@@ -146,6 +152,10 @@
         "location": {
           "label": "Location",
           "placeholder": "e.g. São Paulo — Hotel Unique"
+        },
+        "expectedAttendees": {
+          "label": "Expected attendees",
+          "placeholder": "e.g. 50"
         }
       },
       "checklist": {

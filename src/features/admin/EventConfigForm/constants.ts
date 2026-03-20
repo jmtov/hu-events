@@ -16,4 +16,11 @@ export const eventConfigSchema = z.object({
   date_start: z.string().min(1, 'Start date is required'),
   date_end: z.string().optional(),
   location: z.string().optional(),
+  expected_attendees: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || (Number.isInteger(Number(val)) && Number(val) > 0),
+      'Must be a positive integer',
+    ),
 });

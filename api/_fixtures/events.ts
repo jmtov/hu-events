@@ -1,7 +1,7 @@
 export const events = [
   // ─── Q3 Sales Kickoff (event 001) ────────────────────────────────────────
   {
-    id: 'evt-0001-0000-0000-000000000001',
+    id: '00000001-0000-0001-0000-000000000001',
     title: 'Q3 Sales Kickoff',
     description:
       'Quarterly gathering for the entire sales team. Includes product updates, pipeline review, goal-setting sessions, and team-building activities.',
@@ -10,6 +10,7 @@ export const events = [
     date_end: '2026-04-15T18:00:00Z',
     location: 'Buenos Aires, Argentina',
     expected_attendees: 8,
+    event_day_info: null,
     modules: {
       participantList: true,
       checklist: true,
@@ -23,7 +24,7 @@ export const events = [
 
   // ─── Engineering Hackathon 2026 (event 002) ───────────────────────────────
   {
-    id: 'evt-0002-0000-0000-000000000002',
+    id: '00000001-0000-0001-0000-000000000002',
     title: 'Engineering Hackathon 2026',
     description:
       '48-hour hackathon for the engineering org. Teams of 4 build a working prototype around the theme of AI-assisted internal workflows.',
@@ -32,6 +33,7 @@ export const events = [
     date_end: '2026-05-04T20:00:00Z',
     location: 'Montevideo, Uruguay',
     expected_attendees: 12,
+    event_day_info: null,
     modules: {
       participantList: true,
       checklist: true,
