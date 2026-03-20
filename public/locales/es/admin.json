@@ -88,7 +88,14 @@
         "manage": "Gestionar Presupuesto"
       },
       "loading": "Cargando evento...",
-      "error": "Error al cargar el evento."
+      "error": "Error al cargar el evento.",
+      "delete": "Eliminar evento",
+      "deleteDialog": {
+        "title": "Eliminar evento",
+        "description": "Esta acción no se puede deshacer. Todos los datos del evento serán eliminados permanentemente.",
+        "confirm": "Sí, eliminar",
+        "cancel": "Cancelar"
+      }
     },
     "create": {
       "title": "Crear evento",
@@ -163,6 +170,11 @@
           "comms": "Comunicaciones y equipos",
           "misc": "Gastos varios"
         }
+      },
+      "contacts": {
+        "description": "Agrega las personas a las que los asistentes pueden contactar por dudas o logística. Puedes agregar más después de crear el evento.",
+        "empty": "Aún no hay contactos. Agrega al menos una persona de contacto.",
+        "addContact": "Agregar contacto"
       }
     },
     "config": {
@@ -174,6 +186,89 @@
       "dateStart": "Inicio:",
       "location": "Ubicación:",
       "createAnother": "Crear otro evento"
+    },
+    "contacts": {
+      "title": "Información de contacto",
+      "subtitle": "Define a quién pueden contactar los asistentes para consultas o problemas.",
+      "loading": "Cargando contactos...",
+      "error": "Error al cargar los contactos.",
+      "backToEvent": "Volver al evento",
+      "addContact": "Agregar contacto",
+      "empty": {
+        "title": "Aún no hay contactos",
+        "description": "Agrega al menos una persona de contacto para que los asistentes sepan a quién acudir."
+      },
+      "card": {
+        "editAriaLabel": "Editar contacto",
+        "deleteAriaLabel": "Eliminar contacto"
+      },
+      "form": {
+        "name": "Nombre",
+        "namePlaceholder": "Ej: María Torres",
+        "role": "Rol",
+        "rolePlaceholder": "Ej: Responsable de RR.HH.",
+        "email": "Email",
+        "emailPlaceholder": "Ej: maria@empresa.com",
+        "phone": "Teléfono / WhatsApp",
+        "phonePlaceholder": "Ej: +54 11 9999 0001",
+        "save": "Guardar contacto"
+      }
+    },
+    "dashboard": {
+      "loading": "Cargando panel...",
+      "error": "Error al cargar el panel.",
+      "header": {
+        "label": "Panel del evento",
+        "backToDetail": "Volver al evento"
+      },
+      "checklist": {
+        "title": "Progreso del checklist",
+        "empty": "No hay ítems de checklist configurados para este evento.",
+        "required": "Obligatorio",
+        "completedOf": "{{completed}} de {{total}} participantes completaron"
+      },
+      "participants": {
+        "title": "Participantes",
+        "empty": "Aún no se han agregado participantes.",
+        "unnamed": "Sin nombre",
+        "columns": {
+          "name": "Nombre",
+          "email": "Email",
+          "location": "Ubicación",
+          "rsvp": "RSVP"
+        },
+        "rsvp": {
+          "confirmed": "Confirmado",
+          "pending": "Pendiente",
+          "declined": "Rechazó"
+        }
+      }
+    },
+    "detail": {
+      "loading": "Cargando evento...",
+      "error": "Error al cargar el evento.",
+      "modules": {
+        "title": "Módulos activos",
+        "active": "Activo",
+        "inactive": "Inactivo"
+      },
+      "contacts": {
+        "title": "Personas de contacto",
+        "empty": "No hay contactos configurados para este evento."
+      },
+      "actions": {
+        "contacts": "Información de contacto",
+        "copyInviteLink": "Copiar enlace de invitación",
+        "copyInviteLinkCopied": "¡Enlace copiado!",
+        "delete": "Eliminar evento",
+        "dashboard": "Ver panel"
+      },
+      "deleteDialog": {
+        "title": "Eliminar evento",
+        "description": "Esta acción no se puede deshacer. Todos los datos del evento serán eliminados permanentemente.",
+        "confirm": "Sí, eliminar",
+        "cancel": "Cancelar"
+      }
     },
     "modules": {
       "participantList": {

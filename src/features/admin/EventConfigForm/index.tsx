@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreateEvent } from '@/hooks/useCreateEvent';
 import { useDetectEventType } from '@/hooks/useDetectEventType';
 import { useGenerateChecklist } from '@/hooks/useGenerateChecklist';
+import { contactService } from '@/services/contacts';
 import type { ChecklistSuggestion } from '@/types/checklist';
 import { normaliseChecklistType } from '@/types/checklist';
 import type { EventModules } from '@/types/event';
@@ -18,6 +19,9 @@ import { DEFAULT_BUDGET_CATEGORIES } from './components/BudgetModule/constants';
 import ChecklistModule from './components/ChecklistModule';
 import type { ChecklistItemValues } from './components/ChecklistModule/constants';
 import type { DraftItem } from './components/ChecklistModule/DraftItemRow';
+import ContactsModule from './components/ContactsModule';
+import type { ContactItemValues } from './components/ContactsModule/constants';
+import type { DraftContact } from './components/ContactsModule/DraftContactRow';
 import ModuleToggleRow from './components/ModuleToggleRow';
 import NotificationsModule from './components/NotificationsModule';
 import {
@@ -50,6 +54,10 @@ const EventConfigForm = () => {
   const [draftBudgetCategories, setDraftBudgetCategories] = useState<BudgetCategory[]>(
     DEFAULT_BUDGET_CATEGORIES,
   );
+
+  const [draftContacts, setDraftContacts] = useState<DraftContact[]>([]);
+  const [isAddingContact, setIsAddingContact] = useState(false);
+  const [editingContactKey, setEditingContactKey] = useState<string | null>(null);
 
   const MODULE_KEYS = Object.keys(DEFAULT_MODULES) as Array<keyof EventModules>;
 
@@ -167,6 +175,25 @@ const EventConfigForm = () => {
     );
   };
 
+  const handleAddContact = (values: ContactItemValues) => {
+    setDraftContacts((prev) => [
+      ...prev,
+      { ...values, _key: `${Date.now()}_${Math.random()}` },
+    ]);
+    setIsAddingContact(false);
+  };
+
+  const handleUpdateContact = (key: string, values: ContactItemValues) => {
+    setDraftContacts((prev) =>
+      prev.map((c) => (c._key === key ? { ...values, _key: key } : c)),
+    );
+    setEditingContactKey(null);
+  };
+
+  const handleDeleteContact = (key: string) => {
+    setDraftContacts((prev) => prev.filter((c) => c._key !== key));
+  };
+
   const handleSubmit = form.handleSubmit(async (values) => {
     const event = await createEvent.mutateAsync({
       title: values.title,
@@ -198,6 +225,22 @@ const EventConfigForm = () => {
           }))
         : undefined,
     });
+
+    // Save draft contacts — non-blocking
+    if (modules.contacts) {
+      for (const contact of draftContacts) {
+        try {
+          await contactService.create(event.id, {
+            name: contact.name,
+            role: contact.role,
+            email: contact.email,
+            phone: contact.phone || undefined,
+          });
+        } catch {
+          // Contact will be editable on the contacts page after redirect
+        }
+      }
+    }
 
     navigate({
       to: '/admin/events/$eventId',
@@ -350,6 +393,19 @@ const EventConfigForm = () => {
                 <NotificationsModule
                   draftTriggers={draftTriggers}
                   onUpdateTrigger={handleUpdateTrigger}
+                />
+              )}
+
+              {key === 'contacts' && (
+                <ContactsModule
+                  draftContacts={draftContacts}
+                  isAddingContact={isAddingContact}
+                  editingKey={editingContactKey}
+                  onAddContact={handleAddContact}
+                  onUpdateContact={handleUpdateContact}
+                  onDeleteContact={handleDeleteContact}
+                  onSetAddingContact={setIsAddingContact}
+                  onSetEditingKey={setEditingContactKey}
                 />
               )}
             </ModuleToggleRow>

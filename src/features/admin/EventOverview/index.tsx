@@ -1,16 +1,20 @@
-import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
 import { IconArrowLeft, IconLink } from '@tabler/icons-react';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGetEvent } from '@/hooks/useGetEvent';
+import ContactsCard from '@/components/ContactsCard';
 import { Button } from '@/components/ui/button';
-import SavedBanner from './components/SavedBanner';
-import EventHeader from './components/EventHeader';
-import RsvpCard from './components/RsvpCard';
-import ChecklistProgressCard from './components/ChecklistProgressCard';
-import ParticipantSummaryCard from './components/ParticipantSummaryCard';
-import NotificationsSummaryCard from './components/NotificationsSummaryCard';
+import DeleteConfirmDialog from '@/features/admin/EventDetail/components/DeleteConfirmDialog';
+import { useDeleteEvent } from '@/hooks/useDeleteEvent';
+import { useGetContacts } from '@/hooks/useGetContacts';
+import { useGetEvent } from '@/hooks/useGetEvent';
 import BudgetOverviewCard from './components/BudgetOverviewCard';
+import ChecklistProgressCard from './components/ChecklistProgressCard';
+import EventHeader from './components/EventHeader';
+import NotificationsSummaryCard from './components/NotificationsSummaryCard';
+import ParticipantSummaryCard from './components/ParticipantSummaryCard';
+import RsvpCard from './components/RsvpCard';
+import SavedBanner from './components/SavedBanner';
 
 type EventOverviewProps = {
   eventId: string;
@@ -19,9 +23,13 @@ type EventOverviewProps = {
 
 const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const eventQuery = useGetEvent(eventId);
+  const deleteEvent = useDeleteEvent();
+  const contactsQuery = useGetContacts(eventId);
 
   if (eventQuery.isLoading) {
     return (
@@ -42,6 +50,12 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       </div>
     );
   }
+
+  const handleDeleteConfirm = () => {
+    deleteEvent.mutate(eventId, {
+      onSuccess: () => navigate({ to: '/admin/events' }),
+    });
+  };
 
   const handleCopyInviteLink = async () => {
     const url = `${window.location.origin}/join/${eventId}`;
@@ -75,9 +89,12 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       <EventHeader event={event} style={{ animationDelay: 'calc(1 * 50ms)' }} />
 
       <div
-        className="animate-appear-from-bottom flex justify-end"
+        className="animate-appear-from-bottom flex items-center justify-end gap-2"
         style={{ animationDelay: 'calc(2 * 50ms)' }}
       >
+        <span className="truncate rounded border bg-muted px-2 py-1 font-mono text-xs text-muted-foreground w-full">
+          {`${window.location.origin}/join/${eventId}`}
+        </span>
         <Button variant="outline" size="sm" onClick={handleCopyInviteLink}>
           <IconLink size={16} />
           {copied
@@ -111,6 +128,31 @@ const EventOverview = ({ eventId, showSavedBanner }: EventOverviewProps) => {
       <ParticipantSummaryCard
         participants={participants}
         style={{ animationDelay: 'calc(5 * 50ms)' }}
+      />
+
+      {event.modules.contacts && (
+        <div
+          className="animate-appear-from-bottom"
+          style={{ animationDelay: 'calc(6 * 50ms)' }}
+        >
+          <ContactsCard contacts={contactsQuery.data ?? []} ns="admin" />
+        </div>
+      )}
+
+      <div
+        className="animate-appear-from-bottom flex justify-end"
+        style={{ animationDelay: 'calc(7 * 50ms)' }}
+      >
+        <Button variant="destructive" size="sm" onClick={() => setDeleteDialogOpen(true)}>
+          {t('events.overview.delete')}
+        </Button>
+      </div>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        isDeleting={deleteEvent.isPending}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteDialogOpen(false)}
       />
     </div>
   );
